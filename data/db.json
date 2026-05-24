@@ -1,0 +1,734 @@
+{
+  "highlights": [
+    {
+      "content": {
+        "text": ": A network is a set of devices that"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 213.5833282470703,
+          "y1": 164.2833251953125,
+          "x2": 444.6833190917969,
+          "y2": 181.0333251953125,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 213.5833282470703,
+            "y1": 164.2833251953125,
+            "x2": 444.6833190917969,
+            "y2": 181.0333251953125,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "6431428105692886",
+      "color": "blue",
+      "docId": "1779601647815-214889173",
+      "createdAt": "2026-05-24T05:59:57.063Z"
+    },
+    {
+      "content": {
+        "text": "ne or more nodes. A network is a coll"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 279.21665954589844,
+          "y1": 204.58334350585938,
+          "x2": 529.7999877929688,
+          "y2": 221.33334350585938,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 279.21665954589844,
+            "y1": 204.58334350585938,
+            "x2": 529.7999877929688,
+            "y2": 221.33334350585938,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "23228920332322933",
+      "color": "blue",
+      "docId": "1779601647815-214889173",
+      "createdAt": "2026-05-24T05:59:58.744Z"
+    },
+    {
+      "content": {
+        "text": "onnected toeach other to allow the sharing of data.● Network Topology : Network topology specifies the layout of a computer network. Itshows how devices and cables are connected to each other.Types of Network Topology :● Star :● Star topology is a network topology in which all the nodes are connectedto a single device known as a central device.● Star topology requires more cable compared to other topologies.Therefore, it is more robust as a failure in one cable will only disconnect aspecific computer connected to this cable.● If the central device is damaged, then the whole network fails.● Star topology is very easy to install, manage and troubleshoot. It iscommonly used in office and home networks.● Ring :1. Ring topology is a network topology in which nodes are exactly connected to twoor more nodes and thus, forming a single continuous path for the transmission.2. It does not need any central server to control the connectivity among the nodes.3. If the single node is damaged, then the whole network fails.4. Ring topology is very rarely used as it is expensive, difficult to install andmanage.5. Examples of Ring topology are SONET network, SDH network, etc."
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 0,
+          "y1": 204.58334350585938,
+          "x2": 847.9999847412109,
+          "y2": 904.2333068847656,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 279.21665954589844,
+            "y1": 204.58334350585938,
+            "x2": 529.7999877929688,
+            "y2": 221.33334350585938,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 655.0833587646484,
+            "y1": 204.58334350585938,
+            "x2": 734.7000274658203,
+            "y2": 221.33334350585938,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 149.65000915527344,
+            "y1": 224.75,
+            "x2": 412.1333465576172,
+            "y2": 241.5,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 253.26666259765625,
+            "x2": 285.59999084472656,
+            "y2": 283.5,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 124.69999694824219,
+            "y1": 265.0500183105469,
+            "x2": 717.3666534423828,
+            "y2": 281.8000183105469,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 283.51666259765625,
+            "x2": 847.9833374023438,
+            "y2": 313.75,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 313.73333740234375,
+            "x2": 352.7333221435547,
+            "y2": 343.96665954589844,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 149.65000915527344,
+            "y1": 325.51666259765625,
+            "x2": 355.54998779296875,
+            "y2": 342.26666259765625,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 343.98333740234375,
+            "x2": 847.9999847412109,
+            "y2": 364.1333312988281,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 364.1333312988281,
+            "x2": 737.1166839599609,
+            "y2": 384.2833251953125,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 249.4166717529297,
+            "y1": 385.98333740234375,
+            "x2": 550.8333587646484,
+            "y2": 402.73333740234375,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 404.4499816894531,
+            "x2": 683.7500152587891,
+            "y2": 424.5999755859375,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 249.4166717529297,
+            "y1": 426.3000183105469,
+            "x2": 744.6833343505859,
+            "y2": 443.0500183105469,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 444.7500305175781,
+            "x2": 847.9833374023438,
+            "y2": 464.9000244140625,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 464.9166564941406,
+            "x2": 665.1166839599609,
+            "y2": 485.066650390625,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 485.0666809082031,
+            "x2": 697.2833404541016,
+            "y2": 505.2166748046875,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 249.4166717529297,
+            "y1": 506.9166564941406,
+            "x2": 553.9166717529297,
+            "y2": 523.6666564941406,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 635.0166320800781,
+            "x2": 847.9999847412109,
+            "y2": 764.8332977294922,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 124.69999694824219,
+            "y1": 746.3833312988281,
+            "x2": 191.9499969482422,
+            "y2": 763.1333312988281,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 764.8500061035156,
+            "x2": 847.9999847412109,
+            "y2": 785.0000152587891,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 199.53330993652344,
+            "y1": 786.6999816894531,
+            "x2": 729.5333099365234,
+            "y2": 803.4499816894531,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 805.1499938964844,
+            "x2": 736.3332977294922,
+            "y2": 825.3000030517578,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 825.3166809082031,
+            "x2": 847.9999847412109,
+            "y2": 845.4666748046875,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 845.4666442871094,
+            "x2": 847.9999847412109,
+            "y2": 865.6166534423828,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 199.53330993652344,
+            "y1": 867.3166809082031,
+            "x2": 258.816650390625,
+            "y2": 884.0666809082031,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 174.5833282470703,
+            "y1": 887.4833068847656,
+            "x2": 652.4166412353516,
+            "y2": 904.2333068847656,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "019466949237149977",
+      "color": "blue",
+      "docId": "1779601647815-214889173",
+      "createdAt": "2026-05-24T06:00:01.529Z"
+    },
+    {
+      "content": {
+        "text": "Computer Networks● Network : A network is a set of devices that are connected with a physical media link. Ina network, two or more nodes are connected by a physical link or two or more networksare connected by one or more nodes. A network is a co"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 124.69999694824219,
+          "y1": 106.86666870117188,
+          "x2": 742.7166290283203,
+          "y2": 221.33334350585938,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 334.4166717529297,
+            "y1": 106.86666870117188,
+            "x2": 513.0000152587891,
+            "y2": 131.43333435058594,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 124.69999694824219,
+            "y1": 164.2833251953125,
+            "x2": 742.7166290283203,
+            "y2": 181.0333251953125,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 149.65000915527344,
+            "y1": 184.43331909179688,
+            "x2": 738.0167083740234,
+            "y2": 201.18331909179688,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 149.65000915527344,
+            "y1": 204.58334350585938,
+            "x2": 523.0500030517578,
+            "y2": 221.33334350585938,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "6800693951474837",
+      "color": "pink",
+      "docId": "1779601647815-214889173",
+      "createdAt": "2026-05-24T06:00:07.332Z"
+    },
+    {
+      "content": {
+        "text": "Computer Networks● Network : A network is a set of devices that are connected with a physical media link. Ina network, two or more nodes are connected by a physical"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 119.26666259765625,
+          "y1": 102.25,
+          "x2": 708.7000122070312,
+          "y2": 192.76666259765625,
+          "width": 811,
+          "height": 1049.5294117647059,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 319.816650390625,
+            "y1": 102.25,
+            "x2": 490.7666473388672,
+            "y2": 125.69999694824219,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 1
+          },
+          {
+            "x1": 119.26666259765625,
+            "y1": 156.75,
+            "x2": 708.7000122070312,
+            "y2": 173.5,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 1
+          },
+          {
+            "x1": 143.11663818359375,
+            "y1": 176.01666259765625,
+            "x2": 518.5166320800781,
+            "y2": 192.76666259765625,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "7422187016244535",
+      "color": "yellow",
+      "docId": "1779603505126-650644042",
+      "createdAt": "2026-05-24T06:20:50.681Z"
+    },
+    {
+      "content": {
+        "text": "er to allow the sharing"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 198.8499755859375,
+          "y1": 214.56668090820312,
+          "x2": 340.9333190917969,
+          "y2": 231.31668090820312,
+          "width": 811,
+          "height": 1049.5294117647059,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 198.8499755859375,
+            "y1": 214.56668090820312,
+            "x2": 340.9333190917969,
+            "y2": 231.31668090820312,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "16112644810785726",
+      "color": "yellow",
+      "docId": "1779603505126-650644042",
+      "createdAt": "2026-05-24T06:21:24.959Z"
+    },
+    {
+      "content": {
+        "text": "Network topology specifies the layout of a computer network. Itshows how devices and cables are connected to each other."
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 143.11663818359375,
+          "y1": 253.11666870117188,
+          "x2": 684.7833251953125,
+          "y2": 289.1499938964844,
+          "width": 811,
+          "height": 1049.5294117647059,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 281.20001220703125,
+            "y1": 253.11666870117188,
+            "x2": 684.7833251953125,
+            "y2": 269.8666687011719,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 1
+          },
+          {
+            "x1": 143.11663818359375,
+            "y1": 272.3999938964844,
+            "x2": 530.6666259765625,
+            "y2": 289.1499938964844,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "7816368520082537",
+      "color": "pink",
+      "docId": "1779603505126-650644042",
+      "createdAt": "2026-05-24T06:24:21.597Z"
+    },
+    {
+      "content": {
+        "text": "rid :1. A hybrid topology is a combination of different topolo"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 166.96664428710938,
+          "y1": 680.1000366210938,
+          "x2": 528.0333251953125,
+          "y2": 716.11669921875,
+          "width": 811,
+          "height": 1049.5294117647059,
+          "pageNumber": 3
+        },
+        "rects": [
+          {
+            "x1": 171.43331909179688,
+            "y1": 680.1000366210938,
+            "x2": 197.34999084472656,
+            "y2": 696.8500366210938,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 3
+          },
+          {
+            "x1": 166.96664428710938,
+            "y1": 699.36669921875,
+            "x2": 528.0333251953125,
+            "y2": 716.11669921875,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 3
+          }
+        ],
+        "pageNumber": 3
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "43867069411228976",
+      "color": "pink",
+      "docId": "1779603505126-650644042",
+      "createdAt": "2026-05-24T06:27:32.319Z"
+    },
+    {
+      "content": {
+        "text": "Computer Networks"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 319.816650390625,
+          "y1": 102.25,
+          "x2": 490.7666473388672,
+          "y2": 125.69999694824219,
+          "width": 811,
+          "height": 1049.5294117647059,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 319.816650390625,
+            "y1": 102.25,
+            "x2": 490.7666473388672,
+            "y2": 125.69999694824219,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "9161746581703429",
+      "color": "yellow",
+      "docId": "1779603505126-650644042",
+      "createdAt": "2026-05-24T07:14:36.311Z"
+    },
+    {
+      "content": {
+        "text": "Network Topology : Network topology specifies the layout of a computer network. Itshows how devices and cables are connected to each other."
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 149.65000915527344,
+          "y1": 253.26666259765625,
+          "x2": 717.3666534423828,
+          "y2": 301.9666442871094,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 281.3666534423828,
+            "y1": 253.26666259765625,
+            "x2": 285.59999084472656,
+            "y2": 283.5,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 149.65000915527344,
+            "y1": 265.0500183105469,
+            "x2": 717.3666534423828,
+            "y2": 281.8000183105469,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 149.65000915527344,
+            "y1": 285.2166442871094,
+            "x2": 556.0666961669922,
+            "y2": 301.9666442871094,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "7611975063024446",
+      "color": "pink",
+      "docId": "1779603505126-650644042",
+      "createdAt": "2026-05-24T07:50:11.639Z"
+    },
+    {
+      "content": {
+        "text": "Star topology is a network topology in which all the nodes are connectedto a single device known as a central device."
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 249.4166717529297,
+          "y1": 365.8333435058594,
+          "x2": 737.1166839599609,
+          "y2": 402.73333740234375,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 249.4166717529297,
+            "y1": 365.8333435058594,
+            "x2": 737.1166839599609,
+            "y2": 382.5833435058594,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 249.4166717529297,
+            "y1": 385.98333740234375,
+            "x2": 550.8333587646484,
+            "y2": 402.73333740234375,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "05331247216711099",
+      "color": "yellow",
+      "docId": "1779603505126-650644042",
+      "createdAt": "2026-05-24T07:50:51.385Z"
+    }
+  ],
+  "documents": [
+    {
+      "id": "1779603505126-650644042",
+      "name": "computer_networks.pdf",
+      "size": "0.2 MB",
+      "type": "PDF",
+      "folderId": null,
+      "uploadedAt": "2026-05-24T06:18:25.130Z"
+    },
+    {
+      "id": "1779604172058-808794673",
+      "name": "computer_networks.pdf",
+      "size": "0.2 MB",
+      "type": "PDF",
+      "folderId": null,
+      "uploadedAt": "2026-05-24T06:29:32.061Z"
+    }
+  ],
+  "folders": []
+}
