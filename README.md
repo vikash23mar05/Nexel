@@ -4,7 +4,7 @@ Nexel is a modern web application built with [Next.js](https://nextjs.org) desig
 
 ## Preview
 
-![Signup](./public/signup.png)
+![Login](./public/Login.png)
 
 ## Getting Started
 
