@@ -9,7 +9,7 @@ import {
   AreaHighlight,
 } from "react-pdf-highlighter";
 import type { IHighlight, NewHighlight, ViewportHighlight } from "react-pdf-highlighter";
-import * as pdfjsLib from "pdfjs-dist";
+import { pdfjs } from 'react-pdf';
 
 // Import all required CSS for pdf.js and react-pdf-highlighter to render properly
 import "pdfjs-dist/web/pdf_viewer.css";
@@ -19,7 +19,7 @@ import "react-pdf-highlighter/dist/esm/style/MouseSelection.css";
 import "react-pdf-highlighter/dist/esm/style/PdfHighlighter.css";
 import "react-pdf-highlighter/dist/esm/style/Tip.css";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js`;
 
 const getNextId = () => String(Math.random()).slice(2);
 
@@ -79,10 +79,13 @@ export default function DocumentViewer({
               return <div style={{ display: 'none' }}></div>;
             }}
             highlightTransform={(
-              highlight: ViewportHighlight<CustomHighlight>,
+              highlight: any,
               index: number,
-              setBoundingRect: (rect: any) => void,
-              hideTipAndSelection: () => void
+              setTip: any,
+              hideTip: any,
+              viewportToScaled: any,
+              screenshot: any,
+              isScrolledTo: boolean
             ) => {
               const isTextHighlight = !Boolean(
                 highlight.content && highlight.content.image
@@ -90,16 +93,16 @@ export default function DocumentViewer({
 
               const component = isTextHighlight ? (
                 <Highlight
-                  isScrolledTo={false}
+                  isScrolledTo={isScrolledTo}
                   position={highlight.position}
                   comment={highlight.comment}
                 />
               ) : (
                 <AreaHighlight
-                  isScrolledTo={false}
+                  isScrolledTo={isScrolledTo}
                   highlight={highlight}
                   onChange={(boundingRect) => {
-                    setBoundingRect(boundingRect);
+                    
                   }}
                 />
               );
@@ -108,7 +111,7 @@ export default function DocumentViewer({
                 <Popup
                   popupContent={<div className="bg-black text-white p-2 text-xs rounded">{highlight.color} highlight</div>}
                   onMouseOver={(popupContent) => {}}
-                  onMouseOut={hideTipAndSelection}
+                  onMouseOut={hideTip}
                   key={index}
                 >
                   <div 
