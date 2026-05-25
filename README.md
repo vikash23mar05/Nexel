@@ -2,18 +2,18 @@
 
 Nexel is a next-generation workspace platform designed to transform static PDFs into interactive, AI-driven knowledge. Stop reading passively and start mastering your material with instant AI notes, dynamic visual diagrams, and document-based conversations.
 
-## ✨ Key Features
+## Key Features
 
-- **📝 AI Notes from Highlights:** Simply highlight any text in your PDF. Our AI instantly generates concise summaries, bullet points, simplified explanations, and revision notes.
-- **💬 Chat with Documents:** Ask questions directly to your uploaded documents and get instant answers backed by semantic search and vector embeddings.
-- **📊 Visual Learning:** Automatically convert complex paragraphs into flowcharts, mindmaps, and simple diagrams to understand relationships visually.
-- **🎥 AI Video Generation (Experimental):** Turn your notes into short educational videos with auto-generated scripts, scene splitting, and animated captions.
+- **AI Notes from Highlights:** Simply highlight any text in your PDF. Our AI instantly generates concise summaries, bullet points, simplified explanations, and revision notes.
+- **Chat with Documents:** Ask questions directly to your uploaded documents and get instant answers backed by semantic search and vector embeddings.
+- **Visual Learning:** Automatically convert complex paragraphs into flowcharts, mindmaps, and simple diagrams to understand relationships visually.
+- **AI Video Generation (Experimental):** Turn your notes into short educational videos with auto-generated scripts, scene splitting, and animated captions.
 
-## 📸 Preview
+## Overview
 
 ![Login](./public/Login.png)
 
-## 🔄 User Workflow
+## User Workflow
 
 ```mermaid
 graph TD
@@ -32,7 +32,7 @@ graph TD
     E -->|3. Video| H[Educational Shorts]
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 First, run the development server:
 
