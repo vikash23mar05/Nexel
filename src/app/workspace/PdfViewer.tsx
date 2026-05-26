@@ -51,7 +51,7 @@ export default function DocumentViewer({
     }
   };
 
-  const absoluteUrl = url.startsWith("http") ? url : (typeof window !== "undefined" ? `${window.location.origin}${url}` : url);
+  const absoluteUrl = url.startsWith("http") || url.startsWith("blob:") ? url : (typeof window !== "undefined" ? `${window.location.origin}${url}` : url);
 
   return (
     <div className="w-full relative" style={{ height: "calc(100vh - 120px)", width: "100%", border: "1px solid #ccc" }}>
