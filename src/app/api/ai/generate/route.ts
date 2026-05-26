@@ -1,32 +1,104 @@
 import { NextResponse } from "next/server";
 
+// Global Unhandled Rejection Shield to prevent Next.js dev server from crashing on async errors
+if (typeof process !== "undefined") {
+  process.on("unhandledRejection", (reason) => {
+    console.warn("⚠️ [Unhandled Rejection Shielded]:", reason);
+  });
+}
+
 export async function POST(req: Request) {
   try {
     const { prompt, action, text } = await req.json();
 
-    const encoder = new TextEncoder();
-    
-    // Create a streaming response
+    let systemPrompt = "";
+    if (action === "summarize") {
+      systemPrompt = "You are a helpful assistant. Summarize the provided text concisely.";
+    } else if (action === "explain") {
+      systemPrompt = "You are a helpful assistant. Explain the provided text in simpler terms.";
+    } else if (action === "flashcards") {
+      systemPrompt = "You are a helpful assistant. Generate a few flashcards based on the provided text. Format them as Q: ... A: ...";
+    } else {
+      systemPrompt = "You are a helpful assistant.";
+    }
+
+    const finalPrompt = prompt ? `${prompt}\n\nContext text: ${text}` : `Text to process: ${text}`;
+
+    // Get the GitHub PAT from environment variables
+    const token = process.env.GITHUB_TOKEN || "";
+
+    if (!token) {
+      const fallbackStream = new ReadableStream({
+        async start(controller) {
+          const msg = `⚠️ **Configuration Error**\n\nNo GITHUB_TOKEN detected in .env.local. Please add it to start using free AI features.`;
+          controller.enqueue(new TextEncoder().encode(msg));
+          controller.close();
+        }
+      });
+      return new Response(fallbackStream, {
+        headers: { "Content-Type": "text/plain; charset=utf-8", "Transfer-Encoding": "chunked" }
+      });
+    }
+
+    // Call GitHub Models API (OpenAI-compatible)
+    const url = "https://models.inference.ai.azure.com/chat/completions";
+    const payload = {
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: finalPrompt }
+      ],
+      model: "gpt-4o-mini",
+      temperature: 0.7,
+      max_tokens: 1024
+    };
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      let errorText = "Unknown error";
+      try {
+        const errorData = await response.json();
+        errorText = errorData.message || JSON.stringify(errorData);
+      } catch (e) {
+        errorText = await response.text();
+      }
+      
+      const fallbackStream = new ReadableStream({
+        async start(controller) {
+          const msg = `⚠️ **GitHub Models API Error (${response.status})**\n\n${errorText}`;
+          controller.enqueue(new TextEncoder().encode(msg));
+          controller.close();
+        }
+      });
+      return new Response(fallbackStream, {
+        headers: { "Content-Type": "text/plain; charset=utf-8", "Transfer-Encoding": "chunked" }
+      });
+    }
+
+    const data = await response.json();
+    const generatedText = data.choices?.[0]?.message?.content || "No response generated.";
+
     const stream = new ReadableStream({
       async start(controller) {
-        let simulatedResponse = "";
-        
-        if (action === "summarize") {
-          simulatedResponse = `Here is a summary of the highlighted text:\n\nThe selected passage discusses key concepts that can be condensed into a few main points. It highlights the importance of the core subject matter and provides context. (This is a simulated AI response since no API key is provided).`;
-        } else if (action === "explain") {
-          simulatedResponse = `Let me explain this in simpler terms:\n\nThe text "${text.substring(0, 30)}..." essentially means that the underlying system or concept works by following specific rules. Think of it like a set of instructions. (Simulated AI response).`;
-        } else {
-          simulatedResponse = `I've analyzed your highlight. Based on what you selected, here are some thoughts: This is a very interesting section of the document that warrants further review. (Simulated AI response).`;
+        try {
+          // Simulate streaming chunk by chunk so the UI doesn't break
+          const chunks = generatedText.match(/.{1,10}/g) || [];
+          for (const chunk of chunks) {
+            await new Promise(resolve => setTimeout(resolve, 10)); // tiny delay for visual effect
+            controller.enqueue(new TextEncoder().encode(chunk));
+          }
+        } catch (e) {
+          console.error("Stream error", e);
+        } finally {
+          controller.close();
         }
-
-        const words = simulatedResponse.split(" ");
-        
-        for (let i = 0; i < words.length; i++) {
-          await new Promise(resolve => setTimeout(resolve, 50)); // simulate typing delay
-          controller.enqueue(encoder.encode(words[i] + " "));
-        }
-        
-        controller.close();
       }
     });
 
@@ -37,6 +109,7 @@ export async function POST(req: Request) {
       },
     });
   } catch (error) {
+    console.error("Error generating AI response:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

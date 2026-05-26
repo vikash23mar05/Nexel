@@ -12,7 +12,7 @@ import type { IHighlight, NewHighlight, ViewportHighlight } from "react-pdf-high
 import { pdfjs } from 'react-pdf';
 
 // Import all required CSS for pdf.js and react-pdf-highlighter to render properly
-import "pdfjs-dist/web/pdf_viewer.css";
+import "./pdf_viewer.css";
 import "react-pdf-highlighter/dist/esm/style/AreaHighlight.css";
 import "react-pdf-highlighter/dist/esm/style/Highlight.css";
 import "react-pdf-highlighter/dist/esm/style/MouseSelection.css";

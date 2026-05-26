@@ -2,6 +2,13 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
+// Global Unhandled Rejection Shield to prevent Next.js dev server from crashing on async errors
+if (typeof process !== "undefined") {
+  process.on("unhandledRejection", (reason) => {
+    console.warn("⚠️ [Unhandled Rejection Shielded]:", reason);
+  });
+}
+
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
