@@ -12,12 +12,14 @@ import {
   ChevronRight,
   Upload,
   X,
-  File
+  File,
+  Menu
 } from "lucide-react";
 
 export default function LandingPage() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -65,20 +67,51 @@ export default function LandingPage() {
             </div>
             <span className="font-medium tracking-tight">Nexel</span>
           </div>
-          <nav className="hidden md:flex items-center gap-8">
-          <a href="#" className="text-gray-300 hover:text-white transition-colors">Product</a>
-          <a href="#" className="text-gray-300 hover:text-white transition-colors">Solutions</a>
-          <a href="#" className="text-gray-300 hover:text-white transition-colors">Pricing</a>
           
-          <div className="flex items-center gap-6 ml-4 border-l border-gray-800 pl-8">
-            <a href="/signup" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Log in</a>
-            <a href="/signup" className="bg-emerald-500 text-black px-4 py-2 rounded-full font-medium hover:bg-emerald-400 transition-colors text-sm">
-              Sign up
-            </a>
-          </div>
-        </nav>
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-8">
+            <a href="#" className="text-gray-300 hover:text-white transition-colors">Product</a>
+            <a href="#" className="text-gray-300 hover:text-white transition-colors">Solutions</a>
+            <a href="#" className="text-gray-300 hover:text-white transition-colors">Pricing</a>
+            
+            <div className="flex items-center gap-6 ml-4 border-l border-gray-800 pl-8">
+              <a href="/login" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Log in</a>
+              <a href="/signup" className="bg-emerald-500 text-black px-4 py-2 rounded-full font-medium hover:bg-emerald-400 transition-colors text-sm">
+                Sign up
+              </a>
+            </div>
+          </nav>
+
+          {/* Hamburger Button for Mobile */}
+          <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+            className="md:hidden text-gray-300 hover:text-white focus:outline-none z-50 p-1"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Navigation Drawer */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-x-0 top-12 bg-[#0A0A0A]/95 border-b border-[#1E1E1E] backdrop-blur-[16px] z-40 md:hidden flex flex-col px-6 py-6 space-y-4 shadow-2xl animate-fade-in"
+          >
+            <a href="#" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white text-base font-medium transition-colors py-1">Product</a>
+            <a href="#" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white text-base font-medium transition-colors py-1">Solutions</a>
+            <a href="#" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white text-base font-medium transition-colors py-1">Pricing</a>
+            <div className="h-px bg-gray-800/60 my-1" />
+            <a href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white text-base font-medium transition-colors py-1">Log in</a>
+            <a href="/signup" onClick={() => setIsMobileMenuOpen(false)} className="bg-emerald-500 text-black py-2.5 px-4 rounded-lg font-semibold hover:bg-emerald-400 text-center transition-colors text-sm inline-block">
+              Sign up
+            </a>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6 flex flex-col items-center text-center relative">
@@ -95,12 +128,12 @@ export default function LandingPage() {
             <span className="text-[12px] font-medium text-[#A1A1A1] tracking-wide">Introducing AI-Powered Workspaces</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-medium tracking-[-0.055em] leading-[1.1] mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-medium tracking-[-0.055em] leading-[1.1] mb-6">
             Transform PDFs into <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-[#707070]">Interactive Knowledge.</span>
           </h1>
           
-          <p className="text-lg md:text-xl text-[#A1A1A1] tracking-[-0.01em] mb-10 max-w-[600px] mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-[#A1A1A1] tracking-[-0.01em] mb-10 max-w-[600px] mx-auto">
             Highlight text to instantly generate structured notes, visual diagrams, and flashcards. Stop reading passively.
           </p>
           
@@ -158,7 +191,7 @@ export default function LandingPage() {
             className="w-full mb-16 rounded-[16px] border border-[#2A2A2A] overflow-hidden shadow-2xl relative aspect-[16/9]"
           >
             <Image 
-              src="/login.png"
+              src="/Login.png"
               alt="Login Preview"
               fill
               className="object-cover"

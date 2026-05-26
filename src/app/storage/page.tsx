@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { User, Home, Folder, User as ProfileIcon, Settings, RefreshCw, Download, Plus, FileText, Edit2, Check, FolderPlus, X } from "lucide-react";
+import { User, Home, Folder, User as ProfileIcon, Settings, RefreshCw, Download, Plus, FileText, Edit2, Check, FolderPlus, X, Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function StoragePage() {
@@ -18,6 +18,7 @@ export default function StoragePage() {
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const [newFolderColor, setNewFolderColor] = useState("blue");
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const fetchDocuments = async () => {
     setIsLoading(true);
@@ -121,8 +122,48 @@ export default function StoragePage() {
         </div>
       )}
 
-      {/* Left Sidebar */}
-      <aside className="w-[240px] bg-[#222222] border-r border-[#333333] flex flex-col z-10 shrink-0">
+      {/* Mobile Left Sidebar Overlay Drawer */}
+      {isMobileSidebarOpen && (
+        <div className="fixed inset-0 bg-black/60 z-40 md:hidden" onClick={() => setIsMobileSidebarOpen(false)}>
+          <aside 
+            className="w-[240px] h-full bg-[#222222] border-r border-[#333333] flex flex-col z-50 animate-in slide-in-from-left duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6 flex justify-between items-center border-b border-[#333333]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center overflow-hidden border border-gray-500">
+                  <User className="w-6 h-6 text-gray-300" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-100">Vikash Kumar</h3>
+                  <p className="text-xs text-gray-400">Test@email.com</p>
+                </div>
+              </div>
+              <button onClick={() => setIsMobileSidebarOpen(false)} className="text-gray-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <nav className="flex-1 mt-4">
+              <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="/" onClick={() => setIsMobileSidebarOpen(false)}>
+                <Home className="w-5 h-5 text-center" /> Home
+              </a>
+              <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-100 bg-[#2A2A2A] border-l-4 border-emerald-500 transition-colors" href="/storage" onClick={() => setIsMobileSidebarOpen(false)}>
+                <Folder className="w-5 h-5 text-center" /> Storage
+              </a>
+              <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="#" onClick={() => setIsMobileSidebarOpen(false)}>
+                <ProfileIcon className="w-5 h-5 text-center" /> Profile
+              </a>
+              <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="#" onClick={() => setIsMobileSidebarOpen(false)}>
+                <Settings className="w-5 h-5 text-center" /> Settings
+              </a>
+            </nav>
+          </aside>
+        </div>
+      )}
+
+      {/* Left Sidebar - Desktop only */}
+      <aside className="hidden md:flex w-[240px] bg-[#222222] border-r border-[#333333] flex flex-col z-10 shrink-0">
         <div className="p-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center overflow-hidden border border-gray-500">
@@ -153,18 +194,26 @@ export default function StoragePage() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 bg-[#1A1A1A] overflow-y-auto">
-        <div className="max-w-[1200px] w-full mx-auto p-8">
+        <div className="max-w-[1200px] w-full mx-auto p-4 sm:p-8">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-bold text-white uppercase tracking-wider">Storage</h1>
-            <div className="flex items-center gap-4">
-              <button onClick={fetchDocuments} className="text-gray-400 hover:text-white transition-colors">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setIsMobileSidebarOpen(true)}
+                className="md:hidden text-gray-400 hover:text-white p-1 focus:outline-none"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+              <h1 className="text-xl sm:text-2xl font-bold text-white uppercase tracking-wider">Storage</h1>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+              <button onClick={fetchDocuments} className="text-gray-400 hover:text-white transition-colors p-2">
                 <RefreshCw className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`} />
               </button>
-              <button onClick={() => setIsCreatingFolder(true)} className="text-gray-400 hover:text-white transition-colors border border-gray-600 px-3 py-2 rounded-md flex items-center gap-2">
-                <FolderPlus className="w-4 h-4" /> New Folder
+              <button onClick={() => setIsCreatingFolder(true)} className="text-gray-400 hover:text-white transition-colors border border-gray-600 px-3 py-2 rounded-md flex items-center gap-2 text-xs sm:text-sm">
+                <FolderPlus className="w-4 h-4" /> <span className="hidden sm:inline">New Folder</span><span className="sm:hidden">Folder</span>
               </button>
-              <a href="/" className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-md text-sm font-semibold flex items-center gap-2 transition-colors ml-2">
+              <a href="/" className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 sm:px-5 py-2.5 rounded-md text-xs sm:text-sm font-semibold flex items-center gap-2 transition-colors">
                 <Plus className="w-4 h-4" /> Add new
               </a>
             </div>
@@ -206,7 +255,7 @@ export default function StoragePage() {
               <p className="text-gray-400 font-medium">No documents in storage</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {documents.map((doc) => (
                 <div key={doc.id} className="group flex flex-col">
                   {/* Document Card Thumbnail */}

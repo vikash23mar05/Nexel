@@ -30,6 +30,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [chatInput, setChatInput] = useState("");
   const [rightSidebarWidth, setRightSidebarWidth] = useState(360);
+  const [isMobile, setIsMobile] = useState(false);
   const [flashcards, setFlashcards] = useState<{question: string, answer: string}[]>([
     { 
       question: "What is the primary benefit of React's Virtual DOM?", 
@@ -267,6 +268,13 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
            if (data.highlights) setHighlights(data.highlights);
         });
     }
+
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [docId]);
 
   return (
@@ -429,19 +437,25 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
       {/* BEGIN: RightSidebar (AI Assistant) */}
       {isRightSidebarOpen && (
         <aside 
-          style={{ width: rightSidebarWidth }}
-          className="bg-[#0A0A0A] border-l border-[#1E1E1E] flex flex-col z-20 relative transition-[width] duration-75 select-none"
+          style={{ width: isMobile ? "100%" : rightSidebarWidth }}
+          className={`bg-[#0A0A0A] flex flex-col transition-[width] duration-75 select-none ${
+            isMobile 
+              ? "fixed inset-y-0 right-0 z-50 shadow-2xl animate-in slide-in-from-right duration-250" 
+              : "relative border-l border-[#1E1E1E] z-20"
+          }`}
         >
-          {/* Resize handle */}
-          <div 
-            className="absolute top-0 left-0 w-1.5 h-full cursor-col-resize hover:bg-emerald-500/50 active:bg-emerald-500 transition-colors z-30"
-            onMouseDown={handleMouseDown}
-          />
+          {/* Resize handle (Desktop only) */}
+          {!isMobile && (
+            <div 
+              className="absolute top-0 left-0 w-1.5 h-full cursor-col-resize hover:bg-emerald-500/50 active:bg-emerald-500 transition-colors z-30"
+              onMouseDown={handleMouseDown}
+            />
+          )}
 
           {/* Header */}
           <div className="h-16 flex items-center justify-between px-5 border-b border-[#1E1E1E]">
             <h2 className="text-base font-semibold text-gray-100">AI Assistant</h2>
-            <button onClick={() => setIsRightSidebarOpen(false)} className="text-gray-400 hover:text-white transition-colors">
+            <button onClick={() => setIsRightSidebarOpen(false)} className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-[#1A1A1A]">
               <X className="w-4 h-4" />
             </button>
           </div>

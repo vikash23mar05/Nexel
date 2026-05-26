@@ -30,8 +30,8 @@ export default function SignupPage() {
       <div 
         className="hidden lg:flex w-1/2 flex-col justify-between p-10 relative overflow-hidden"
         style={{
-          backgroundImage: "url('/Signup.png')",
-          backgroundSize: "100% 100%",
+          backgroundImage: "url('/signup.png')",
+          backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat"
         }}
@@ -54,9 +54,9 @@ export default function SignupPage() {
         {/* Top Right "Back to website" Pill */}
         <a 
           href="/" 
-          className="absolute top-6 right-6 md:top-10 md:right-10 flex items-center gap-2 bg-[#2A2A30] hover:bg-[#33333A] px-5 py-2.5 rounded-full text-sm font-medium text-white transition-colors border border-white/5 shadow-md"
+          className="absolute top-4 right-4 md:top-10 md:right-10 flex items-center gap-1.5 bg-[#2A2A30] hover:bg-[#33333A] px-3.5 py-2 rounded-full text-xs sm:text-sm font-medium text-white transition-colors border border-white/5 shadow-md"
         >
-          Back to website <ArrowRight className="w-4 h-4" />
+          Back to website <ArrowRight className="w-3.5 h-3.5" />
         </a>
 
         <div className="w-full max-w-[440px] mt-12">
