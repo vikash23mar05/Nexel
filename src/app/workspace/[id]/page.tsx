@@ -240,8 +240,18 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
       color
     };
     
+    const updatedHighlights = [...highlights, newHighlight];
+    
     // Optimistic update
-    setHighlights(prev => [...prev, newHighlight]);
+    setHighlights(updatedHighlights);
+    
+    // Always save to client-side IndexedDB as a fallback backup
+    try {
+      const { saveLocalHighlights } = await import("../../../utils/indexedDB");
+      await saveLocalHighlights(docId, updatedHighlights);
+    } catch (e) {
+      console.warn("Failed to backup highlights in IndexedDB:", e);
+    }
     
     // Save to DB
     try {
@@ -251,7 +261,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
         body: JSON.stringify({ docId, highlight: newHighlight })
       });
     } catch (e) {
-      console.error("Failed to save highlight", e);
+      console.error("Failed to save highlight to server:", e);
     }
   };
 
@@ -259,13 +269,42 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     // Basic way to grab query param in a client component if not using useSearchParams
     const searchParams = new URLSearchParams(window.location.search);
     const urlParam = searchParams.get("url");
-    if (urlParam) setUrl(urlParam);
+    
+    if (urlParam) {
+      if (urlParam.startsWith("indexeddb://")) {
+        const localDocId = urlParam.replace("indexeddb://", "");
+        import("../../../utils/indexedDB").then(async ({ getLocalDocumentFile }) => {
+          try {
+            const blob = await getLocalDocumentFile(localDocId);
+            if (blob) {
+              const objectUrl = URL.createObjectURL(blob);
+              setUrl(objectUrl);
+            } else {
+              console.error("Local document not found in IndexedDB");
+            }
+          } catch (e) {
+            console.error("Error reading local document from IndexedDB", e);
+          }
+        });
+      } else {
+        setUrl(urlParam);
+      }
+    }
 
     if (docId) {
       fetch(`/api/highlights?docId=${docId}`)
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error("Server error fetching highlights");
+          return res.json();
+        })
         .then(data => {
            if (data.highlights) setHighlights(data.highlights);
+        })
+        .catch(async (err) => {
+           console.warn("Server highlights load failed, using local IndexedDB database fallback:", err);
+           const { getLocalHighlights } = await import("../../../utils/indexedDB");
+           const localHighlights = await getLocalHighlights(docId);
+           if (localHighlights) setHighlights(localHighlights);
         });
     }
 
@@ -515,7 +554,12 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
                           <button 
                             onClick={async (e) => {
                               e.stopPropagation();
-                              setHighlights(prev => prev.filter(item => item.id !== h.id));
+                              const filtered = highlights.filter(item => item.id !== h.id);
+                              setHighlights(filtered);
+                              try {
+                                const { saveLocalHighlights } = await import("../../../utils/indexedDB");
+                                await saveLocalHighlights(docId, filtered);
+                              } catch(dbErr) {}
                               try {
                                 await fetch(`/api/highlights?id=${h.id}&docId=${docId}`, { method: 'DELETE' });
                               } catch(e) {}

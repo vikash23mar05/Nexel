@@ -22,13 +22,57 @@ export default function StoragePage() {
 
   const fetchDocuments = async () => {
     setIsLoading(true);
+    
+    let serverDocs: any[] = [];
+    let serverFolders: any[] = [];
+    
     try {
       const res = await fetch("/api/documents/list");
-      const data = await res.json();
-      if (data.documents) setDocuments(data.documents);
-      if (data.folders) setFolders(data.folders);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.documents) serverDocs = data.documents;
+        if (data.folders) serverFolders = data.folders;
+      }
     } catch (e) {
-      console.error(e);
+      console.warn("Failed to fetch documents from server, combining with client-side database:", e);
+    }
+    
+    try {
+      const { getLocalDocuments, getLocalFolders } = await import("../../utils/indexedDB");
+      const localDocs = await getLocalDocuments();
+      const localFolders = await getLocalFolders();
+      
+      const formattedLocalDocs = localDocs.map(d => ({
+        id: d.id,
+        name: d.name,
+        size: d.size,
+        type: "PDF",
+        uploadedAt: d.uploadedAt,
+        isLocal: true
+      }));
+
+      // Combine and de-duplicate documents
+      const combinedDocs = [...serverDocs];
+      formattedLocalDocs.forEach(ld => {
+        if (!combinedDocs.some(sd => sd.id === ld.id)) {
+          combinedDocs.push(ld);
+        }
+      });
+
+      // Combine and de-duplicate folders
+      const combinedFolders = [...serverFolders];
+      localFolders.forEach(lf => {
+        if (!combinedFolders.some(sf => sf.id === lf.id)) {
+          combinedFolders.push(lf);
+        }
+      });
+      
+      setDocuments(combinedDocs);
+      setFolders(combinedFolders);
+    } catch (e) {
+      console.error("Failed to load local documents", e);
+      setDocuments(serverDocs);
+      setFolders(serverFolders);
     } finally {
       setIsLoading(false);
     }
@@ -56,20 +100,34 @@ export default function StoragePage() {
 
   const handleCreateFolder = async () => {
     if (!newFolderName.trim()) return;
+    
+    const uniqueFolderId = `folder-${Date.now()}`;
+    
+    // Save locally in IndexedDB as a fallback backup
     try {
-      const res = await fetch("/api/folders", {
+      const { saveLocalFolder } = await import("../../utils/indexedDB");
+      await saveLocalFolder(uniqueFolderId, newFolderName, newFolderColor);
+      
+      const newFolderObj = { id: uniqueFolderId, name: newFolderName, color: newFolderColor };
+      setFolders(prev => {
+        if (prev.some(f => f.name === newFolderName)) return prev;
+        return [...prev, newFolderObj];
+      });
+      setIsCreatingFolder(false);
+      setNewFolderName("");
+    } catch(e) {
+      console.warn("Failed to save folder locally:", e);
+    }
+
+    // Try saving on server
+    try {
+      await fetch("/api/folders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newFolderName, color: newFolderColor })
       });
-      const data = await res.json();
-      if (data.folder) {
-        setFolders(prev => [...prev, data.folder]);
-        setIsCreatingFolder(false);
-        setNewFolderName("");
-      }
     } catch(e) {
-      console.error("Failed to create folder", e);
+      console.warn("Failed to create folder on server:", e);
     }
   };
 
@@ -260,7 +318,12 @@ export default function StoragePage() {
                 <div key={doc.id} className="group flex flex-col">
                   {/* Document Card Thumbnail */}
                   <div 
-                    onClick={() => router.push(`/workspace/${doc.id}?url=${encodeURIComponent(`/api/document?id=${doc.id}`)}`)}
+                    onClick={() => {
+                      const targetUrl = doc.isLocal 
+                        ? `indexeddb://${doc.id}` 
+                        : `/api/document?id=${doc.id}`;
+                      router.push(`/workspace/${doc.id}?url=${encodeURIComponent(targetUrl)}`);
+                    }}
                     className="cursor-pointer bg-[#EFEFEF] rounded-t-lg aspect-[4/3] w-full p-4 relative overflow-hidden border border-[#333] border-b-0 group-hover:opacity-90 transition-opacity"
                   >
                      <div className="absolute top-3 right-3 bg-[#114032] text-emerald-100 text-xs font-bold px-2 py-1 rounded shadow-sm z-10">

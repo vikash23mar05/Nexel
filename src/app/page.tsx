@@ -34,22 +34,50 @@ export default function LandingPage() {
         const formData = new FormData();
         formData.append("file", file);
 
-        const res = await fetch("/api/upload", {
-          method: "POST",
-          body: formData
-        });
+        let uploadSuccess = false;
+        let data: any = {};
 
-        const data = await res.json();
-        
-        if (data.url) {
+        try {
+          const res = await fetch("/api/upload", {
+            method: "POST",
+            body: formData
+          });
+          if (res.ok) {
+            data = await res.json();
+            if (data.url && data.docId) {
+              uploadSuccess = true;
+            }
+          }
+        } catch (serverErr) {
+          console.warn("Server upload failed, falling back to client IndexedDB storage:", serverErr);
+        }
+
+        if (uploadSuccess) {
           if (isSignedIn) {
             router.push("/storage");
           } else {
             router.push(`/workspace/${data.docId}?url=${encodeURIComponent(data.url)}`);
           }
+        } else {
+          // Client-side fallback: Save file in IndexedDB
+          const { saveLocalDocument } = await import("../utils/indexedDB");
+          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+          const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+          
+          await saveLocalDocument(
+            uniqueSuffix,
+            file.name,
+            `${sizeMb} MB`,
+            file
+          );
+
+          // Redirect to workspace page using the local indexeddb protocol
+          const localUrl = `indexeddb://${uniqueSuffix}`;
+          router.push(`/workspace/${uniqueSuffix}?url=${encodeURIComponent(localUrl)}`);
         }
       } catch (err) {
-        console.error("Upload failed", err);
+        console.error("Upload failed completely", err);
+        alert("Upload failed. Please check file format and try again.");
       } finally {
         setIsUploading(false);
       }
