@@ -53,11 +53,7 @@ export default function LandingPage() {
         }
 
         if (uploadSuccess) {
-          if (isSignedIn) {
-            router.push("/storage");
-          } else {
-            router.push(`/workspace/${data.docId}?url=${encodeURIComponent(data.url)}`);
-          }
+          router.push("/storage");
         } else {
           // Client-side fallback: Save file in IndexedDB
           const { saveLocalDocument } = await import("../utils/indexedDB");
@@ -71,9 +67,8 @@ export default function LandingPage() {
             file
           );
 
-          // Redirect to workspace page using the local indexeddb protocol
-          const localUrl = `indexeddb://${uniqueSuffix}`;
-          router.push(`/workspace/${uniqueSuffix}?url=${encodeURIComponent(localUrl)}`);
+          // Go to Storage page
+          router.push("/storage");
         }
       } catch (err) {
         console.error("Upload failed completely", err);
