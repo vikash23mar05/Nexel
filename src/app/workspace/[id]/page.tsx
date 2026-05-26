@@ -4,7 +4,7 @@ import {
   User, Home, Folder, FileText, StickyNote, Library, Network, 
   MessageSquare, Video, Settings, ArrowLeft, ChevronDown, ZoomOut, 
   ZoomIn, Maximize, Minimize, Sparkles, Highlighter, Type, 
-  MessageSquareText, ArrowRight, Plus, X, Copy, Download, 
+  MessageSquareText, ArrowRight, Plus, X, Copy, Download, Menu, 
   AlignLeft, Send 
 } from "lucide-react";
 import React, { useState, useEffect, use } from "react";
@@ -330,7 +330,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
 
       {/* BEGIN: LeftSidebar */}
       {isLeftSidebarOpen && (
-        <aside className="w-64 bg-[#111111] border-r border-[#1E1E1E] flex-col justify-between hidden md:flex z-10 transition-all relative">
+        <aside className={`w-64 bg-[#111111] border-r border-[#1E1E1E] flex-col justify-between ${isMobile ? (isLeftSidebarOpen ? "fixed inset-y-0 left-0 z-40 transition-all bg-[#111111] shadow-lg" : "hidden") : "hidden md:flex"} z-10 transition-all relative`}>
           {/* Edge Toggle Button */}
           <button 
             onClick={() => setIsLeftSidebarOpen(false)}
@@ -450,7 +450,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
           </div>
 
           {/* The Document Page */}
-          <div className="bg-white text-gray-900 w-full max-w-[850px] h-[calc(100vh-120px)] shadow-2xl rounded-sm text-sm lg:text-base leading-relaxed relative overflow-hidden">
+          <div className="bg-white text-gray-900 w-full max-w-full md:max-w-[850px] h-[calc(100vh-120px)] shadow-2xl rounded-sm text-sm lg:text-base leading-relaxed relative overflow-hidden">
             {url ? (
               <PdfViewer 
                 docId={docId} 
