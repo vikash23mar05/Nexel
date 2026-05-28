@@ -44,3 +44,6 @@ next-env.d.ts
 
 # private uploads
 /data/uploads/
+
+# personal study plan
+NEXEL_30_DAY_STUDY_PLAN.md
