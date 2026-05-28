@@ -153,7 +153,7 @@ export default function LandingPage() {
           
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-medium tracking-[-0.055em] leading-[1.1] mb-6">
             Transform PDFs into <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-[#707070]">Interactive Knowledge.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-[#707070] [-webkit-text-fill-color:transparent] [transform:translate3d(0,0,0)]">Interactive Knowledge.</span>
           </h1>
           
           <p className="text-base sm:text-lg md:text-xl text-[#A1A1A1] tracking-[-0.01em] mb-10 max-w-[600px] mx-auto">
