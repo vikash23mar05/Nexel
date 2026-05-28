@@ -183,12 +183,13 @@ export default function LandingPage() {
           className="mt-20 w-full max-w-[1100px] relative z-10 perspective-1000"
         >
           <div className="rounded-[12px] border border-[#2A2A2A] bg-[#0E0E0E] overflow-hidden shadow-2xl flex relative aspect-[16/9] transform-gpu rotate-x-[2deg] scale-[0.95] hover:rotate-x-0 hover:scale-100 transition-all duration-700 ease-out">
-            <Image 
-              src="/WebsiteMock.png" 
-              alt="Nexel Mockup" 
-              fill 
-              className="object-cover"
-              priority
+            <video
+              src="/SaaS Intro.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
             />
           </div>
         </motion.div>
