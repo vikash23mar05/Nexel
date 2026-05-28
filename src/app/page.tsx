@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { 
   Sparkles, 
@@ -17,6 +17,11 @@ import {
 } from "lucide-react";
 
 export default function LandingPage() {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -183,14 +188,18 @@ export default function LandingPage() {
           className="mt-20 w-full max-w-[1100px] relative z-10 perspective-1000"
         >
           <div className="rounded-[12px] border border-[#2A2A2A] bg-[#0E0E0E] overflow-hidden shadow-2xl flex relative aspect-[16/9] transform-gpu rotate-x-[2deg] scale-[0.95] hover:rotate-x-0 hover:scale-100 transition-all duration-700 ease-out">
-            <video
-              src="/SaaS Intro.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-            />
+            {isMounted ? (
+              <video
+                src="/SaaS Intro.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-[#0E0E0E]" />
+            )}
           </div>
         </motion.div>
       </section>
