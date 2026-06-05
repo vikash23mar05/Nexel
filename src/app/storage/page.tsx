@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { User, Home, Folder, User as ProfileIcon, Settings, RefreshCw, Download, Plus, FileText, Edit2, Check, FolderPlus, X, Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -9,12 +9,15 @@ export default function StoragePage() {
   const [documents, setDocuments] = useState<any[]>([]);
   const [folders, setFolders] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // Renaming state
+
+  const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
   const [editingDocId, setEditingDocId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
 
-  // Create folder state
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const [newFolderColor, setNewFolderColor] = useState("blue");
@@ -22,10 +25,10 @@ export default function StoragePage() {
 
   const fetchDocuments = async () => {
     setIsLoading(true);
-    
+
     let serverDocs: any[] = [];
     let serverFolders: any[] = [];
-    
+
     try {
       const res = await fetch("/api/documents/list");
       if (res.ok) {
@@ -36,12 +39,12 @@ export default function StoragePage() {
     } catch (e) {
       console.warn("Failed to fetch documents from server, combining with client-side database:", e);
     }
-    
+
     try {
       const { getLocalDocuments, getLocalFolders } = await import("../../utils/indexedDB");
       const localDocs = await getLocalDocuments();
       const localFolders = await getLocalFolders();
-      
+
       const formattedLocalDocs = localDocs.map(d => ({
         id: d.id,
         name: d.name,
@@ -51,7 +54,6 @@ export default function StoragePage() {
         isLocal: true
       }));
 
-      // Combine and de-duplicate documents
       const combinedDocs = [...serverDocs];
       formattedLocalDocs.forEach(ld => {
         if (!combinedDocs.some(sd => sd.id === ld.id)) {
@@ -59,14 +61,13 @@ export default function StoragePage() {
         }
       });
 
-      // Combine and de-duplicate folders
       const combinedFolders = [...serverFolders];
       localFolders.forEach(lf => {
         if (!combinedFolders.some(sf => sf.id === lf.id)) {
           combinedFolders.push(lf);
         }
       });
-      
+
       setDocuments(combinedDocs);
       setFolders(combinedFolders);
     } catch (e) {
@@ -98,16 +99,140 @@ export default function StoragePage() {
     setEditingDocId(null);
   };
 
+  const handleMoveDocument = async (docId: string, folderId: string | null) => {
+    try {
+
+      setDocuments(prev => prev.map(d => d.id === docId ? { ...d, folderId } : d));
+
+      try {
+        const { initDB } = await import("../../utils/indexedDB");
+        const db = await initDB();
+        const transaction = db.transaction("documents", "readwrite");
+        const store = transaction.objectStore("documents");
+        const request = store.get(docId);
+        request.onsuccess = () => {
+          if (request.result) {
+            const updated = { ...request.result, folderId };
+            store.put(updated);
+          }
+        };
+      } catch (err) {
+        console.warn("IndexedDB move fallback failed:", err);
+      }
+
+      await fetch("/api/documents/move", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: docId, folderId })
+      });
+    } catch (e) {
+      console.error("Failed to move document:", e);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setIsUploading(true);
+
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        let uploadSuccess = false;
+        let data: any = {};
+
+        try {
+          const res = await fetch("/api/upload", {
+            method: "POST",
+            body: formData
+          });
+          if (res.ok) {
+            data = await res.json();
+            if (data.url && data.docId) {
+              uploadSuccess = true;
+            }
+          }
+        } catch (serverErr) {
+          console.warn("Server upload failed, falling back to client IndexedDB storage:", serverErr);
+        }
+
+        if (uploadSuccess) {
+
+          const newDoc = {
+            id: data.docId,
+            name: file.name,
+            size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+            type: "PDF",
+            folderId: activeFolderId,
+            uploadedAt: new Date().toISOString()
+          };
+
+          if (activeFolderId) {
+            await fetch("/api/documents/move", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id: data.docId, folderId: activeFolderId })
+            });
+          }
+
+          setDocuments(prev => [newDoc, ...prev]);
+        } else {
+
+          const { saveLocalDocument } = await import("../../utils/indexedDB");
+          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+          const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+
+          await saveLocalDocument(uniqueSuffix, file.name, `${sizeMb} MB`, file);
+
+          const newDoc = {
+            id: uniqueSuffix,
+            name: file.name,
+            size: `${sizeMb} MB`,
+            type: "PDF",
+            folderId: activeFolderId,
+            uploadedAt: new Date().toISOString(),
+            isLocal: true
+          };
+
+          if (activeFolderId) {
+            try {
+              const { initDB } = await import("../../utils/indexedDB");
+              const db = await initDB();
+              const transaction = db.transaction("documents", "readwrite");
+              const store = transaction.objectStore("documents");
+              const request = store.get(uniqueSuffix);
+              request.onsuccess = () => {
+                if (request.result) {
+                  const updated = { ...request.result, folderId: activeFolderId };
+                  store.put(updated);
+                }
+              };
+            } catch (err) {
+              console.warn("IndexedDB move fallback failed:", err);
+            }
+          }
+
+          setDocuments(prev => [newDoc, ...prev]);
+        }
+      } catch (err) {
+        console.error("Upload failed:", err);
+      } finally {
+        setIsUploading(false);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      }
+    }
+  };
+
   const handleCreateFolder = async () => {
     if (!newFolderName.trim()) return;
-    
+
     const uniqueFolderId = `folder-${Date.now()}`;
-    
-    // Save locally in IndexedDB as a fallback backup
+
     try {
       const { saveLocalFolder } = await import("../../utils/indexedDB");
       await saveLocalFolder(uniqueFolderId, newFolderName, newFolderColor);
-      
+
       const newFolderObj = { id: uniqueFolderId, name: newFolderName, color: newFolderColor };
       setFolders(prev => {
         if (prev.some(f => f.name === newFolderName)) return prev;
@@ -119,7 +244,6 @@ export default function StoragePage() {
       console.warn("Failed to save folder locally:", e);
     }
 
-    // Try saving on server
     try {
       await fetch("/api/folders", {
         method: "POST",
@@ -145,7 +269,7 @@ export default function StoragePage() {
 
   return (
     <div className="bg-[#181818] text-gray-200 h-screen w-screen overflow-hidden flex font-sans relative">
-      {/* Create Folder Modal */}
+      {}
       {isCreatingFolder && (
         <div className="absolute inset-0 bg-black/60 z-50 flex items-center justify-center">
           <div className="bg-[#222] p-6 rounded-xl border border-[#333] w-96 shadow-2xl">
@@ -180,7 +304,7 @@ export default function StoragePage() {
         </div>
       )}
 
-      {/* Mobile Left Sidebar Overlay Drawer */}
+      {}
       {isMobileSidebarOpen && (
         <div className="fixed inset-0 bg-black/60 z-40 md:hidden" onClick={() => setIsMobileSidebarOpen(false)}>
           <aside 
@@ -201,7 +325,7 @@ export default function StoragePage() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             <nav className="flex-1 mt-4">
               <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="/" onClick={() => setIsMobileSidebarOpen(false)}>
                 <Home className="w-5 h-5 text-center" /> Home
@@ -220,7 +344,7 @@ export default function StoragePage() {
         </div>
       )}
 
-      {/* Left Sidebar - Desktop only */}
+      {}
       <aside className="hidden md:flex w-[240px] bg-[#222222] border-r border-[#333333] flex flex-col z-10 shrink-0">
         <div className="p-6">
           <div className="flex items-center gap-3">
@@ -233,7 +357,7 @@ export default function StoragePage() {
             </div>
           </div>
         </div>
-        
+
         <nav className="flex-1 mt-2">
           <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="/">
             <Home className="w-5 h-5 text-center" /> Home
@@ -250,10 +374,10 @@ export default function StoragePage() {
         </nav>
       </aside>
 
-      {/* Main Content */}
+      {}
       <main className="flex-1 flex flex-col min-w-0 bg-[#1A1A1A] overflow-y-auto">
         <div className="max-w-[1200px] w-full mx-auto p-4 sm:p-8">
-          {/* Header */}
+          {}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div className="flex items-center gap-3">
               <button 
@@ -271,26 +395,41 @@ export default function StoragePage() {
               <button onClick={() => setIsCreatingFolder(true)} className="text-gray-400 hover:text-white transition-colors border border-gray-600 px-3 py-2 rounded-md flex items-center gap-2 text-xs sm:text-sm">
                 <FolderPlus className="w-4 h-4" /> <span className="hidden sm:inline">New Folder</span><span className="sm:hidden">Folder</span>
               </button>
-              <a href="/" className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 sm:px-5 py-2.5 rounded-md text-xs sm:text-sm font-semibold flex items-center gap-2 transition-colors">
-                <Plus className="w-4 h-4" /> Add new
-              </a>
+              <input 
+                type="file" 
+                accept=".pdf" 
+                className="hidden" 
+                ref={fileInputRef} 
+                onChange={handleFileUpload}
+              />
+              <button 
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-800 text-white px-3 sm:px-5 py-2.5 rounded-md text-xs sm:text-sm font-semibold flex items-center gap-2 transition-colors"
+              >
+                <Plus className="w-4 h-4" /> {isUploading ? "Uploading..." : "Upload PDF"}
+              </button>
             </div>
           </div>
 
-          {/* Cloud Tabs */}
+          {}
           <div className="flex items-center gap-3 mb-8">
             <button className="bg-[#2A2A2A] text-gray-200 px-5 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 border border-[#333]">
               <Folder className="w-4 h-4 text-gray-400" /> My Storage
             </button>
           </div>
 
-          {/* Folders Row */}
+          {}
           {folders.length > 0 && (
             <div className="mb-8">
               <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">Folders</h2>
               <div className="flex gap-4 flex-wrap">
                 {folders.map(f => (
-                  <div key={f.id} className="flex items-center gap-3 bg-[#222] border border-[#333] px-5 py-4 rounded-xl hover:bg-[#2A2A2A] cursor-pointer transition-colors w-64">
+                  <div 
+                    key={f.id} 
+                    onClick={() => setActiveFolderId(f.id === activeFolderId ? null : f.id)}
+                    className={`flex items-center gap-3 bg-[#222] border px-5 py-4 rounded-xl hover:bg-[#2A2A2A] cursor-pointer transition-colors w-64 ${activeFolderId === f.id ? 'border-emerald-500 bg-[#2A2A2A]' : 'border-[#333]'}`}
+                  >
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-opacity-20 ${getColorClass(f.color).replace('bg-', 'text-').replace('500', '400')} ${getColorClass(f.color).replace('bg-', 'bg-').replace('500', '500/20')}`}>
                       <Folder className="w-5 h-5" />
                     </div>
@@ -301,22 +440,39 @@ export default function StoragePage() {
             </div>
           )}
 
-          {/* Grid Layout */}
-          <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">Documents</h2>
+          {}
+          <div className="flex items-center gap-3 mb-6">
+            <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest">
+              {activeFolderId 
+                ? `Documents / ${folders.find(f => f.id === activeFolderId)?.name || 'Folder'}` 
+                : 'Documents'}
+            </h2>
+            {activeFolderId && (
+              <button 
+                onClick={() => setActiveFolderId(null)}
+                className="text-xs text-emerald-500 hover:text-emerald-400 font-semibold flex items-center gap-1 ml-4"
+              >
+                ← Back to All
+              </button>
+            )}
+          </div>
+
           {isLoading ? (
             <div className="flex items-center justify-center h-64">
               <div className="text-gray-400">Loading documents...</div>
             </div>
-          ) : documents.length === 0 ? (
+          ) : documents.filter(doc => activeFolderId ? doc.folderId === activeFolderId : !doc.folderId).length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 bg-[#222] rounded-xl border border-[#333] border-dashed">
               <FileText className="w-12 h-12 text-gray-500 mb-3" />
-              <p className="text-gray-400 font-medium">No documents in storage</p>
+              <p className="text-gray-400 font-medium">
+                {activeFolderId ? "No documents in this folder" : "No documents in storage"}
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {documents.map((doc) => (
+              {documents.filter(doc => activeFolderId ? doc.folderId === activeFolderId : !doc.folderId).map((doc) => (
                 <div key={doc.id} className="group flex flex-col">
-                  {/* Document Card Thumbnail */}
+                  {}
                   <div 
                     onClick={() => {
                       const targetUrl = doc.isLocal 
@@ -337,7 +493,7 @@ export default function StoragePage() {
                         <div className="h-2 bg-gray-400 w-full rounded mt-4"></div>
                      </div>
                   </div>
-                  {/* Document Card Footer */}
+                  {}
                   <div className="bg-[#1A1A1A] border border-[#333] border-t-0 p-3 rounded-b-lg flex justify-between items-center group-hover:bg-[#222] transition-colors">
                     {editingDocId === doc.id ? (
                       <div className="flex items-center gap-2 w-full pr-2">
@@ -353,16 +509,36 @@ export default function StoragePage() {
                       </div>
                     ) : (
                       <>
-                        <div className="flex items-center gap-2 overflow-hidden pr-2">
-                          <h4 className="text-gray-200 text-sm font-medium truncate">{doc.name}</h4>
-                          <button 
-                            onClick={() => { setEditingDocId(doc.id); setEditName(doc.name); }}
-                            className="text-gray-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-                          >
-                            <Edit2 className="w-3 h-3" />
-                          </button>
+                        <div className="flex items-center gap-2 overflow-hidden pr-2 w-full justify-between">
+                          <div className="flex items-center gap-2 overflow-hidden">
+                            <h4 className="text-gray-200 text-sm font-medium truncate max-w-[120px]">{doc.name}</h4>
+                            <button 
+                              onClick={() => { setEditingDocId(doc.id); setEditName(doc.name); }}
+                              className="text-gray-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                            >
+                              <Edit2 className="w-3 h-3" />
+                            </button>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            {}
+                            <select
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                handleMoveDocument(doc.id, val === "root" ? null : val);
+                              }}
+                              value={doc.folderId || "root"}
+                              className="bg-[#2a2a2a] border border-[#444] text-gray-400 text-[10px] rounded px-1.5 py-0.5 focus:outline-none max-w-[95px] opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer hover:text-white"
+                            >
+                              <option value="root">Move to...</option>
+                              {folders.map(f => (
+                                <option key={f.id} value={f.id}>{f.name}</option>
+                              ))}
+                              {doc.folderId && <option value="root">Uncategorize</option>}
+                            </select>
+                            <span className="text-gray-500 text-xs">{doc.size}</span>
+                          </div>
                         </div>
-                        <span className="text-gray-500 text-xs shrink-0">{doc.size}</span>
                       </>
                     )}
                   </div>

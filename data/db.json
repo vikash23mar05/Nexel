@@ -914,7 +914,34 @@
       "type": "PDF",
       "folderId": null,
       "uploadedAt": "2026-05-26T01:42:04.273Z"
+    },
+    {
+      "id": "1780573221973-423967260",
+      "name": "IIMA-Consult-Prep-Book-Case-Book-2025-26.pdf",
+      "size": "0.3 MB",
+      "type": "PDF",
+      "folderId": null,
+      "uploadedAt": "2026-06-04T11:40:21.974Z"
+    },
+    {
+      "id": "1780653577223-896892286",
+      "name": "test.pdf",
+      "size": "0.0 MB",
+      "type": "PDF",
+      "folderId": "f_1780653126054",
+      "uploadedAt": "2026-06-05T09:59:37.224Z"
     }
   ],
-  "folders": []
+  "folders": [
+    {
+      "id": "f_1780653126054",
+      "name": "Test Folder",
+      "color": "green"
+    },
+    {
+      "id": "f_1780653455441",
+      "name": "Sub Folder",
+      "color": "blue"
+    }
+  ]
 }

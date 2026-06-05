@@ -34,7 +34,7 @@ export default function LandingPage() {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       setIsUploading(true);
-      
+
       try {
         const formData = new FormData();
         formData.append("file", file);
@@ -60,11 +60,11 @@ export default function LandingPage() {
         if (uploadSuccess) {
           router.push("/storage");
         } else {
-          // Client-side fallback: Save file in IndexedDB
+
           const { saveLocalDocument } = await import("../utils/indexedDB");
           const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
           const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-          
+
           await saveLocalDocument(
             uniqueSuffix,
             file.name,
@@ -72,7 +72,6 @@ export default function LandingPage() {
             file
           );
 
-          // Go to Storage page
           router.push("/storage");
         }
       } catch (err) {
@@ -86,7 +85,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white selection:bg-[#2A2A2A] overflow-hidden">
-      {/* Navigation */}
+      {}
       <nav className="fixed top-0 left-0 right-0 h-12 border-b border-[#1E1E1E] bg-[#0A0A0A]/70 backdrop-blur-[16px] z-50 flex items-center justify-center">
         <div className="w-full max-w-[1100px] px-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -95,13 +94,13 @@ export default function LandingPage() {
             </div>
             <span className="font-medium tracking-tight">Nexel</span>
           </div>
-          
-          {/* Desktop Navigation */}
+
+          {}
           <nav className="hidden md:flex items-center gap-8">
             <a href="#" className="text-gray-300 hover:text-white transition-colors">Product</a>
             <a href="#" className="text-gray-300 hover:text-white transition-colors">Solutions</a>
             <a href="#" className="text-gray-300 hover:text-white transition-colors">Pricing</a>
-            
+
             <div className="flex items-center gap-6 ml-4 border-l border-gray-800 pl-8">
               <a href="/login" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Log in</a>
               <a href="/signup" className="bg-emerald-500 text-black px-4 py-2 rounded-full font-medium hover:bg-emerald-400 transition-colors text-sm">
@@ -110,7 +109,7 @@ export default function LandingPage() {
             </div>
           </nav>
 
-          {/* Hamburger Button for Mobile */}
+          {}
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
             className="md:hidden text-gray-300 hover:text-white focus:outline-none z-50 p-1"
@@ -120,7 +119,7 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* Mobile Navigation Drawer */}
+      {}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -141,10 +140,10 @@ export default function LandingPage() {
         )}
       </AnimatePresence>
 
-      {/* Hero Section */}
+      {}
       <section className="pt-32 pb-20 px-6 flex flex-col items-center text-center relative">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-white/[0.03] blur-[120px] rounded-full pointer-events-none" />
-        
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -155,16 +154,16 @@ export default function LandingPage() {
             <Sparkles className="w-3 h-3 text-[#A1A1A1]" />
             <span className="text-[12px] font-medium text-[#A1A1A1] tracking-wide">Introducing AI-Powered Workspaces</span>
           </div>
-          
+
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-medium tracking-[-0.055em] leading-[1.1] mb-6">
             Transform PDFs into <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-[#707070] [-webkit-text-fill-color:transparent] [transform:translate3d(0,0,0)]">Interactive Knowledge.</span>
           </h1>
-          
+
           <p className="text-base sm:text-lg md:text-xl text-[#A1A1A1] tracking-[-0.01em] mb-10 max-w-[600px] mx-auto">
             Highlight text to instantly generate structured notes, visual diagrams, and flashcards. Stop reading passively.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button className="h-11 px-6 bg-white text-black text-[15px] font-medium rounded-[6px] hover:bg-zinc-200 transition-colors flex items-center gap-2">
               Start Learning for Free
@@ -180,7 +179,7 @@ export default function LandingPage() {
           </div>
         </motion.div>
 
-        {/* Hero Product Mockup */}
+        {}
         <motion.div 
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -204,7 +203,7 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/* Features Section */}
+      {}
       <section id="features" className="py-24 px-6 bg-[#0A0A0A]">
         <div className="max-w-[1100px] mx-auto">
           <div className="mb-16">
@@ -232,7 +231,7 @@ export default function LandingPage() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Feature 1 */}
+            {}
             <div className="col-span-1 md:col-span-2 bg-[#111111] border border-[#2A2A2A] rounded-[12px] p-8 hover:bg-[#181818] transition-colors group">
               <div className="w-10 h-10 rounded-[8px] bg-[#1E1E1E] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Sparkles className="w-5 h-5 text-white" />
@@ -243,7 +242,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Feature 2 */}
+            {}
             <div className="bg-[#111111] border border-[#2A2A2A] rounded-[12px] p-8 hover:bg-[#181818] transition-colors group">
               <div className="w-10 h-10 rounded-[8px] bg-[#1E1E1E] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <MessageSquare className="w-5 h-5 text-white" />
@@ -254,7 +253,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Feature 3 */}
+            {}
             <div className="bg-[#111111] border border-[#2A2A2A] rounded-[12px] p-8 hover:bg-[#181818] transition-colors group">
               <div className="w-10 h-10 rounded-[8px] bg-[#1E1E1E] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Network className="w-5 h-5 text-white" />
@@ -265,7 +264,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Feature 4 */}
+            {}
             <div className="col-span-1 md:col-span-2 bg-[#111111] border border-[#2A2A2A] rounded-[12px] p-8 hover:bg-[#181818] transition-colors group relative overflow-hidden">
               <div className="w-10 h-10 rounded-[8px] bg-[#1E1E1E] flex items-center justify-center mb-6 relative z-10 group-hover:scale-110 transition-transform">
                 <Video className="w-5 h-5 text-white" />
@@ -277,15 +276,15 @@ export default function LandingPage() {
               <p className="text-[#A1A1A1] leading-relaxed relative z-10 max-w-[500px]">
                 Turn your notes into short educational videos. We generate a script, split content into scenes, and render animated captions seamlessly.
               </p>
-              
-              {/* Decorative background element */}
+
+              {}
               <div className="absolute right-0 bottom-0 w-64 h-64 bg-gradient-to-tl from-[#2A2A2A]/50 to-transparent rounded-tl-[100%] pointer-events-none" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
+      {}
       <footer className="border-t border-[#1E1E1E] bg-[#0A0A0A] py-12 px-6">
         <div className="max-w-[1100px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2">
@@ -303,7 +302,7 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      {/* Upload Modal */}
+      {}
       <AnimatePresence>
         {isUploadModalOpen && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -314,14 +313,14 @@ export default function LandingPage() {
               onClick={() => setIsUploadModalOpen(false)}
               className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             />
-            
+
             <motion.div 
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="relative w-full max-w-md bg-[#111111] border border-[#1E1E1E] rounded-[24px] p-8 shadow-2xl flex flex-col items-center text-center overflow-hidden"
             >
-              {/* Header */}
+              {}
               <div className="w-full flex justify-between items-center mb-10">
                 <h3 className="font-semibold text-lg tracking-tight">Document Upload Vault</h3>
                 <button 
@@ -332,9 +331,9 @@ export default function LandingPage() {
                 </button>
               </div>
 
-              {/* Graphic Center */}
+              {}
               <div className="relative w-full h-48 flex items-center justify-center mb-8 perspective-1000">
-                {/* Background Cards */}
+                {}
                 <div className="absolute w-40 h-32 bg-[#181818] border border-[#2A2A2A] rounded-xl transform -rotate-12 -translate-x-12 opacity-50 overflow-hidden">
                   <div className="w-full h-full bg-zinc-800/50 flex flex-col p-2 gap-1">
                      <div className="w-3/4 h-2 bg-zinc-700 rounded-full" />
@@ -349,8 +348,8 @@ export default function LandingPage() {
                      <div className="w-5/6 h-1 bg-zinc-700/50 rounded-full" />
                   </div>
                 </div>
-                
-                {/* Center Purple Folder */}
+
+                {}
                 <div 
                   className="relative w-48 h-36 bg-[#8B5CF6] rounded-2xl rounded-tl-sm shadow-[0_0_40px_rgba(139,92,246,0.3)] flex flex-col justify-end p-4 border border-purple-400/20 z-10 cursor-pointer hover:scale-105 transition-transform" 
                   onClick={() => fileInputRef.current?.click()}
@@ -363,13 +362,13 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Text */}
+              {}
               <h2 className="text-2xl font-bold tracking-tight mb-3">Document Vault</h2>
               <p className="text-[#A1A1A1] text-sm leading-relaxed mb-8 px-4">
                 Upload your quantum mathematics treatises, thermodynamic physics handbooks, and journal manuscripts.
               </p>
 
-              {/* Action Button */}
+              {}
               <input 
                 type="file" 
                 accept=".pdf" 

@@ -10,7 +10,6 @@ import {
 import React, { useState, useEffect, use } from "react";
 import dynamic from "next/dynamic";
 
-// Dynamically import PdfViewer
 const PdfViewer = dynamic(() => import("../PdfViewer"), {
   ssr: false,
   loading: () => <div className="flex items-center justify-center h-full text-gray-400">Loading Document Viewer...</div>
@@ -49,8 +48,8 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     const startWidth = rightSidebarWidth;
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
-      const deltaX = startX - moveEvent.clientX; // drag to the left increases width
-      const newWidth = Math.max(280, Math.min(600, startWidth + deltaX)); // enforce constraints
+      const deltaX = startX - moveEvent.clientX; 
+      const newWidth = Math.max(280, Math.min(600, startWidth + deltaX)); 
       setRightSidebarWidth(newWidth);
     };
 
@@ -65,15 +64,13 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
 
   const renderMarkdown = (content: string) => {
     if (!content) return "";
-    
-    // Split by double newlines or single newlines for paragraph spacing
+
     const lines = content.split('\n');
-    
+
     return lines.map((line, idx) => {
-      // Check if line is a header or key feature (e.g. "Key features of React include:")
+
       const isHeader = line.trim().startsWith('###') || line.trim().startsWith('##') || line.trim().startsWith('#') || line.trim().startsWith('**Key');
-      
-      // Replace **bold** with strong elements
+
       const parts = line.split(/\*\*([^*]+)\*\*/g);
       const renderedLine = parts.map((part, pIdx) => {
         if (pIdx % 2 === 1) {
@@ -85,8 +82,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
       if (isHeader) {
         return <h4 key={idx} className="text-sm font-bold text-emerald-400 mt-4 mb-2">{renderedLine}</h4>;
       }
-      
-      // Check for lists (e.g. "1. " or "* " or "- ")
+
       const isList = /^\d+\.\s/.test(line.trim()) || /^[\*\-\+]\s/.test(line.trim());
       if (isList) {
         return <div key={idx} className="pl-4 py-1 text-gray-300 leading-relaxed list-item list-disc ml-4">{renderedLine}</div>;
@@ -105,7 +101,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
 
     const text = targetHighlight.content.text;
     setActiveTab("Chat");
-    
+
     const userMsg = { role: "user", text: `Please ${action} this text: "${text}"` };
     setChatMessages(prev => [...prev, userMsg, { role: "assistant", text: "" }]);
     setIsGeneratingAI(true);
@@ -134,7 +130,6 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
         });
       }
 
-      // Parse flashcards after streaming completes
       if (action === "flashcards") {
         setChatMessages(prev => {
           const finalMsg = prev[prev.length - 1];
@@ -153,7 +148,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
             }
             if (parsedCards.length > 0) {
               setFlashcards(prevCards => [...prevCards, ...parsedCards]);
-              setActiveTab("Flashcards"); // Automatically switch to the flashcards tab!
+              setActiveTab("Flashcards"); 
             }
           }
           return prev;
@@ -204,7 +199,6 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
         });
       }
 
-      // Auto-parse flashcards if response contains Q: and A:
       setChatMessages(prev => {
         const finalMsg = prev[prev.length - 1];
         if (finalMsg && finalMsg.text && finalMsg.text.includes("Q:") && finalMsg.text.includes("A:")) {
@@ -239,21 +233,18 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
       id: String(Math.random()).slice(2),
       color
     };
-    
+
     const updatedHighlights = [...highlights, newHighlight];
-    
-    // Optimistic update
+
     setHighlights(updatedHighlights);
-    
-    // Always save to client-side IndexedDB as a fallback backup
+
     try {
       const { saveLocalHighlights } = await import("../../../utils/indexedDB");
       await saveLocalHighlights(docId, updatedHighlights);
     } catch (e) {
       console.warn("Failed to backup highlights in IndexedDB:", e);
     }
-    
-    // Save to DB
+
     try {
       await fetch("/api/highlights", {
         method: "POST",
@@ -266,10 +257,10 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
   };
 
   useEffect(() => {
-    // Basic way to grab query param in a client component if not using useSearchParams
+
     const searchParams = new URLSearchParams(window.location.search);
     const urlParam = searchParams.get("url");
-    
+
     if (urlParam) {
       if (urlParam.startsWith("indexeddb://")) {
         const localDocId = urlParam.replace("indexeddb://", "");
@@ -318,7 +309,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
 
   return (
     <div className="bg-[#0A0A0A] text-gray-300 h-screen w-screen overflow-hidden flex selection:bg-emerald-500/30 relative">
-      {/* Left Sidebar Edge Toggle (Always Visible when closed) */}
+      {}
       {!isLeftSidebarOpen && (
         <button 
           onClick={() => setIsLeftSidebarOpen(true)}
@@ -328,19 +319,19 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
         </button>
       )}
 
-      {/* BEGIN: LeftSidebar */}
+      {}
       {isLeftSidebarOpen && (
         <aside className={`w-64 bg-[#111111] border-r border-[#1E1E1E] flex-col justify-between ${isMobile ? (isLeftSidebarOpen ? "fixed inset-y-0 left-0 z-40 transition-all bg-[#111111] shadow-lg" : "hidden") : "hidden md:flex"} z-10 transition-all relative`}>
-          {/* Edge Toggle Button */}
+          {}
           <button 
             onClick={() => setIsLeftSidebarOpen(false)}
             className="absolute -right-5 top-1/2 -translate-y-1/2 bg-emerald-500 hover:bg-emerald-600 text-black w-5 h-16 rounded-r-md flex items-center justify-center shadow-md transition-colors"
           >
             <ChevronDown className="w-4 h-4 rotate-90" />
           </button>
-          
+
           <div>
-            {/* User Profile */}
+            {}
             <div className="p-5 border-b border-[#1E1E1E]">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#181818] border border-[#2A2A2A] flex items-center justify-center text-gray-400">
@@ -352,7 +343,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
                 </div>
               </div>
             </div>
-            {/* Navigation Menu */}
+            {}
             <nav className="p-3 space-y-1 mt-2">
               <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#181818] transition-colors" href="#">
                 <Home className="w-5 h-5 text-center" /> Home
@@ -380,7 +371,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
               </a>
             </nav>
           </div>
-          {/* Settings */}
+          {}
           <div className="p-3 mb-2 border-t border-[#1E1E1E]">
             <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#181818] transition-colors" href="#">
               <Settings className="w-5 h-5 text-center" /> Settings
@@ -388,11 +379,11 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
           </div>
         </aside>
       )}
-      {/* END: LeftSidebar */}
+      {}
 
-      {/* BEGIN: MainContent */}
+      {}
       <main className="flex-1 flex flex-col relative min-w-0">
-        {/* Top Header */}
+        {}
         <header className="h-16 border-b border-[#1E1E1E] bg-[#0A0A0A] flex items-center justify-between px-4 lg:px-6 z-20">
           <div className="flex items-center gap-4">
             <a 
@@ -404,7 +395,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
             <h1 className="text-gray-100 font-medium">Workspace Document</h1>
           </div>
           <div className="flex items-center gap-4">
-            {/* Zoom Controls */}
+            {}
             <div className="hidden sm:flex items-center gap-3 text-sm text-gray-400 bg-[#111111] px-3 py-1.5 rounded-lg border border-[#2A2A2A]">
               <span>100%</span>
               <ChevronDown className="w-4 h-4 text-xs" />
@@ -416,7 +407,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
               <button className="hover:text-white"><Maximize className="w-4 h-4" /></button>
               <button className="hover:text-white"><Minimize className="w-4 h-4" /></button>
             </div>
-            {/* AI Tools Button */}
+            {}
             <button 
               onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
               className="bg-emerald-400 hover:bg-emerald-500 text-black px-4 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors shadow-[0_0_15px_rgba(52,211,153,0.3)]">
@@ -425,9 +416,9 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
           </div>
         </header>
 
-        {/* Document Viewer Area */}
+        {}
         <div className="flex-1 overflow-y-auto bg-[#0E0E0E] relative flex justify-center pt-8 pb-32">
-          {/* Annotation Toolbar (Floating Left) */}
+          {}
           <div className="absolute left-6 top-24 bg-[#111111] border border-[#2A2A2A] rounded-xl p-2 flex-col gap-3 shadow-lg z-10 hidden xl:flex">
             <button className="w-8 h-8 flex items-center justify-center rounded bg-emerald-500 text-black hover:bg-emerald-400 transition-colors">
               <Highlighter className="w-4 h-4" />
@@ -449,7 +440,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
             </button>
           </div>
 
-          {/* The Document Page */}
+          {}
           <div className="bg-white text-gray-900 w-full max-w-full md:max-w-[850px] h-[calc(100vh-120px)] shadow-2xl rounded-sm text-sm lg:text-base leading-relaxed relative overflow-hidden">
             {url ? (
               <PdfViewer 
@@ -468,12 +459,12 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
             )}
           </div>
 
-          {/* Bottom Floating Controls (Removed static pagination) */}
+          {}
         </div>
       </main>
-      {/* END: MainContent */}
+      {}
 
-      {/* BEGIN: RightSidebar (AI Assistant) */}
+      {}
       {isRightSidebarOpen && (
         <aside 
           style={{ width: isMobile ? "100%" : rightSidebarWidth }}
@@ -483,7 +474,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
               : "relative border-l border-[#1E1E1E] z-20"
           }`}
         >
-          {/* Resize handle (Desktop only) */}
+          {}
           {!isMobile && (
             <div 
               className="absolute top-0 left-0 w-1.5 h-full cursor-col-resize hover:bg-emerald-500/50 active:bg-emerald-500 transition-colors z-30"
@@ -491,7 +482,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
             />
           )}
 
-          {/* Header */}
+          {}
           <div className="h-16 flex items-center justify-between px-5 border-b border-[#1E1E1E]">
             <h2 className="text-base font-semibold text-gray-100">AI Assistant</h2>
             <button onClick={() => setIsRightSidebarOpen(false)} className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-[#1A1A1A]">
@@ -499,7 +490,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
             </button>
           </div>
 
-          {/* Tabs */}
+          {}
           <div className="px-4 pt-4 pb-2 border-b border-[#1E1E1E]">
             <div className="flex bg-[#111111] p-1 rounded-lg border border-[#2A2A2A]">
               {["Chat", "Notes", "Flashcards", "Diagram"].map((tab) => (
@@ -517,11 +508,11 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
               ))}
             </div>
           </div>
-          
-          {/* Scrollable Content */}
+
+          {}
           {activeTab === "Notes" && (
             <div className="flex-1 overflow-y-auto p-5 space-y-6">
-              {/* AI Notes Section */}
+              {}
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold text-gray-100">AI Notes</h3>
@@ -577,7 +568,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
                 </ul>
               </div>
 
-              {/* Generate From Highlight Section */}
+              {}
               <div className="pt-2">
                 <h3 className="text-sm font-semibold text-gray-100 mb-3">Generate From Highlight</h3>
                 <div className="grid grid-cols-2 gap-2">
@@ -606,7 +597,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
               <div>
                 <h3 className="text-sm font-semibold text-gray-100 mb-2">Interactive Study Deck</h3>
                 <p className="text-xs text-gray-500 mb-4">Click a card to flip and reveal the answer. You can generate more flashcards from text highlights.</p>
-                
+
                 {flashcards.length > 0 ? (
                   <div className="space-y-4">
                     {flashcards.map((card, idx) => (
@@ -646,12 +637,12 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
                   <div className="w-20 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold text-xs mb-8 shadow-[0_0_15px_rgba(52,211,153,0.1)]">
                     Document
                   </div>
-                  
+
                   {highlights.length > 0 ? (
                     <div className="w-full relative flex flex-col gap-6 items-center px-4">
-                      {/* Draw vertical connecting line */}
+                      {}
                       <div className="absolute top-[-32px] bottom-8 w-0.5 bg-[#2A2A2A] z-0" />
-                      
+
                       {highlights.map((h, i) => (
                         <div key={i} className="bg-[#111] border border-[#2A2A2A] rounded-lg p-3 w-full max-w-[260px] text-center text-xs relative z-10 hover:border-emerald-500/40 transition-colors shadow-md">
                           <div className="text-[9px] text-emerald-400 mb-1 font-bold uppercase tracking-wider">Highlight #{i + 1}</div>
@@ -667,7 +658,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
             </div>
           )}
 
-          {/* Chat UI (Shows when Chat tab is active) */}
+          {}
           {activeTab === "Chat" && (
             <div className="flex-1 bg-[#0A0A0A] flex flex-col p-4 overflow-y-auto">
               {chatMessages.length === 0 ? (
@@ -690,7 +681,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
             </div>
           )}
 
-          {/* Bottom Input */}
+          {}
           <div className="p-4 border-t border-[#1E1E1E] bg-[#0A0A0A]">
             <div className="relative flex items-center">
               <input 
@@ -716,7 +707,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
           </div>
         </aside>
       )}
-      {/* END: RightSidebar */}
+      {}
     </div>
   );
 }

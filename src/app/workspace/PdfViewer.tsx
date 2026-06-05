@@ -11,7 +11,6 @@ import {
 import type { IHighlight, NewHighlight, ViewportHighlight } from "react-pdf-highlighter";
 import { pdfjs } from 'react-pdf';
 
-// Import all required CSS for pdf.js and react-pdf-highlighter to render properly
 import "./pdf_viewer.css";
 import "react-pdf-highlighter/dist/esm/style/AreaHighlight.css";
 import "react-pdf-highlighter/dist/esm/style/Highlight.css";
@@ -47,7 +46,7 @@ export default function DocumentViewer({
       case "blue": return "rgba(96, 165, 250, 0.7)";
       case "pink": return "rgba(244, 114, 182, 0.7)";
       case "green": return "rgba(74, 222, 128, 0.7)";
-      default: return "rgba(253, 224, 71, 0.7)"; // default yellow
+      default: return "rgba(253, 224, 71, 0.7)"; 
     }
   };
 
@@ -72,9 +71,9 @@ export default function DocumentViewer({
               hideTipAndSelection,
               transformSelection
             ) => {
-              // Immediately add the highlight using the globally selected activeColor
+
               addHighlight({ content, position, comment: { text: "", emoji: "" } }, activeColor);
-              // Hide the selection native box
+
               setTimeout(hideTipAndSelection, 0);
               return <div style={{ display: 'none' }}></div>;
             }}
@@ -102,7 +101,7 @@ export default function DocumentViewer({
                   isScrolledTo={isScrolledTo}
                   highlight={highlight}
                   onChange={(boundingRect) => {
-                    
+
                   }}
                 />
               );

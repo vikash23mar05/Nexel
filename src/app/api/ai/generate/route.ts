@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 
-// Global Unhandled Rejection Shield to prevent Next.js dev server from crashing on async errors
 if (typeof process !== "undefined") {
   process.on("unhandledRejection", (reason) => {
     console.warn("⚠️ [Unhandled Rejection Shielded]:", reason);
@@ -24,7 +23,6 @@ export async function POST(req: Request) {
 
     const finalPrompt = prompt ? `${prompt}\n\nContext text: ${text}` : `Text to process: ${text}`;
 
-    // Get the GitHub PAT from environment variables
     const token = process.env.GITHUB_TOKEN || "";
 
     if (!token) {
@@ -40,7 +38,6 @@ export async function POST(req: Request) {
       });
     }
 
-    // Call GitHub Models API (OpenAI-compatible)
     const url = "https://models.inference.ai.azure.com/chat/completions";
     const payload = {
       messages: [
@@ -69,7 +66,7 @@ export async function POST(req: Request) {
       } catch (e) {
         errorText = await response.text();
       }
-      
+
       const fallbackStream = new ReadableStream({
         async start(controller) {
           const msg = `⚠️ **GitHub Models API Error (${response.status})**\n\n${errorText}`;
@@ -88,10 +85,10 @@ export async function POST(req: Request) {
     const stream = new ReadableStream({
       async start(controller) {
         try {
-          // Simulate streaming chunk by chunk so the UI doesn't break
+
           const chunks = generatedText.match(/.{1,10}/g) || [];
           for (const chunk of chunks) {
-            await new Promise(resolve => setTimeout(resolve, 10)); // tiny delay for visual effect
+            await new Promise(resolve => setTimeout(resolve, 10)); 
             controller.enqueue(new TextEncoder().encode(chunk));
           }
         } catch (e) {

@@ -47,3 +47,8 @@ next-env.d.ts
 
 # personal study plan
 NEXEL_30_DAY_STUDY_PLAN.md
+
+# backend server ignores
+/server/node_modules/
+/server/.env
+
