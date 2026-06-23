@@ -18,8 +18,14 @@ import {
 
 export default function LandingPage() {
   const [isMounted, setIsMounted] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  
   useEffect(() => {
     setIsMounted(true);
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsSignedIn(true);
+    }
   }, []);
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -27,8 +33,6 @@ export default function LandingPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-
-  const [isSignedIn, setIsSignedIn] = useState(false);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -102,10 +106,21 @@ export default function LandingPage() {
             <a href="#" className="text-gray-300 hover:text-white transition-colors">Pricing</a>
 
             <div className="flex items-center gap-6 ml-4 border-l border-gray-800 pl-8">
-              <a href="/login" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Log in</a>
-              <a href="/signup" className="bg-emerald-500 text-black px-4 py-2 rounded-full font-medium hover:bg-emerald-400 transition-colors text-sm">
-                Sign up
-              </a>
+              {isMounted && isSignedIn ? (
+                <a href="/storage" className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-600 border border-gray-500 hover:border-white transition-colors overflow-hidden">
+                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
+                     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                     <circle cx="12" cy="7" r="4"></circle>
+                   </svg>
+                </a>
+              ) : (
+                <>
+                  <a href="/login" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Log in</a>
+                  <a href="/signup" className="bg-emerald-500 text-black px-4 py-2 rounded-full font-medium hover:bg-emerald-400 transition-colors text-sm">
+                    Sign up
+                  </a>
+                </>
+              )}
             </div>
           </nav>
 
@@ -132,10 +147,24 @@ export default function LandingPage() {
             <a href="#" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white text-base font-medium transition-colors py-1">Solutions</a>
             <a href="#" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white text-base font-medium transition-colors py-1">Pricing</a>
             <div className="h-px bg-gray-800/60 my-1" />
-            <a href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white text-base font-medium transition-colors py-1">Log in</a>
-            <a href="/signup" onClick={() => setIsMobileMenuOpen(false)} className="bg-emerald-500 text-black py-2.5 px-4 rounded-lg font-semibold hover:bg-emerald-400 text-center transition-colors text-sm inline-block">
-              Sign up
-            </a>
+            {isMounted && isSignedIn ? (
+              <a href="/storage" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 py-2 text-gray-300 hover:text-white transition-colors">
+                <div className="w-8 h-8 rounded-full bg-gray-600 border border-gray-500 flex items-center justify-center overflow-hidden">
+                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
+                     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                     <circle cx="12" cy="7" r="4"></circle>
+                   </svg>
+                </div>
+                <span className="font-medium text-base">My Storage</span>
+              </a>
+            ) : (
+              <>
+                <a href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white text-base font-medium transition-colors py-1">Log in</a>
+                <a href="/signup" onClick={() => setIsMobileMenuOpen(false)} className="bg-emerald-500 text-black py-2.5 px-4 rounded-lg font-semibold hover:bg-emerald-400 text-center transition-colors text-sm inline-block">
+                  Sign up
+                </a>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
