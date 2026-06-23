@@ -22,6 +22,8 @@ export default function StoragePage() {
   const [newFolderName, setNewFolderName] = useState("");
   const [newFolderColor, setNewFolderColor] = useState("blue");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  
+  const [userEmail, setUserEmail] = useState("Loading...");
 
   const fetchDocuments = async () => {
     setIsLoading(true);
@@ -30,6 +32,11 @@ export default function StoragePage() {
       window.location.href = "/login";
       return;
     }
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (payload.email) setUserEmail(payload.email);
+    } catch(e) {}
 
     try {
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -236,8 +243,8 @@ export default function StoragePage() {
                   <User className="w-6 h-6 text-gray-300" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-100">Vikash Kumar</h3>
-                  <p className="text-xs text-gray-400">Test@email.com</p>
+                  <h3 className="text-sm font-semibold text-gray-100">Nexel User</h3>
+                  <p className="text-xs text-gray-400">{userEmail}</p>
                 </div>
               </div>
               <button onClick={() => setIsMobileSidebarOpen(false)} className="text-gray-400 hover:text-white">
@@ -271,8 +278,8 @@ export default function StoragePage() {
               <User className="w-6 h-6 text-gray-300" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-gray-100">Vikash Kumar Vivek</h3>
-              <p className="text-xs text-gray-400">Test@email.com</p>
+              <h3 className="text-sm font-semibold text-gray-100">Nexel User</h3>
+              <p className="text-xs text-gray-400">{userEmail}</p>
             </div>
           </div>
         </div>

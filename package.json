@@ -10,6 +10,7 @@
     "backend:lint": "eslint .",
     "backend:swagger": "node backend/src/swagger.js",
     "frontend:dev": "next dev",
+    "build": "next build",
     "start": "npm run backend:start",
     "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
     "test": "npm run backend:test",
