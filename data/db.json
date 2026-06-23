@@ -1,0 +1,2833 @@
+{
+  "highlights": [
+    {
+      "content": {
+        "text": ": A network is a set of devices that"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 213.5833282470703,
+          "y1": 164.2833251953125,
+          "x2": 444.6833190917969,
+          "y2": 181.0333251953125,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 213.5833282470703,
+            "y1": 164.2833251953125,
+            "x2": 444.6833190917969,
+            "y2": 181.0333251953125,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "6431428105692886",
+      "color": "blue",
+      "docId": "1779601647815-214889173",
+      "createdAt": "2026-05-24T05:59:57.063Z"
+    },
+    {
+      "content": {
+        "text": "ne or more nodes. A network is a coll"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 279.21665954589844,
+          "y1": 204.58334350585938,
+          "x2": 529.7999877929688,
+          "y2": 221.33334350585938,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 279.21665954589844,
+            "y1": 204.58334350585938,
+            "x2": 529.7999877929688,
+            "y2": 221.33334350585938,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "23228920332322933",
+      "color": "blue",
+      "docId": "1779601647815-214889173",
+      "createdAt": "2026-05-24T05:59:58.744Z"
+    },
+    {
+      "content": {
+        "text": "onnected toeach other to allow the sharing of data.● Network Topology : Network topology specifies the layout of a computer network. Itshows how devices and cables are connected to each other.Types of Network Topology :● Star :● Star topology is a network topology in which all the nodes are connectedto a single device known as a central device.● Star topology requires more cable compared to other topologies.Therefore, it is more robust as a failure in one cable will only disconnect aspecific computer connected to this cable.● If the central device is damaged, then the whole network fails.● Star topology is very easy to install, manage and troubleshoot. It iscommonly used in office and home networks.● Ring :1. Ring topology is a network topology in which nodes are exactly connected to twoor more nodes and thus, forming a single continuous path for the transmission.2. It does not need any central server to control the connectivity among the nodes.3. If the single node is damaged, then the whole network fails.4. Ring topology is very rarely used as it is expensive, difficult to install andmanage.5. Examples of Ring topology are SONET network, SDH network, etc."
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 0,
+          "y1": 204.58334350585938,
+          "x2": 847.9999847412109,
+          "y2": 904.2333068847656,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 279.21665954589844,
+            "y1": 204.58334350585938,
+            "x2": 529.7999877929688,
+            "y2": 221.33334350585938,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 655.0833587646484,
+            "y1": 204.58334350585938,
+            "x2": 734.7000274658203,
+            "y2": 221.33334350585938,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 149.65000915527344,
+            "y1": 224.75,
+            "x2": 412.1333465576172,
+            "y2": 241.5,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 253.26666259765625,
+            "x2": 285.59999084472656,
+            "y2": 283.5,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 124.69999694824219,
+            "y1": 265.0500183105469,
+            "x2": 717.3666534423828,
+            "y2": 281.8000183105469,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 283.51666259765625,
+            "x2": 847.9833374023438,
+            "y2": 313.75,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 313.73333740234375,
+            "x2": 352.7333221435547,
+            "y2": 343.96665954589844,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 149.65000915527344,
+            "y1": 325.51666259765625,
+            "x2": 355.54998779296875,
+            "y2": 342.26666259765625,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 343.98333740234375,
+            "x2": 847.9999847412109,
+            "y2": 364.1333312988281,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 364.1333312988281,
+            "x2": 737.1166839599609,
+            "y2": 384.2833251953125,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 249.4166717529297,
+            "y1": 385.98333740234375,
+            "x2": 550.8333587646484,
+            "y2": 402.73333740234375,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 404.4499816894531,
+            "x2": 683.7500152587891,
+            "y2": 424.5999755859375,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 249.4166717529297,
+            "y1": 426.3000183105469,
+            "x2": 744.6833343505859,
+            "y2": 443.0500183105469,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 444.7500305175781,
+            "x2": 847.9833374023438,
+            "y2": 464.9000244140625,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 464.9166564941406,
+            "x2": 665.1166839599609,
+            "y2": 485.066650390625,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 485.0666809082031,
+            "x2": 697.2833404541016,
+            "y2": 505.2166748046875,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 249.4166717529297,
+            "y1": 506.9166564941406,
+            "x2": 553.9166717529297,
+            "y2": 523.6666564941406,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 635.0166320800781,
+            "x2": 847.9999847412109,
+            "y2": 764.8332977294922,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 124.69999694824219,
+            "y1": 746.3833312988281,
+            "x2": 191.9499969482422,
+            "y2": 763.1333312988281,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 764.8500061035156,
+            "x2": 847.9999847412109,
+            "y2": 785.0000152587891,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 199.53330993652344,
+            "y1": 786.6999816894531,
+            "x2": 729.5333099365234,
+            "y2": 803.4499816894531,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 805.1499938964844,
+            "x2": 736.3332977294922,
+            "y2": 825.3000030517578,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 825.3166809082031,
+            "x2": 847.9999847412109,
+            "y2": 845.4666748046875,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 0,
+            "y1": 845.4666442871094,
+            "x2": 847.9999847412109,
+            "y2": 865.6166534423828,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 199.53330993652344,
+            "y1": 867.3166809082031,
+            "x2": 258.816650390625,
+            "y2": 884.0666809082031,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 174.5833282470703,
+            "y1": 887.4833068847656,
+            "x2": 652.4166412353516,
+            "y2": 904.2333068847656,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "019466949237149977",
+      "color": "blue",
+      "docId": "1779601647815-214889173",
+      "createdAt": "2026-05-24T06:00:01.529Z"
+    },
+    {
+      "content": {
+        "text": "Computer Networks● Network : A network is a set of devices that are connected with a physical media link. Ina network, two or more nodes are connected by a physical link or two or more networksare connected by one or more nodes. A network is a co"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 124.69999694824219,
+          "y1": 106.86666870117188,
+          "x2": 742.7166290283203,
+          "y2": 221.33334350585938,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 334.4166717529297,
+            "y1": 106.86666870117188,
+            "x2": 513.0000152587891,
+            "y2": 131.43333435058594,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 124.69999694824219,
+            "y1": 164.2833251953125,
+            "x2": 742.7166290283203,
+            "y2": 181.0333251953125,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 149.65000915527344,
+            "y1": 184.43331909179688,
+            "x2": 738.0167083740234,
+            "y2": 201.18331909179688,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 149.65000915527344,
+            "y1": 204.58334350585938,
+            "x2": 523.0500030517578,
+            "y2": 221.33334350585938,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "6800693951474837",
+      "color": "pink",
+      "docId": "1779601647815-214889173",
+      "createdAt": "2026-05-24T06:00:07.332Z"
+    },
+    {
+      "content": {
+        "text": "Computer Networks● Network : A network is a set of devices that are connected with a physical media link. Ina network, two or more nodes are connected by a physical"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 119.26666259765625,
+          "y1": 102.25,
+          "x2": 708.7000122070312,
+          "y2": 192.76666259765625,
+          "width": 811,
+          "height": 1049.5294117647059,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 319.816650390625,
+            "y1": 102.25,
+            "x2": 490.7666473388672,
+            "y2": 125.69999694824219,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 1
+          },
+          {
+            "x1": 119.26666259765625,
+            "y1": 156.75,
+            "x2": 708.7000122070312,
+            "y2": 173.5,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 1
+          },
+          {
+            "x1": 143.11663818359375,
+            "y1": 176.01666259765625,
+            "x2": 518.5166320800781,
+            "y2": 192.76666259765625,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "7422187016244535",
+      "color": "yellow",
+      "docId": "1779603505126-650644042",
+      "createdAt": "2026-05-24T06:20:50.681Z"
+    },
+    {
+      "content": {
+        "text": "er to allow the sharing"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 198.8499755859375,
+          "y1": 214.56668090820312,
+          "x2": 340.9333190917969,
+          "y2": 231.31668090820312,
+          "width": 811,
+          "height": 1049.5294117647059,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 198.8499755859375,
+            "y1": 214.56668090820312,
+            "x2": 340.9333190917969,
+            "y2": 231.31668090820312,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "16112644810785726",
+      "color": "yellow",
+      "docId": "1779603505126-650644042",
+      "createdAt": "2026-05-24T06:21:24.959Z"
+    },
+    {
+      "content": {
+        "text": "Network topology specifies the layout of a computer network. Itshows how devices and cables are connected to each other."
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 143.11663818359375,
+          "y1": 253.11666870117188,
+          "x2": 684.7833251953125,
+          "y2": 289.1499938964844,
+          "width": 811,
+          "height": 1049.5294117647059,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 281.20001220703125,
+            "y1": 253.11666870117188,
+            "x2": 684.7833251953125,
+            "y2": 269.8666687011719,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 1
+          },
+          {
+            "x1": 143.11663818359375,
+            "y1": 272.3999938964844,
+            "x2": 530.6666259765625,
+            "y2": 289.1499938964844,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "7816368520082537",
+      "color": "pink",
+      "docId": "1779603505126-650644042",
+      "createdAt": "2026-05-24T06:24:21.597Z"
+    },
+    {
+      "content": {
+        "text": "rid :1. A hybrid topology is a combination of different topolo"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 166.96664428710938,
+          "y1": 680.1000366210938,
+          "x2": 528.0333251953125,
+          "y2": 716.11669921875,
+          "width": 811,
+          "height": 1049.5294117647059,
+          "pageNumber": 3
+        },
+        "rects": [
+          {
+            "x1": 171.43331909179688,
+            "y1": 680.1000366210938,
+            "x2": 197.34999084472656,
+            "y2": 696.8500366210938,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 3
+          },
+          {
+            "x1": 166.96664428710938,
+            "y1": 699.36669921875,
+            "x2": 528.0333251953125,
+            "y2": 716.11669921875,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 3
+          }
+        ],
+        "pageNumber": 3
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "43867069411228976",
+      "color": "pink",
+      "docId": "1779603505126-650644042",
+      "createdAt": "2026-05-24T06:27:32.319Z"
+    },
+    {
+      "content": {
+        "text": "Computer Networks"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 319.816650390625,
+          "y1": 102.25,
+          "x2": 490.7666473388672,
+          "y2": 125.69999694824219,
+          "width": 811,
+          "height": 1049.5294117647059,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 319.816650390625,
+            "y1": 102.25,
+            "x2": 490.7666473388672,
+            "y2": 125.69999694824219,
+            "width": 811,
+            "height": 1049.5294117647059,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "9161746581703429",
+      "color": "yellow",
+      "docId": "1779603505126-650644042",
+      "createdAt": "2026-05-24T07:14:36.311Z"
+    },
+    {
+      "content": {
+        "text": "Network Topology : Network topology specifies the layout of a computer network. Itshows how devices and cables are connected to each other."
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 149.65000915527344,
+          "y1": 253.26666259765625,
+          "x2": 717.3666534423828,
+          "y2": 301.9666442871094,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 281.3666534423828,
+            "y1": 253.26666259765625,
+            "x2": 285.59999084472656,
+            "y2": 283.5,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 149.65000915527344,
+            "y1": 265.0500183105469,
+            "x2": 717.3666534423828,
+            "y2": 281.8000183105469,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 149.65000915527344,
+            "y1": 285.2166442871094,
+            "x2": 556.0666961669922,
+            "y2": 301.9666442871094,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "7611975063024446",
+      "color": "pink",
+      "docId": "1779603505126-650644042",
+      "createdAt": "2026-05-24T07:50:11.639Z"
+    },
+    {
+      "content": {
+        "text": "Star topology is a network topology in which all the nodes are connectedto a single device known as a central device."
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 249.4166717529297,
+          "y1": 365.8333435058594,
+          "x2": 737.1166839599609,
+          "y2": 402.73333740234375,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 249.4166717529297,
+            "y1": 365.8333435058594,
+            "x2": 737.1166839599609,
+            "y2": 382.5833435058594,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 249.4166717529297,
+            "y1": 385.98333740234375,
+            "x2": 550.8333587646484,
+            "y2": 402.73333740234375,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "05331247216711099",
+      "color": "yellow",
+      "docId": "1779603505126-650644042",
+      "createdAt": "2026-05-24T07:50:51.385Z"
+    },
+    {
+      "content": {
+        "text": "arious atomic theories were propounded by the Bhāratīya Darśanas like Vai"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 116.79998779296875,
+          "y1": 353.6999816894531,
+          "x2": 701.63330078125,
+          "y2": 370.4833221435547,
+          "width": 848,
+          "height": 1199.314318275434,
+          "pageNumber": 2
+        },
+        "rects": [
+          {
+            "x1": 116.79998779296875,
+            "y1": 353.6999816894531,
+            "x2": 701.63330078125,
+            "y2": 370.4833221435547,
+            "width": 848,
+            "height": 1199.314318275434,
+            "pageNumber": 2
+          }
+        ],
+        "pageNumber": 2
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "26416281715743506",
+      "color": "yellow",
+      "docId": "1779668265968-604443709",
+      "createdAt": "2026-05-25T00:17:55.062Z"
+    },
+    {
+      "content": {
+        "text": "Sāṃkhya, and Jainas, etc., of which the concepts of Vaiśeṣika are amazingly si"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 89.316650390625,
+          "y1": 375.7833557128906,
+          "x2": 698.88330078125,
+          "y2": 392.5666809082031,
+          "width": 848,
+          "height": 1199.314318275434,
+          "pageNumber": 2
+        },
+        "rects": [
+          {
+            "x1": 89.316650390625,
+            "y1": 375.7833557128906,
+            "x2": 698.88330078125,
+            "y2": 392.5666809082031,
+            "width": 848,
+            "height": 1199.314318275434,
+            "pageNumber": 2
+          }
+        ],
+        "pageNumber": 2
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "8790718768180797",
+      "color": "blue",
+      "docId": "1779668265968-604443709",
+      "createdAt": "2026-05-25T00:17:59.154Z"
+    },
+    {
+      "content": {
+        "text": "hat of modern science. The Upaniṣads and Brāhmaṇas also developed theories of t"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 94.14999389648438,
+          "y1": 397.8666687011719,
+          "x2": 736.6666564941406,
+          "y2": 414.65000915527344,
+          "width": 848,
+          "height": 1199.314318275434,
+          "pageNumber": 2
+        },
+        "rects": [
+          {
+            "x1": 94.14999389648438,
+            "y1": 397.8666687011719,
+            "x2": 736.6666564941406,
+            "y2": 414.65000915527344,
+            "width": 848,
+            "height": 1199.314318275434,
+            "pageNumber": 2
+          }
+        ],
+        "pageNumber": 2
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "49864242833723926",
+      "color": "pink",
+      "docId": "1779668265968-604443709",
+      "createdAt": "2026-05-25T00:18:03.675Z"
+    },
+    {
+      "content": {
+        "text": "document viewer, note-taking apps, web search for explanations, and AI chat windows.2. Passive Consumption: Highlighting text is a passive memory technique that results inlow information retention unless paired with active retriev"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 98.20001220703125,
+          "y1": 496.25001525878906,
+          "x2": 751.4833374023438,
+          "y2": 563.1166839599609,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 6
+        },
+        "rects": [
+          {
+            "x1": 120.79998779296875,
+            "y1": 496.25001525878906,
+            "x2": 742.0833129882812,
+            "y2": 514.8000183105469,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 6
+          },
+          {
+            "x1": 98.20001220703125,
+            "y1": 524.5500183105469,
+            "x2": 751.4833374023438,
+            "y2": 543.1000213623047,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 6
+          },
+          {
+            "x1": 120.79998779296875,
+            "y1": 544.5666809082031,
+            "x2": 512.5999755859375,
+            "y2": 563.1166839599609,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 6
+          }
+        ],
+        "pageNumber": 6
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "6356962210492286",
+      "color": "yellow",
+      "docId": "1779759724270-464823189",
+      "createdAt": "2026-05-26T01:42:12.506Z"
+    },
+    {
+      "content": {
+        "text": "ack: Next.js 16 · TypeScript · Tailwind CSS "
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 179,
+          "y1": 398.9500274658203,
+          "x2": 410.6333312988281,
+          "y2": 410.5500183105469,
+          "width": 564,
+          "height": 729.8823529411765,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 179,
+            "y1": 398.9500274658203,
+            "x2": 410.6333312988281,
+            "y2": 410.5500183105469,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "7295937231209243",
+      "color": "yellow",
+      "author": {
+        "id": "0.676896382378101",
+        "name": "Vikash Kumar Vivek",
+        "color": "#EF4444"
+      },
+      "docId": "1782238141885-959321222",
+      "createdAt": "2026-06-23T18:40:03.083Z"
+    },
+    {
+      "content": {
+        "text": "NEXELArchitectural Blueprint & Technical Documentation“An AI-powered interactive document workspace designedto transform passive reading into active mastery.”Stack: Next.js 16 · TypeScript · Tailwind CSS v4AI Engine: AWS Bedrock · Claude 3 HaikuDatabase: SQLite · Prisma ORMRenderer: Mozilla pdf.js · react-pdf-highlighterFull-Stack Engineering Reference | Placement Interview M"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 63.2833251953125,
+          "y1": 88.70001220703125,
+          "x2": 245.04998779296875,
+          "y2": 370.9666748046875,
+          "width": 308,
+          "height": 398.5882352941176,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 96.11666870117188,
+            "y1": 88.70001220703125,
+            "x2": 213.2166748046875,
+            "y2": 122.53334045410156,
+            "width": 308,
+            "height": 398.5882352941176,
+            "pageNumber": 1
+          },
+          {
+            "x1": 63.2833251953125,
+            "y1": 122.01667785644531,
+            "x2": 245.04998779296875,
+            "y2": 131.68333435058594,
+            "width": 308,
+            "height": 398.5882352941176,
+            "pageNumber": 1
+          },
+          {
+            "x1": 64.61666870117188,
+            "y1": 163.2000274658203,
+            "x2": 240.50001525878906,
+            "y2": 171.9000244140625,
+            "width": 308,
+            "height": 398.5882352941176,
+            "pageNumber": 1
+          },
+          {
+            "x1": 76.683349609375,
+            "y1": 172.2666778564453,
+            "x2": 229.183349609375,
+            "y2": 180.9666748046875,
+            "width": 308,
+            "height": 398.5882352941176,
+            "pageNumber": 1
+          },
+          {
+            "x1": 91.61666870117188,
+            "y1": 217.8333282470703,
+            "x2": 230.6166534423828,
+            "y2": 224.59999084472656,
+            "width": 308,
+            "height": 398.5882352941176,
+            "pageNumber": 1
+          },
+          {
+            "x1": 77.48333740234375,
+            "y1": 227.1333465576172,
+            "x2": 200.58335876464844,
+            "y2": 233.90000915527344,
+            "width": 308,
+            "height": 398.5882352941176,
+            "pageNumber": 1
+          },
+          {
+            "x1": 80.4666748046875,
+            "y1": 236.43333435058594,
+            "x2": 176.70001220703125,
+            "y2": 243.20001220703125,
+            "width": 308,
+            "height": 398.5882352941176,
+            "pageNumber": 1
+          },
+          {
+            "x1": 80.31668090820312,
+            "y1": 245.68333435058594,
+            "x2": 212.16668701171875,
+            "y2": 252.45001220703125,
+            "width": 308,
+            "height": 398.5882352941176,
+            "pageNumber": 1
+          },
+          {
+            "x1": 67.75,
+            "y1": 365.1666717529297,
+            "x2": 215.71665954589844,
+            "y2": 370.9666748046875,
+            "width": 308,
+            "height": 398.5882352941176,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "8305030966147505",
+      "color": "yellow",
+      "author": {
+        "id": "0.7938441178059409",
+        "name": "Vikash Kumar Vivek",
+        "color": "#8B5CF6"
+      },
+      "docId": "1782238141885-959321222",
+      "createdAt": "2026-06-23T18:40:07.743Z"
+    },
+    {
+      "content": {
+        "text": "ContentsI Architectural Blueprint & Technical Case Study 41 Project Overview 51.1 The Core Problem & Real-World Context . . . . . . . . . . . . . . . . . . . 51.2 The Nexel Solution . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51.3 Key Features . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 61.4 Target Demographics & Use Cases . . . . . . . . . . . . . . . . . . . . . . . 61.5 Interview-Ready Pitch Matrix . . . . . . . . . . . . . . . . . . . . . . . . . . 72 Tech Stack Breakdown & Trade-Off Analysis 82.1 Complete Stack Breakdown & Rationale . . . . . . . . . . . . . . . . . . . . 92.2 Deep Architectural Mechanics"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 65.29998779296875,
+          "y1": 110.69999694824219,
+          "x2": 499.3999786376953,
+          "y2": 335.0666809082031,
+          "width": 564,
+          "height": 729.8823529411765,
+          "pageNumber": 2
+        },
+        "rects": [
+          {
+            "x1": 65.29998779296875,
+            "y1": 110.69999694824219,
+            "x2": 166.1166534423828,
+            "y2": 135.83334350585938,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 65.29998779296875,
+            "y1": 179.88331604003906,
+            "x2": 74.5,
+            "y2": 194.38331604003906,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 85.71665954589844,
+            "y1": 179.88331604003906,
+            "x2": 403.9333038330078,
+            "y2": 194.38331604003906,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 491.2333221435547,
+            "y1": 179.88331604003906,
+            "x2": 498.5833282470703,
+            "y2": 194.38331604003906,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 65.29998779296875,
+            "y1": 206.15000915527344,
+            "x2": 179.3666534423828,
+            "y2": 217.75,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 492.4833221435547,
+            "y1": 206.15000915527344,
+            "x2": 498.6166534423828,
+            "y2": 217.75,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 81.48332214355469,
+            "y1": 219.5166778564453,
+            "x2": 473.8833312988281,
+            "y2": 231.11668395996094,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 493.2666473388672,
+            "y1": 219.5166778564453,
+            "x2": 499.3999786376953,
+            "y2": 231.11668395996094,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 81.48332214355469,
+            "y1": 232.8000030517578,
+            "x2": 473.8833312988281,
+            "y2": 244.40000915527344,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 493.2666473388672,
+            "y1": 232.8000030517578,
+            "x2": 499.3999786376953,
+            "y2": 244.40000915527344,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 81.48332214355469,
+            "y1": 246.15000915527344,
+            "x2": 473.8833312988281,
+            "y2": 257.75,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 493.2666473388672,
+            "y1": 246.15000915527344,
+            "x2": 499.3999786376953,
+            "y2": 257.75,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 81.48332214355469,
+            "y1": 259.4499969482422,
+            "x2": 473.8833312988281,
+            "y2": 271.0500030517578,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 493.2666473388672,
+            "y1": 259.4499969482422,
+            "x2": 499.3999786376953,
+            "y2": 271.0500030517578,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 81.48332214355469,
+            "y1": 272.7333526611328,
+            "x2": 473.8833312988281,
+            "y2": 284.33335876464844,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 493.2666473388672,
+            "y1": 272.7333526611328,
+            "x2": 499.3999786376953,
+            "y2": 284.33335876464844,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 65.29998779296875,
+            "y1": 296.88331604003906,
+            "x2": 327.1833190917969,
+            "y2": 308.4833221435547,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 492.4833221435547,
+            "y1": 296.88331604003906,
+            "x2": 498.6166534423828,
+            "y2": 308.4833221435547,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 81.48332214355469,
+            "y1": 310.18333435058594,
+            "x2": 473.8833312988281,
+            "y2": 321.78334045410156,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 493.2666473388672,
+            "y1": 310.18333435058594,
+            "x2": 499.3999786376953,
+            "y2": 321.78334045410156,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          },
+          {
+            "x1": 81.48332214355469,
+            "y1": 323.46669006347656,
+            "x2": 248.51666259765625,
+            "y2": 335.0666809082031,
+            "width": 564,
+            "height": 729.8823529411765,
+            "pageNumber": 2
+          }
+        ],
+        "pageNumber": 2
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "6341595407667324",
+      "color": "yellow",
+      "author": {
+        "id": "0.676896382378101",
+        "name": "Vikash Kumar Vivek",
+        "color": "#EF4444"
+      },
+      "docId": "1782238141885-959321222",
+      "createdAt": "2026-06-23T18:40:32.166Z"
+    },
+    {
+      "content": {
+        "text": "Conten"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 35.6500244140625,
+          "y1": 17.75,
+          "x2": 52.800018310546875,
+          "y2": 23.550003051757812,
+          "width": 308,
+          "height": 398.5882352941176,
+          "pageNumber": 4
+        },
+        "rects": [
+          {
+            "x1": 35.6500244140625,
+            "y1": 17.75,
+            "x2": 52.800018310546875,
+            "y2": 23.550003051757812,
+            "width": 308,
+            "height": 398.5882352941176,
+            "pageNumber": 4
+          }
+        ],
+        "pageNumber": 4
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "44608783952109154",
+      "color": "yellow",
+      "author": {
+        "id": "0.7938441178059409",
+        "name": "Vikash Kumar Vivek",
+        "color": "#8B5CF6"
+      },
+      "docId": "1782238141885-959321222",
+      "createdAt": "2026-06-23T18:40:45.980Z"
+    },
+    {
+      "content": {
+        "text": "NEXELArchitectural Blueprint & Technical Documentation“An AI-powered interactive document workspace designedto transform passive reading into active mastery.”Stack: Next.js 16 · TypeScript · Tailwind CSS v4AI Engine: AWS Bedrock · Claude 3 HaikuDatabase: SQLite · Prisma ORMRenderer: Mozilla pdf.js · react-pdf-highlighterFull-Stack Engineering Reference | Placement Interview Masterclass"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 174.25,
+          "y1": 244.21669006347656,
+          "x2": 675.066650390625,
+          "y2": 1020.183349609375,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 264.63330078125,
+            "y1": 244.21669006347656,
+            "x2": 587.0333251953125,
+            "y2": 337.36668395996094,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 174.25,
+            "y1": 335.7666778564453,
+            "x2": 675.066650390625,
+            "y2": 361.8666687011719,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 177.9000244140625,
+            "y1": 449.5833282470703,
+            "x2": 661.7833862304688,
+            "y2": 471.81666564941406,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 211.1500244140625,
+            "y1": 474.4833526611328,
+            "x2": 630.9166870117188,
+            "y2": 496.71669006347656,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 252.26666259765625,
+            "y1": 598.5500030517578,
+            "x2": 306.3166809082031,
+            "y2": 617.8833465576172,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 318.25,
+            "y1": 598.5500030517578,
+            "x2": 635.1000213623047,
+            "y2": 617.8833465576172,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 213.3499755859375,
+            "y1": 624.1166534423828,
+            "x2": 306.3166809082031,
+            "y2": 643.4499969482422,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 318.25,
+            "y1": 624.1166534423828,
+            "x2": 552.2999877929688,
+            "y2": 643.4499969482422,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 221.566650390625,
+            "y1": 649.6833648681641,
+            "x2": 306.3166809082031,
+            "y2": 669.0167083740234,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 318.25,
+            "y1": 649.6833648681641,
+            "x2": 486.5833282470703,
+            "y2": 669.0167083740234,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 221.1500244140625,
+            "y1": 675.1333160400391,
+            "x2": 306.3166809082031,
+            "y2": 694.4666442871094,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 318.25,
+            "y1": 675.1333160400391,
+            "x2": 584.2166900634766,
+            "y2": 694.4666442871094,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 186.54998779296875,
+            "y1": 1003.7500152587891,
+            "x2": 409.36668395996094,
+            "y2": 1020.183349609375,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 425.3499755859375,
+            "y1": 1003.7500152587891,
+            "x2": 433.6999969482422,
+            "y2": 1020.183349609375,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 444.683349609375,
+            "y1": 1003.7500152587891,
+            "x2": 661.183349609375,
+            "y2": 1020.183349609375,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "6095762608598472",
+      "color": "blue",
+      "author": {
+        "id": "0.6316923428600041",
+        "name": "Vikash Kumar Vivek",
+        "color": "#60A5FA"
+      },
+      "docId": "1782238141885-959321222",
+      "createdAt": "2026-06-23T18:46:57.857Z"
+    },
+    {
+      "content": {
+        "text": "NEXELArchitectural Blueprint & Technical Documentation“An AI-powered interactive document workspace designedto transform passive reading into active mastery.”Stack: Next.js 16 · TypeScript · Tailwind CSS v4AI Engine: AWS Bedrock · Claude 3 HaikuDatabase: SQLite · Prisma ORMRenderer: Mozilla pdf.js · react-pdf-highlighterFull-Stack Engineering Reference | Placement Interview Masterclass"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 174.25,
+          "y1": 244.21669006347656,
+          "x2": 675.066650390625,
+          "y2": 1020.183349609375,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 264.63330078125,
+            "y1": 244.21669006347656,
+            "x2": 587.0333251953125,
+            "y2": 337.36668395996094,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 174.25,
+            "y1": 335.7666778564453,
+            "x2": 675.066650390625,
+            "y2": 361.8666687011719,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 177.9000244140625,
+            "y1": 449.5833282470703,
+            "x2": 661.7833862304688,
+            "y2": 471.81666564941406,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 211.1500244140625,
+            "y1": 474.4833526611328,
+            "x2": 630.9166870117188,
+            "y2": 496.71669006347656,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 252.26666259765625,
+            "y1": 598.5500030517578,
+            "x2": 306.3166809082031,
+            "y2": 617.8833465576172,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 318.25,
+            "y1": 598.5500030517578,
+            "x2": 635.1000213623047,
+            "y2": 617.8833465576172,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 213.3499755859375,
+            "y1": 624.1166534423828,
+            "x2": 306.3166809082031,
+            "y2": 643.4499969482422,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 318.25,
+            "y1": 624.1166534423828,
+            "x2": 552.2999877929688,
+            "y2": 643.4499969482422,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 221.566650390625,
+            "y1": 649.6833648681641,
+            "x2": 306.3166809082031,
+            "y2": 669.0167083740234,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 318.25,
+            "y1": 649.6833648681641,
+            "x2": 486.5833282470703,
+            "y2": 669.0167083740234,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 221.1500244140625,
+            "y1": 675.1333160400391,
+            "x2": 306.3166809082031,
+            "y2": 694.4666442871094,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 318.25,
+            "y1": 675.1333160400391,
+            "x2": 584.2166900634766,
+            "y2": 694.4666442871094,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 186.54998779296875,
+            "y1": 1003.7500152587891,
+            "x2": 409.36668395996094,
+            "y2": 1020.183349609375,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 425.3499755859375,
+            "y1": 1003.7500152587891,
+            "x2": 433.6999969482422,
+            "y2": 1020.183349609375,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 444.683349609375,
+            "y1": 1003.7500152587891,
+            "x2": 661.183349609375,
+            "y2": 1020.183349609375,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "09509098083155909",
+      "color": "pink",
+      "author": {
+        "id": "0.18622206695652666",
+        "name": "Vikash Kumar Vivek",
+        "color": "#F472B6"
+      },
+      "docId": "1782238141885-959321222",
+      "createdAt": "2026-06-23T18:47:02.405Z"
+    },
+    {
+      "content": {
+        "text": "NEXELArchitectural Blueprint & Technical Documentation“An AI-powered interactive document workspace designedto transform passive reading into active mastery.”Stack: Next.js 16 · TypeScript · Tailwind CSS v4AI Engine: AWS Bedrock · Claude 3 HaikuDatabase: SQLite · Prisma ORMRenderer: Mozilla pdf.js · react-pdf-highlighterFull-Stack Engineering Reference | Placement Interview Masterclass"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 174.23333740234375,
+          "y1": 244.21669006347656,
+          "x2": 675.066650390625,
+          "y2": 1020.183349609375,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 1
+        },
+        "rects": [
+          {
+            "x1": 264.63330078125,
+            "y1": 244.21669006347656,
+            "x2": 587.0333251953125,
+            "y2": 337.36668395996094,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 174.23333740234375,
+            "y1": 335.9500274658203,
+            "x2": 675.066650390625,
+            "y2": 362.5666961669922,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 177.9000244140625,
+            "y1": 449.3333282470703,
+            "x2": 662.1500244140625,
+            "y2": 473.2833251953125,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 211.13330078125,
+            "y1": 474.3000030517578,
+            "x2": 630.9999694824219,
+            "y2": 498.25,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 252.26666259765625,
+            "y1": 598.5500030517578,
+            "x2": 306.3166809082031,
+            "y2": 617.8833465576172,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 318.25,
+            "y1": 598.5500030517578,
+            "x2": 635.1000213623047,
+            "y2": 617.8833465576172,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 213.3499755859375,
+            "y1": 624.1166534423828,
+            "x2": 306.3166809082031,
+            "y2": 643.4499969482422,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 318.25,
+            "y1": 624.1166534423828,
+            "x2": 552.2999877929688,
+            "y2": 643.4499969482422,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 221.566650390625,
+            "y1": 649.6833648681641,
+            "x2": 306.3166809082031,
+            "y2": 669.0167083740234,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 318.25,
+            "y1": 649.6833648681641,
+            "x2": 486.5833282470703,
+            "y2": 669.0167083740234,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 221.1500244140625,
+            "y1": 675.1333160400391,
+            "x2": 306.3166809082031,
+            "y2": 694.4666442871094,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 318.25,
+            "y1": 675.1333160400391,
+            "x2": 584.2166900634766,
+            "y2": 694.4666442871094,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 186.54998779296875,
+            "y1": 1003.7500152587891,
+            "x2": 409.36668395996094,
+            "y2": 1020.183349609375,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 425.3499755859375,
+            "y1": 1003.7500152587891,
+            "x2": 433.6999969482422,
+            "y2": 1020.183349609375,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          },
+          {
+            "x1": 444.683349609375,
+            "y1": 1003.7500152587891,
+            "x2": 661.183349609375,
+            "y2": 1020.183349609375,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 1
+          }
+        ],
+        "pageNumber": 1
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "43606578371067806",
+      "color": "green",
+      "author": {
+        "id": "0.21230657735706882",
+        "name": "Vikash Kumar Vivek",
+        "color": "#4ADE80"
+      },
+      "docId": "1782238141885-959321222",
+      "createdAt": "2026-06-23T18:47:06.997Z"
+    },
+    {
+      "content": {
+        "text": "ContentsI Architectural Blueprint & Technical Case Study 41 Project Overview 51.1 The Core Problem & Real-World Context . . . . . . . . . . . . . . . . . . . 51.2 The Nexel Solution . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51.3 Key Features . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 61.4 Target Demographics & Use Cases . . . . . . . . . . . . . . . . . . . . . . . 61.5 Interview-Ready Pitch Matrix . . . . . . . . . . . . . . . . . . . . . . . . . . 72 Tech Stack Breakdown & Trade-Off Analysis 82.1 Complete Stack Breakdown & Rationale . . . . . . . . . . . . . . . . . . . . 92.2 Deep Architectural Mechanics . . . . . . . . . . . . . . . . . . . . . . . . . . 92.2.1 Next.js 16 & Serverless Route Handlers . . . . . . . . . . . . . . . . . 92.2.2 AWS Bedrock Claude 3 Haiku — Model Mechanics . . . . . . . . . . 103 Frontend Architecture — React & Next.js 113.1 Advanced React Mechanisms . . . . . . . . . . . . . . . . . . . . . . . . . . . 113.1.1 Component-Based Architecture & Reusability . . . . . . . . . . . . . 113.1.2 Virtual DOM & Reconciliation (Fiber) . . . . . . . . . . . . . . . . . 113.1.3 SPA Dynamics & Next.js Routing . . . . . . . . . . . . . . . . . . . . 113.2 Frontend Framework Comparison Matrix . . . . . . . . . . . . . . . . . . . . 123.3 Production-Grade React Code Sample . . . . . . . . . . . . . . . . . . . . . 124 Backend Architecture — Node.js & API Layer 144.1 Node.js Event Loop Architecture . . . . . . . . . . . . . . . . . . . . . . . . 144.2 Non-Blocking Event-Driven I/O . . . . . . . . . . . . . . . . . . . . . . . . . 144.3 Backend Runtime Comparison . . . . . . . . . . . . . . . . . . . . . . . . . . 154.4 Production API Handler — AWS Bedrock Route . . . . . . . . . . . . . . . 155 Full System Architecture 185.1 End-to-End Data Flow — Sequence Diagram . . . . . . . . . . . . . . . . . . 185.2 Folder Directory Tree & Architecture Rationale . . . . . . . . . . . . . . . . 196 Component Breakdown 206.1 LandingPage (src/app/page.tsx) . . . . . . . . . . . . . . . . . . . . . . . 206.2 StoragePage (src/app/storage/page.tsx) . . . . . . . . . . . . . . . . . . 206.3 WorkspacePage (src/app/workspace/[id]/page.tsx) . . . . . . . . . . . . 206.4 DocumentViewer / PdfViewer (src/app/workspace/PdfViewer.tsx) . . . . 211"
+      },
+      "position": {
+        "boundingRect": {
+          "x1": 96.79998779296875,
+          "y1": 165.90000915527344,
+          "x2": 750.86669921875,
+          "y2": 1062.6166687011719,
+          "width": 848,
+          "height": 1097.4117647058824,
+          "pageNumber": 2
+        },
+        "rects": [
+          {
+            "x1": 98.183349609375,
+            "y1": 165.90000915527344,
+            "x2": 248.4833526611328,
+            "y2": 204.56668090820312,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 738.5999755859375,
+            "y1": 270.1166687011719,
+            "x2": 749.6499633789062,
+            "y2": 292.3500061035156,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 96.79998779296875,
+            "y1": 272.6166687011719,
+            "x2": 607.3333129882812,
+            "y2": 294.8500061035156,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 740.4666748046875,
+            "y1": 308.8333435058594,
+            "x2": 749.683349609375,
+            "y2": 328.1666717529297,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 96.79998779296875,
+            "y1": 311.1166687011719,
+            "x2": 269.6833190917969,
+            "y2": 330.4499969482422,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 328.9166717529297,
+            "x2": 147.81668090820312,
+            "y2": 348.25,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.25,
+            "y1": 328.9166717529297,
+            "x2": 461.6666564941406,
+            "y2": 348.25,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 473.183349609375,
+            "y1": 328.9166717529297,
+            "x2": 712.5000305175781,
+            "y2": 348.25,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 741.6500244140625,
+            "y1": 328.9166717529297,
+            "x2": 750.86669921875,
+            "y2": 348.25,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 121.13330078125,
+            "y1": 331.03334045410156,
+            "x2": 458.4166259765625,
+            "y2": 345.20001220703125,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 348.8833465576172,
+            "x2": 147.81668090820312,
+            "y2": 368.2166748046875,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.25,
+            "y1": 348.8833465576172,
+            "x2": 712.5000305175781,
+            "y2": 368.2166748046875,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 741.6500244140625,
+            "y1": 348.8833465576172,
+            "x2": 750.86669921875,
+            "y2": 368.2166748046875,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 121.13330078125,
+            "y1": 351.03334045410156,
+            "x2": 297.56663513183594,
+            "y2": 365.20001220703125,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 268.54998779296875,
+            "y1": 368.9500274658203,
+            "x2": 712.5000305175781,
+            "y2": 388.2833557128906,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 741.6500244140625,
+            "y1": 368.9500274658203,
+            "x2": 750.86669921875,
+            "y2": 388.2833557128906,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 121.13330078125,
+            "y1": 371.0500030517578,
+            "x2": 257.96669006347656,
+            "y2": 390.3833312988281,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 422.0333251953125,
+            "y1": 388.9166717529297,
+            "x2": 712.5000305175781,
+            "y2": 408.25,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 741.6500244140625,
+            "y1": 388.9166717529297,
+            "x2": 750.86669921875,
+            "y2": 408.25,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 121.13330078125,
+            "y1": 391.06666564941406,
+            "x2": 409.9333190917969,
+            "y2": 410.3999938964844,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 741.6500244140625,
+            "y1": 408.8833465576172,
+            "x2": 750.86669921875,
+            "y2": 428.2166748046875,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 121.13330078125,
+            "y1": 411.06666564941406,
+            "x2": 712.5000305175781,
+            "y2": 430.3999938964844,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 740.4666748046875,
+            "y1": 445.2000274658203,
+            "x2": 749.683349609375,
+            "y2": 464.5333557128906,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 96.79998779296875,
+            "y1": 447.3833465576172,
+            "x2": 491.9333190917969,
+            "y2": 466.7166748046875,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 741.6500244140625,
+            "y1": 465.1666717529297,
+            "x2": 750.86669921875,
+            "y2": 484.5,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 121.13330078125,
+            "y1": 467.3000030517578,
+            "x2": 712.5000305175781,
+            "y2": 486.6333312988281,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 741.6500244140625,
+            "y1": 485.1333465576172,
+            "x2": 750.86669921875,
+            "y2": 504.4666748046875,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 121.13330078125,
+            "y1": 487.31666564941406,
+            "x2": 712.5000305175781,
+            "y2": 506.6499938964844,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 741.6500244140625,
+            "y1": 505.2000274658203,
+            "x2": 750.86669921875,
+            "y2": 524.5333557128906,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 158.433349609375,
+            "y1": 507.31666564941406,
+            "x2": 712.5000305175781,
+            "y2": 526.6499938964844,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.83331298828125,
+            "y1": 525.1666717529297,
+            "x2": 197.7666778564453,
+            "y2": 544.5,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 211.1500244140625,
+            "y1": 525.1666717529297,
+            "x2": 712.5000305175781,
+            "y2": 544.5,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 525.1666717529297,
+            "x2": 749.88330078125,
+            "y2": 544.5,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 158.433349609375,
+            "y1": 527.3333282470703,
+            "x2": 577.7333374023438,
+            "y2": 541.4999847412109,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 731.13330078125,
+            "y1": 561.3666534423828,
+            "x2": 749.8499755859375,
+            "y2": 580.6999969482422,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 96.79998779296875,
+            "y1": 563.6333465576172,
+            "x2": 472.7666778564453,
+            "y2": 582.9666900634766,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 581.4500274658203,
+            "x2": 147.81668090820312,
+            "y2": 600.7833557128906,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.25,
+            "y1": 581.4500274658203,
+            "x2": 712.5000305175781,
+            "y2": 600.7833557128906,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 581.4500274658203,
+            "x2": 749.88330078125,
+            "y2": 600.7833557128906,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 121.13330078125,
+            "y1": 583.5666656494141,
+            "x2": 366.88330078125,
+            "y2": 597.7333221435547,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.83331298828125,
+            "y1": 601.4166412353516,
+            "x2": 197.7666778564453,
+            "y2": 620.7499694824219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 211.73333740234375,
+            "y1": 601.4166412353516,
+            "x2": 712.5000305175781,
+            "y2": 620.7499694824219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 601.4166412353516,
+            "x2": 749.88330078125,
+            "y2": 620.7499694824219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.83331298828125,
+            "y1": 621.4833526611328,
+            "x2": 197.7666778564453,
+            "y2": 640.8166961669922,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 211.1500244140625,
+            "y1": 621.4833526611328,
+            "x2": 712.5000305175781,
+            "y2": 640.8166961669922,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 621.4833526611328,
+            "x2": 749.88330078125,
+            "y2": 640.8166961669922,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.83331298828125,
+            "y1": 641.4500274658203,
+            "x2": 197.7666778564453,
+            "y2": 660.7833557128906,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 211.73333740234375,
+            "y1": 641.4500274658203,
+            "x2": 712.5000305175781,
+            "y2": 660.7833557128906,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 641.4500274658203,
+            "x2": 749.88330078125,
+            "y2": 660.7833557128906,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 661.4166412353516,
+            "x2": 147.81668090820312,
+            "y2": 680.7499694824219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.83331298828125,
+            "y1": 661.4166412353516,
+            "x2": 712.5000305175781,
+            "y2": 680.7499694824219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 661.4166412353516,
+            "x2": 749.88330078125,
+            "y2": 680.7499694824219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 681.4833526611328,
+            "x2": 147.81668090820312,
+            "y2": 700.8166961669922,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.83331298828125,
+            "y1": 681.4833526611328,
+            "x2": 437.1499786376953,
+            "y2": 700.8166961669922,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 447.566650390625,
+            "y1": 681.4833526611328,
+            "x2": 712.5000305175781,
+            "y2": 700.8166961669922,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 681.4833526611328,
+            "x2": 749.88330078125,
+            "y2": 700.8166961669922,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 98.183349609375,
+            "y1": 717.7000274658203,
+            "x2": 112.11666870117188,
+            "y2": 737.0333557128906,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 717.7000274658203,
+            "x2": 509.2333068847656,
+            "y2": 737.0333557128906,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 731.13330078125,
+            "y1": 717.7000274658203,
+            "x2": 749.8332977294922,
+            "y2": 737.0333557128906,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 737.6500396728516,
+            "x2": 147.81668090820312,
+            "y2": 756.9833679199219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.83331298828125,
+            "y1": 737.6500396728516,
+            "x2": 398.7500305175781,
+            "y2": 756.9833679199219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 409.23333740234375,
+            "y1": 737.6500396728516,
+            "x2": 712.5000305175781,
+            "y2": 756.9833679199219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 737.6500396728516,
+            "x2": 749.88330078125,
+            "y2": 756.9833679199219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 757.7333526611328,
+            "x2": 147.81668090820312,
+            "y2": 777.0666961669922,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.83331298828125,
+            "y1": 757.7333526611328,
+            "x2": 712.5000305175781,
+            "y2": 777.0666961669922,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 757.7333526611328,
+            "x2": 749.88330078125,
+            "y2": 777.0666961669922,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 777.7000274658203,
+            "x2": 147.81668090820312,
+            "y2": 797.0333557128906,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.83331298828125,
+            "y1": 777.7000274658203,
+            "x2": 712.5000305175781,
+            "y2": 797.0333557128906,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 777.7000274658203,
+            "x2": 749.88330078125,
+            "y2": 797.0333557128906,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 797.7666778564453,
+            "x2": 147.81668090820312,
+            "y2": 817.1000061035156,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.83331298828125,
+            "y1": 797.7666778564453,
+            "x2": 513.9833068847656,
+            "y2": 817.1000061035156,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 524.316650390625,
+            "y1": 797.7666778564453,
+            "x2": 712.5000305175781,
+            "y2": 817.1000061035156,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 797.7666778564453,
+            "x2": 749.88330078125,
+            "y2": 817.1000061035156,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 98.183349609375,
+            "y1": 833.9666900634766,
+            "x2": 112.11666870117188,
+            "y2": 853.3000183105469,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 833.9666900634766,
+            "x2": 331.9166564941406,
+            "y2": 853.3000183105469,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 731.13330078125,
+            "y1": 833.9666900634766,
+            "x2": 749.8332977294922,
+            "y2": 853.3000183105469,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 853.9333648681641,
+            "x2": 147.81668090820312,
+            "y2": 873.2667083740234,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.83331298828125,
+            "y1": 853.9333648681641,
+            "x2": 712.5000305175781,
+            "y2": 873.2667083740234,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 853.9333648681641,
+            "x2": 749.88330078125,
+            "y2": 873.2667083740234,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 873.9000396728516,
+            "x2": 147.81668090820312,
+            "y2": 893.2333679199219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.83331298828125,
+            "y1": 873.9000396728516,
+            "x2": 712.5000305175781,
+            "y2": 893.2333679199219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 873.9000396728516,
+            "x2": 749.88330078125,
+            "y2": 893.2333679199219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 98.183349609375,
+            "y1": 910.2166900634766,
+            "x2": 112.11666870117188,
+            "y2": 929.5500183105469,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 910.2166900634766,
+            "x2": 319.0333557128906,
+            "y2": 929.5500183105469,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 731.13330078125,
+            "y1": 910.2166900634766,
+            "x2": 749.8332977294922,
+            "y2": 929.5500183105469,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 930.1833648681641,
+            "x2": 147.81668090820312,
+            "y2": 949.5167083740234,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.83331298828125,
+            "y1": 930.1833648681641,
+            "x2": 410.7833557128906,
+            "y2": 949.5167083740234,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 422.0333251953125,
+            "y1": 930.1833648681641,
+            "x2": 712.5000305175781,
+            "y2": 949.5167083740234,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 930.1833648681641,
+            "x2": 749.88330078125,
+            "y2": 949.5167083740234,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 950.1500396728516,
+            "x2": 147.81668090820312,
+            "y2": 969.4833679199219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.83331298828125,
+            "y1": 950.1500396728516,
+            "x2": 474.21669006347656,
+            "y2": 969.4833679199219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 485.98333740234375,
+            "y1": 950.1500396728516,
+            "x2": 712.5000305175781,
+            "y2": 969.4833679199219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 950.1500396728516,
+            "x2": 749.88330078125,
+            "y2": 969.4833679199219,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 970.2166900634766,
+            "x2": 147.81668090820312,
+            "y2": 989.5500183105469,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159,
+            "y1": 970.2166900634766,
+            "x2": 712.5000305175781,
+            "y2": 989.5500183105469,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 970.2166900634766,
+            "x2": 749.88330078125,
+            "y2": 989.5500183105469,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 122.5333251953125,
+            "y1": 990.1833648681641,
+            "x2": 147.81668090820312,
+            "y2": 1009.5167083740234,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 159.83331298828125,
+            "y1": 990.1833648681641,
+            "x2": 712.5000305175781,
+            "y2": 1009.5167083740234,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 733.5999755859375,
+            "y1": 990.1833648681641,
+            "x2": 749.88330078125,
+            "y2": 1009.5167083740234,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          },
+          {
+            "x1": 419.91668701171875,
+            "y1": 1043.2833404541016,
+            "x2": 429.1333465576172,
+            "y2": 1062.6166687011719,
+            "width": 848,
+            "height": 1097.4117647058824,
+            "pageNumber": 2
+          }
+        ],
+        "pageNumber": 2
+      },
+      "comment": {
+        "text": "",
+        "emoji": ""
+      },
+      "id": "11427734381262233",
+      "color": "blue",
+      "author": {
+        "id": "0.21230657735706882",
+        "name": "Vikash Kumar Vivek",
+        "color": "#4ADE80"
+      },
+      "docId": "1782238141885-959321222",
+      "createdAt": "2026-06-23T18:48:12.540Z"
+    }
+  ],
+  "documents": [
+    {
+      "id": "1779603505126-650644042",
+      "name": "computer_networks.pdf",
+      "size": "0.2 MB",
+      "type": "PDF",
+      "folderId": null,
+      "uploadedAt": "2026-05-24T06:18:25.130Z"
+    },
+    {
+      "id": "1779604172058-808794673",
+      "name": "computer_networks.pdf",
+      "size": "0.2 MB",
+      "type": "PDF",
+      "folderId": null,
+      "uploadedAt": "2026-05-24T06:29:32.061Z"
+    },
+    {
+      "id": "1779668053291-425398404",
+      "name": "Unit_3_final.pdf",
+      "size": "0.2 MB",
+      "type": "PDF",
+      "folderId": null,
+      "uploadedAt": "2026-05-25T00:14:13.295Z"
+    },
+    {
+      "id": "1779668265968-604443709",
+      "name": "Unit_3_final.pdf",
+      "size": "0.2 MB",
+      "type": "PDF",
+      "folderId": null,
+      "uploadedAt": "2026-05-25T00:17:45.973Z"
+    },
+    {
+      "id": "1779759724270-464823189",
+      "name": "main.pdf",
+      "size": "0.6 MB",
+      "type": "PDF",
+      "folderId": null,
+      "uploadedAt": "2026-05-26T01:42:04.273Z"
+    },
+    {
+      "id": "1780573221973-423967260",
+      "name": "IIMA-Consult-Prep-Book-Case-Book-2025-26.pdf",
+      "size": "0.3 MB",
+      "type": "PDF",
+      "folderId": null,
+      "uploadedAt": "2026-06-04T11:40:21.974Z"
+    },
+    {
+      "id": "1780653577223-896892286",
+      "name": "test.pdf",
+      "size": "0.0 MB",
+      "type": "PDF",
+      "folderId": "f_1780653126054",
+      "uploadedAt": "2026-06-05T09:59:37.224Z"
+    },
+    {
+      "id": "1782238141885-959321222",
+      "name": "main.pdf",
+      "size": "0.6 MB",
+      "type": "PDF",
+      "folderId": null,
+      "uploadedAt": "2026-06-23T18:09:01.889Z"
+    },
+    {
+      "id": "1782238262505-466385563",
+      "name": "Workout Plan.pdf",
+      "size": "0.9 MB",
+      "type": "PDF",
+      "folderId": "folder-1782238255882",
+      "uploadedAt": "2026-06-23T18:11:02.519Z"
+    },
+    {
+      "id": "1782238571340-969889318",
+      "name": "Delhi_AQI_Quotation_SRI_2024.pdf",
+      "size": "0.0 MB",
+      "type": "PDF",
+      "folderId": "folder-1782238255882",
+      "uploadedAt": "2026-06-23T18:16:11.345Z"
+    },
+    {
+      "id": "1782238676991-795744720",
+      "name": "Workout Plan.pdf",
+      "size": "0.9 MB",
+      "type": "PDF",
+      "folderId": null,
+      "uploadedAt": "2026-06-23T18:17:57.001Z"
+    }
+  ],
+  "folders": [
+    {
+      "id": "f_1780653126054",
+      "name": "Test Folder",
+      "color": "green"
+    },
+    {
+      "id": "f_1780653455441",
+      "name": "Sub Folder",
+      "color": "blue"
+    },
+    {
+      "id": "f_1782238256225",
+      "name": "Test Sub ",
+      "color": "green"
+    }
+  ]
+}
