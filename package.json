@@ -58,6 +58,6 @@
     "typescript": "6.0.3"
   },
   "overrides": {
-    "pdfjs-dist": "4.4.168"
+    "pdfjs-dist": "$pdfjs-dist"
   }
 }
