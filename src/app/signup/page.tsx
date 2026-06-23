@@ -13,14 +13,32 @@ export default function SignupPage() {
     agreed: false
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.agreed) {
       alert("Please agree to the Terms & Conditions.");
       return;
     }
-    // Simulate successful registration, route back to storage
-    window.location.href = "/storage";
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, password: formData.password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Registration failed");
+      
+      localStorage.setItem("token", data.token);
+      window.location.href = "/storage";
+    } catch (err: any) {
+      setError(err.message);
+      setLoading(false);
+    }
   };
 
   return (
@@ -61,9 +79,11 @@ export default function SignupPage() {
 
         <div className="w-full max-w-[440px] mt-12">
           <h1 className="text-4xl font-semibold text-white mb-2 tracking-tight">Create an account</h1>
-          <p className="text-gray-400 text-sm mb-10">
+          <p className="text-gray-400 text-sm mb-6">
             Already have an account? <a href="/login" className="text-emerald-500 hover:underline underline-offset-4">Log in</a>
           </p>
+
+          {error && <div className="bg-red-500/10 border border-red-500/50 text-red-500 text-sm p-3 rounded-lg mb-6">{error}</div>}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Name Row */}
@@ -141,9 +161,10 @@ export default function SignupPage() {
             {/* Submit Button */}
             <button 
               type="submit"
-              className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-semibold py-3.5 rounded-lg transition-colors mt-6 shadow-lg shadow-emerald-500/20"
+              disabled={loading}
+              className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-semibold py-3.5 rounded-lg transition-colors mt-6 shadow-lg shadow-emerald-500/20"
             >
-              Create account
+              {loading ? "Creating..." : "Create account"}
             </button>
 
             {/* Divider */}

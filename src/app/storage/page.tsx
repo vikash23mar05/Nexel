@@ -25,55 +25,38 @@ export default function StoragePage() {
 
   const fetchDocuments = async () => {
     setIsLoading(true);
-
-    let serverDocs: any[] = [];
-    let serverFolders: any[] = [];
-
-    try {
-      const res = await fetch("/api/documents/list");
-      if (res.ok) {
-        const data = await res.json();
-        if (data.documents) serverDocs = data.documents;
-        if (data.folders) serverFolders = data.folders;
-      }
-    } catch (e) {
-      console.warn("Failed to fetch documents from server, combining with client-side database:", e);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/login";
+      return;
     }
 
     try {
-      const { getLocalDocuments, getLocalFolders } = await import("../../utils/indexedDB");
-      const localDocs = await getLocalDocuments();
-      const localFolders = await getLocalFolders();
-
-      const formattedLocalDocs = localDocs.map(d => ({
-        id: d.id,
-        name: d.name,
-        size: d.size,
-        type: "PDF",
-        uploadedAt: d.uploadedAt,
-        isLocal: true
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const [docsRes, foldersRes] = await Promise.all([
+        fetch(`${baseUrl}/api/documents`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${baseUrl}/api/folders`, { headers: { Authorization: `Bearer ${token}` } })
+      ]);
+      
+      if (docsRes.status === 401 || foldersRes.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+        return;
+      }
+      
+      const docsData = await docsRes.json();
+      const foldersData = await foldersRes.json();
+      
+      setDocuments(docsData);
+      
+      const formattedFolders = foldersData.map((f: any) => ({
+        id: f._id,
+        name: f.name,
+        color: "blue" // Assuming default color
       }));
-
-      const combinedDocs = [...serverDocs];
-      formattedLocalDocs.forEach(ld => {
-        if (!combinedDocs.some(sd => sd.id === ld.id)) {
-          combinedDocs.push(ld);
-        }
-      });
-
-      const combinedFolders = [...serverFolders];
-      localFolders.forEach(lf => {
-        if (!combinedFolders.some(sf => sf.id === lf.id)) {
-          combinedFolders.push(lf);
-        }
-      });
-
-      setDocuments(combinedDocs);
-      setFolders(combinedFolders);
+      setFolders(formattedFolders);
     } catch (e) {
-      console.error("Failed to load local documents", e);
-      setDocuments(serverDocs);
-      setFolders(serverFolders);
+      console.error("Failed to fetch from backend", e);
     } finally {
       setIsLoading(false);
     }
@@ -85,10 +68,15 @@ export default function StoragePage() {
 
   const handleRename = async (docId: string) => {
     try {
-      const res = await fetch("/api/documents/rename", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: docId, name: editName })
+      const token = localStorage.getItem("token");
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const res = await fetch(`${baseUrl}/api/documents/${docId}`, {
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ title: editName })
       });
       if (res.ok) {
         setDocuments(prev => prev.map(d => d.id === docId ? { ...d, name: editName } : d));
@@ -101,29 +89,16 @@ export default function StoragePage() {
 
   const handleMoveDocument = async (docId: string, folderId: string | null) => {
     try {
-
       setDocuments(prev => prev.map(d => d.id === docId ? { ...d, folderId } : d));
-
-      try {
-        const { initDB } = await import("../../utils/indexedDB");
-        const db = await initDB();
-        const transaction = db.transaction("documents", "readwrite");
-        const store = transaction.objectStore("documents");
-        const request = store.get(docId);
-        request.onsuccess = () => {
-          if (request.result) {
-            const updated = { ...request.result, folderId };
-            store.put(updated);
-          }
-        };
-      } catch (err) {
-        console.warn("IndexedDB move fallback failed:", err);
-      }
-
-      await fetch("/api/documents/move", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: docId, folderId })
+      const token = localStorage.getItem("token");
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      await fetch(`${baseUrl}/api/documents/${docId}`, {
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ folder: folderId })
       });
     } catch (e) {
       console.error("Failed to move document:", e);
@@ -134,86 +109,35 @@ export default function StoragePage() {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       setIsUploading(true);
+      const token = localStorage.getItem("token");
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
       try {
         const formData = new FormData();
         formData.append("file", file);
-
-        let uploadSuccess = false;
-        let data: any = {};
-
-        try {
-          const res = await fetch("/api/upload", {
-            method: "POST",
-            body: formData
-          });
-          if (res.ok) {
-            data = await res.json();
-            if (data.url && data.docId) {
-              uploadSuccess = true;
-            }
-          }
-        } catch (serverErr) {
-          console.warn("Server upload failed, falling back to client IndexedDB storage:", serverErr);
+        if (activeFolderId) {
+          formData.append("folder", activeFolderId);
         }
 
-        if (uploadSuccess) {
+        const res = await fetch(`${baseUrl}/api/documents`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData
+        });
 
+        if (res.ok) {
+          const rawDoc = await res.json();
           const newDoc = {
-            id: data.docId,
-            name: file.name,
+            id: rawDoc._id,
+            name: rawDoc.title,
             size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
             type: "PDF",
-            folderId: activeFolderId,
-            uploadedAt: new Date().toISOString()
+            folderId: rawDoc.folder,
+            uploadedAt: rawDoc.createdAt
           };
-
-          if (activeFolderId) {
-            await fetch("/api/documents/move", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ id: data.docId, folderId: activeFolderId })
-            });
-          }
-
           setDocuments(prev => [newDoc, ...prev]);
         } else {
-
-          const { saveLocalDocument } = await import("../../utils/indexedDB");
-          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-          const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-
-          await saveLocalDocument(uniqueSuffix, file.name, `${sizeMb} MB`, file);
-
-          const newDoc = {
-            id: uniqueSuffix,
-            name: file.name,
-            size: `${sizeMb} MB`,
-            type: "PDF",
-            folderId: activeFolderId,
-            uploadedAt: new Date().toISOString(),
-            isLocal: true
-          };
-
-          if (activeFolderId) {
-            try {
-              const { initDB } = await import("../../utils/indexedDB");
-              const db = await initDB();
-              const transaction = db.transaction("documents", "readwrite");
-              const store = transaction.objectStore("documents");
-              const request = store.get(uniqueSuffix);
-              request.onsuccess = () => {
-                if (request.result) {
-                  const updated = { ...request.result, folderId: activeFolderId };
-                  store.put(updated);
-                }
-              };
-            } catch (err) {
-              console.warn("IndexedDB move fallback failed:", err);
-            }
-          }
-
-          setDocuments(prev => [newDoc, ...prev]);
+          console.error("Server upload failed");
         }
       } catch (err) {
         console.error("Upload failed:", err);
@@ -227,29 +151,24 @@ export default function StoragePage() {
   const handleCreateFolder = async () => {
     if (!newFolderName.trim()) return;
 
-    const uniqueFolderId = `folder-${Date.now()}`;
+    const token = localStorage.getItem("token");
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
     try {
-      const { saveLocalFolder } = await import("../../utils/indexedDB");
-      await saveLocalFolder(uniqueFolderId, newFolderName, newFolderColor);
-
-      const newFolderObj = { id: uniqueFolderId, name: newFolderName, color: newFolderColor };
-      setFolders(prev => {
-        if (prev.some(f => f.name === newFolderName)) return prev;
-        return [...prev, newFolderObj];
-      });
-      setIsCreatingFolder(false);
-      setNewFolderName("");
-    } catch(e) {
-      console.warn("Failed to save folder locally:", e);
-    }
-
-    try {
-      await fetch("/api/folders", {
+      const res = await fetch(`${baseUrl}/api/folders`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newFolderName, color: newFolderColor })
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ name: newFolderName })
       });
+      if (res.ok) {
+        const newFolder = await res.json();
+        setFolders(prev => [...prev, { id: newFolder._id, name: newFolder.name, color: newFolderColor }]);
+        setIsCreatingFolder(false);
+        setNewFolderName("");
+      }
     } catch(e) {
       console.warn("Failed to create folder on server:", e);
     }
@@ -371,6 +290,15 @@ export default function StoragePage() {
           <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="#">
             <Settings className="w-5 h-5 text-center" /> Settings
           </a>
+          <button 
+            onClick={() => {
+              localStorage.removeItem("token");
+              window.location.href = "/login";
+            }}
+            className="w-full flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-[#2A2A2A] transition-colors mt-auto border-t border-[#333]"
+          >
+            Log Out
+          </button>
         </nav>
       </aside>
 
@@ -475,9 +403,8 @@ export default function StoragePage() {
                   {}
                   <div 
                     onClick={() => {
-                      const targetUrl = doc.isLocal 
-                        ? `indexeddb://${doc.id}` 
-                        : `/api/document?id=${doc.id}`;
+                      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+                      const targetUrl = `${baseUrl}/api/documents/${doc.id}/stream`;
                       router.push(`/workspace/${doc.id}?url=${encodeURIComponent(targetUrl)}`);
                     }}
                     className="cursor-pointer bg-[#EFEFEF] rounded-t-lg aspect-[4/3] w-full p-4 relative overflow-hidden border border-[#333] border-b-0 group-hover:opacity-90 transition-opacity"

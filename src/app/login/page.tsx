@@ -10,10 +10,28 @@ export default function LoginPage() {
     password: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate successful login
-    window.location.href = "/storage";
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, password: formData.password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Login failed");
+      
+      localStorage.setItem("token", data.token);
+      window.location.href = "/storage";
+    } catch (err: any) {
+      setError(err.message);
+      setLoading(false);
+    }
   };
 
   return (
@@ -70,9 +88,11 @@ export default function LoginPage() {
 
         <div className="w-full max-w-[440px] mt-12">
           <h1 className="text-4xl font-semibold text-white mb-2 tracking-tight">Log in</h1>
-          <p className="text-gray-400 text-sm mb-10">
+          <p className="text-gray-400 text-sm mb-6">
             Don't have an account? <a href="/signup" className="text-emerald-500 hover:underline underline-offset-4">Sign up</a>
           </p>
+
+          {error && <div className="bg-red-500/10 border border-red-500/50 text-red-500 text-sm p-3 rounded-lg mb-6">{error}</div>}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
@@ -113,9 +133,10 @@ export default function LoginPage() {
             {/* Submit Button */}
             <button 
               type="submit"
-              className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-semibold py-3.5 rounded-lg transition-colors mt-6 shadow-lg shadow-emerald-500/20"
+              disabled={loading}
+              className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-semibold py-3.5 rounded-lg transition-colors mt-6 shadow-lg shadow-emerald-500/20"
             >
-              Log in
+              {loading ? "Logging in..." : "Log in"}
             </button>
 
             {/* Divider */}

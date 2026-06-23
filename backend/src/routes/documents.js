@@ -32,6 +32,27 @@ const upload = multer({ storage, fileFilter: (req, file, cb) => {
 
 router.use(auth);
 
+// List all documents for the logged-in user
+router.get('/', async (req, res, next) => {
+  try {
+    const documents = await Document.find({ owner: req.user.id }).sort({ createdAt: -1 });
+    
+    // Map backend documents to match the frontend expected format
+    const formattedDocs = documents.map(doc => ({
+      id: doc._id,
+      name: doc.title,
+      size: "Uploaded", // We can add real size calculation if needed
+      type: "PDF",
+      folderId: doc.folder,
+      uploadedAt: doc.createdAt
+    }));
+    
+    res.json(formattedDocs);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Upload a PDF document
 router.post('/', upload.single('file'), async (req, res, next) => {
   try {
@@ -81,6 +102,26 @@ router.get('/:id/stream', async (req, res, next) => {
       res.writeHead(200, head);
       fs.createReadStream(filePath).pipe(res);
     }
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Update document (e.g. rename or move folder)
+router.put('/:id', async (req, res, next) => {
+  try {
+    const { title, folder } = req.body;
+    const updateData = {};
+    if (title !== undefined) updateData.title = title;
+    if (folder !== undefined) updateData.folder = folder;
+
+    const doc = await Document.findOneAndUpdate(
+      { _id: req.params.id, owner: req.user.id },
+      updateData,
+      { new: true }
+    );
+    if (!doc) return res.status(404).json({ error: 'Document not found' });
+    res.json(doc);
   } catch (err) {
     next(err);
   }
