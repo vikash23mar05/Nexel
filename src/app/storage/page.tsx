@@ -181,14 +181,14 @@ export default function StoragePage() {
     }
   };
 
-  const getColorClass = (color: string) => {
-    const map: Record<string, string> = {
-      blue: "bg-blue-500",
-      red: "bg-red-500",
-      green: "bg-green-500",
-      yellow: "bg-yellow-500",
-      purple: "bg-purple-500",
-      gray: "bg-gray-500"
+  const getColorClasses = (color: string) => {
+    const map: Record<string, { bg: string, text: string, bgOp: string }> = {
+      blue: { bg: "bg-blue-500", text: "text-blue-400", bgOp: "bg-blue-500/20" },
+      red: { bg: "bg-red-500", text: "text-red-400", bgOp: "bg-red-500/20" },
+      green: { bg: "bg-green-500", text: "text-green-400", bgOp: "bg-green-500/20" },
+      yellow: { bg: "bg-yellow-500", text: "text-yellow-400", bgOp: "bg-yellow-500/20" },
+      purple: { bg: "bg-purple-500", text: "text-purple-400", bgOp: "bg-purple-500/20" },
+      gray: { bg: "bg-gray-500", text: "text-gray-400", bgOp: "bg-gray-500/20" }
     };
     return map[color] || map.gray;
   };
@@ -216,7 +216,7 @@ export default function StoragePage() {
                 <button 
                   key={c}
                   onClick={() => setNewFolderColor(c)}
-                  className={`w-8 h-8 rounded-full ${getColorClass(c)} border-2 ${newFolderColor === c ? 'border-white' : 'border-transparent'}`}
+                  className={`w-8 h-8 rounded-full ${getColorClasses(c).bg} border-2 ${newFolderColor === c ? 'border-white' : 'border-transparent'}`}
                 />
               ))}
             </div>
@@ -365,10 +365,10 @@ export default function StoragePage() {
                     onClick={() => setActiveFolderId(f.id === activeFolderId ? null : f.id)}
                     className={`flex items-center gap-3 bg-[#222] border px-5 py-4 rounded-xl hover:bg-[#2A2A2A] cursor-pointer transition-colors w-64 ${activeFolderId === f.id ? 'border-emerald-500 bg-[#2A2A2A]' : 'border-[#333]'}`}
                   >
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-opacity-20 ${getColorClass(f.color).replace('bg-', 'text-').replace('500', '400')} ${getColorClass(f.color).replace('bg-', 'bg-').replace('500', '500/20')}`}>
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getColorClasses(f.color).text} ${getColorClasses(f.color).bgOp}`}>
                       <Folder className="w-5 h-5" />
                     </div>
-                    <span className="font-medium text-gray-200 truncate">{f.name}</span>
+                    <span className="font-semibold text-gray-200 truncate">{f.name}</span>
                   </div>
                 ))}
               </div>
@@ -411,7 +411,8 @@ export default function StoragePage() {
                   <div 
                     onClick={() => {
                       const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-                      const targetUrl = `${baseUrl}/api/documents/${doc.id}/stream`;
+                      const token = localStorage.getItem("token") || "";
+                      const targetUrl = `${baseUrl}/api/documents/${doc.id}/stream?token=${token}`;
                       router.push(`/workspace/${doc.id}?url=${encodeURIComponent(targetUrl)}`);
                     }}
                     className="cursor-pointer bg-[#EFEFEF] rounded-t-lg aspect-[4/3] w-full p-4 relative overflow-hidden border border-[#333] border-b-0 group-hover:opacity-90 transition-opacity"
