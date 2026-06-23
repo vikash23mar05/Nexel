@@ -1,0 +1,15 @@
+openapi: 3.0.0
+info:
+  title: Nexel Backend API
+  version: 1.0.0
+  description: API documentation for the Nexel backend.
+servers:
+  - url: http://localhost:5000/api
+    description: Local development server
+paths:
+  /auth/login:
+    get:
+      summary: Placeholder auth login
+      responses:
+        '200':
+          description: OK
