@@ -1,0 +1,11 @@
+node_modules/
+.env
+.env.example
+uploads/
+coverage/
+.DS_Store
+npm-debug.log
+.next/
+out/
+build/
+.env.local
