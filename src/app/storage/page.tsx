@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { User, Home, Folder, User as ProfileIcon, Settings, RefreshCw, Download, Plus, FileText, Edit2, Check, FolderPlus, X, Menu } from "lucide-react";
+import { User, Home, Folder, User as ProfileIcon, Settings, RefreshCw, Download, Plus, FileText, Edit2, Check, FolderPlus, X, Menu, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function StoragePage() {
@@ -109,6 +109,23 @@ export default function StoragePage() {
       });
     } catch (e) {
       console.error("Failed to move document:", e);
+    }
+  };
+
+  const handleDeleteDocument = async (docId: string) => {
+    if (!confirm("Are you sure you want to delete this document?")) return;
+    
+    setDocuments(prev => prev.filter(d => d.id !== docId));
+
+    try {
+      const token = localStorage.getItem("token");
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      await fetch(`${baseUrl}/api/documents/${docId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (e) {
+      console.error("Failed to delete document:", e);
     }
   };
 
@@ -452,6 +469,12 @@ export default function StoragePage() {
                               className="text-gray-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                             >
                               <Edit2 className="w-3 h-3" />
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteDocument(doc.id)}
+                              className="text-gray-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                            >
+                              <Trash2 className="w-3 h-3" />
                             </button>
                           </div>
 
