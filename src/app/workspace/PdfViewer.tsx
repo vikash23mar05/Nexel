@@ -28,13 +28,15 @@ export default function DocumentViewer({
   url,
   highlights,
   addHighlight,
-  activeColor
+  activeColor,
+  pdfScaleValue = "1"
 }: { 
   docId: string, 
   url: string,
   highlights: CustomHighlight[],
   addHighlight: (h: NewHighlight, c: string) => void,
-  activeColor: string
+  activeColor: string,
+  pdfScaleValue?: string
 }) {
 
   const getHighlightColor = (colorCode?: string) => {
@@ -62,6 +64,7 @@ export default function DocumentViewer({
             enableAreaSelection={(event) => event.altKey}
             onScrollChange={() => {}}
             scrollRef={() => {}}
+            pdfScaleValue={pdfScaleValue}
             onSelectionFinished={(
               position,
               content,

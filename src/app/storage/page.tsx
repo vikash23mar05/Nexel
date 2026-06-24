@@ -3,6 +3,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { User, Home, Folder, User as ProfileIcon, Settings, RefreshCw, Download, Plus, FileText, Edit2, Check, FolderPlus, X, Menu, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Document, Page, pdfjs } from 'react-pdf';
+
+if (typeof window !== "undefined") {
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+}
 
 export default function StoragePage() {
   const router = useRouter();
@@ -59,7 +64,8 @@ export default function StoragePage() {
       const formattedFolders = foldersData.map((f: any) => ({
         id: f._id,
         name: f.name,
-        color: "blue" // Assuming default color
+        color: "blue", // Assuming default color
+        parent: f.parent
       }));
       setFolders(formattedFolders);
     } catch (e) {
@@ -129,6 +135,25 @@ export default function StoragePage() {
     }
   };
 
+  const handleDeleteFolder = async (folderId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm("Are you sure you want to delete this folder?")) return;
+
+    setFolders(prev => prev.filter(f => f.id !== folderId));
+    if (activeFolderId === folderId) setActiveFolderId(null);
+
+    try {
+      const token = localStorage.getItem("token");
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      await fetch(`${baseUrl}/api/folders/${folderId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (err) {
+      console.error("Failed to delete folder:", err);
+    }
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
@@ -185,11 +210,11 @@ export default function StoragePage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}` 
         },
-        body: JSON.stringify({ name: newFolderName })
+        body: JSON.stringify({ name: newFolderName, parent: activeFolderId })
       });
       if (res.ok) {
         const newFolder = await res.json();
-        setFolders(prev => [...prev, { id: newFolder._id, name: newFolder.name, color: newFolderColor }]);
+        setFolders(prev => [...prev, { id: newFolder._id, name: newFolder.name, color: newFolderColor, parent: newFolder.parent }]);
         setIsCreatingFolder(false);
         setNewFolderName("");
       }
@@ -276,10 +301,10 @@ export default function StoragePage() {
               <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-100 bg-[#2A2A2A] border-l-4 border-emerald-500 transition-colors" href="/storage" onClick={() => setIsMobileSidebarOpen(false)}>
                 <Folder className="w-5 h-5 text-center" /> Storage
               </a>
-              <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="#" onClick={() => setIsMobileSidebarOpen(false)}>
+              <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="/profile" onClick={() => setIsMobileSidebarOpen(false)}>
                 <ProfileIcon className="w-5 h-5 text-center" /> Profile
               </a>
-              <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="#" onClick={() => setIsMobileSidebarOpen(false)}>
+              <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="/settings" onClick={() => setIsMobileSidebarOpen(false)}>
                 <Settings className="w-5 h-5 text-center" /> Settings
               </a>
             </nav>
@@ -308,10 +333,10 @@ export default function StoragePage() {
           <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-100 bg-[#2A2A2A] border-l-4 border-emerald-500 transition-colors" href="/storage">
             <Folder className="w-5 h-5 text-center" /> Storage
           </a>
-          <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="#">
+          <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="/profile">
             <ProfileIcon className="w-5 h-5 text-center" /> Profile
           </a>
-          <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="#">
+          <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="/settings">
             <Settings className="w-5 h-5 text-center" /> Settings
           </a>
           <button 
@@ -372,20 +397,28 @@ export default function StoragePage() {
           </div>
 
           {}
-          {folders.length > 0 && (
+          {folders.filter(f => activeFolderId ? f.parent === activeFolderId : !f.parent).length > 0 && (
             <div className="mb-8">
               <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">Folders</h2>
               <div className="flex gap-4 flex-wrap">
-                {folders.map(f => (
+                {folders.filter(f => activeFolderId ? f.parent === activeFolderId : !f.parent).map(f => (
                   <div 
                     key={f.id} 
                     onClick={() => setActiveFolderId(f.id === activeFolderId ? null : f.id)}
-                    className={`flex items-center gap-3 bg-[#222] border px-5 py-4 rounded-xl hover:bg-[#2A2A2A] cursor-pointer transition-colors w-64 ${activeFolderId === f.id ? 'border-emerald-500 bg-[#2A2A2A]' : 'border-[#333]'}`}
+                    className={`group flex items-center justify-between gap-3 bg-[#222] border px-5 py-4 rounded-xl hover:bg-[#2A2A2A] cursor-pointer transition-colors w-64 ${activeFolderId === f.id ? 'border-emerald-500 bg-[#2A2A2A]' : 'border-[#333]'}`}
                   >
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getColorClasses(f.color).text} ${getColorClasses(f.color).bgOp}`}>
-                      <Folder className="w-5 h-5" />
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <div className={`shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${getColorClasses(f.color).text} ${getColorClasses(f.color).bgOp}`}>
+                        <Folder className="w-5 h-5" />
+                      </div>
+                      <span className="font-semibold text-gray-200 truncate">{f.name}</span>
                     </div>
-                    <span className="font-semibold text-gray-200 truncate">{f.name}</span>
+                    <button 
+                      onClick={(e) => handleDeleteFolder(f.id, e)}
+                      className="text-gray-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 p-1"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 ))}
               </div>
@@ -401,10 +434,13 @@ export default function StoragePage() {
             </h2>
             {activeFolderId && (
               <button 
-                onClick={() => setActiveFolderId(null)}
+                onClick={() => {
+                  const currentFolder = folders.find(f => f.id === activeFolderId);
+                  setActiveFolderId(currentFolder?.parent || null);
+                }}
                 className="text-xs text-emerald-500 hover:text-emerald-400 font-semibold flex items-center gap-1 ml-4"
               >
-                ← Back to All
+                ← Back
               </button>
             )}
           </div>
@@ -430,20 +466,21 @@ export default function StoragePage() {
                       const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
                       const token = localStorage.getItem("token") || "";
                       const targetUrl = `${baseUrl}/api/documents/${doc.id}/stream?token=${token}`;
-                      router.push(`/workspace/${doc.id}?url=${encodeURIComponent(targetUrl)}`);
+                      router.push(`/workspace/${doc.id}?url=${encodeURIComponent(targetUrl)}&name=${encodeURIComponent(doc.name)}`);
                     }}
-                    className="cursor-pointer bg-[#EFEFEF] rounded-t-lg aspect-[4/3] w-full p-4 relative overflow-hidden border border-[#333] border-b-0 group-hover:opacity-90 transition-opacity"
+                    className="cursor-pointer bg-[#EFEFEF] rounded-t-lg aspect-[4/3] w-full relative overflow-hidden border border-[#333] border-b-0 group-hover:opacity-90 transition-opacity flex items-center justify-center"
                   >
-                     <div className="absolute top-3 right-3 bg-[#114032] text-emerald-100 text-xs font-bold px-2 py-1 rounded shadow-sm z-10">
+                     <div className="absolute top-3 right-3 bg-[#114032] text-emerald-100 text-xs font-bold px-2 py-1 rounded shadow-sm z-20">
                        PDF
                      </div>
-                     <div className="space-y-2 mt-4 opacity-50">
-                        <div className="h-3 bg-gray-400 w-3/4 rounded"></div>
-                        <div className="h-2 bg-gray-400 w-full rounded"></div>
-                        <div className="h-2 bg-gray-400 w-full rounded"></div>
-                        <div className="h-2 bg-gray-400 w-5/6 rounded"></div>
-                        <div className="h-2 bg-gray-400 w-full rounded mt-4"></div>
-                     </div>
+                     <Document
+                        file={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/documents/${doc.id}/stream?token=${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`}
+                        loading={<div className="text-gray-500 text-xs">Loading PDF...</div>}
+                        error={<div className="text-red-400 text-xs">Error</div>}
+                        className="flex justify-center items-center w-full h-full overflow-hidden"
+                     >
+                       <Page pageNumber={1} width={200} renderTextLayer={false} renderAnnotationLayer={false} className="shadow-sm" />
+                     </Document>
                   </div>
                   {}
                   <div className="bg-[#1A1A1A] border border-[#333] border-t-0 p-3 rounded-b-lg flex justify-between items-center group-hover:bg-[#222] transition-colors">

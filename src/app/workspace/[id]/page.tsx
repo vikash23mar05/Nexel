@@ -31,19 +31,26 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
   const [chatInput, setChatInput] = useState("");
   const [rightSidebarWidth, setRightSidebarWidth] = useState(360);
   const [isMobile, setIsMobile] = useState(false);
-  const [flashcards, setFlashcards] = useState<{question: string, answer: string}[]>([
-    { 
-      question: "What is the primary benefit of React's Virtual DOM?", 
-      answer: "It optimizes rendering performance by minimizing direct manipulations of the real browser DOM, reconciling state changes virtually first." 
-    },
-    { 
-      question: "How does unidirectional data flow work in React?", 
-      answer: "Data flows strictly downward from parent components to child components via props, making debugging and state management highly predictable." 
-    }
-  ]);
+  const [docName, setDocName] = useState("Loading Document...");
+  const [flashcards, setFlashcards] = useState<{question: string, answer: string}[]>([]);
   const [flippedCards, setFlippedCards] = useState<Record<number, boolean>>({});
   const [activeReaders, setActiveReaders] = useState<any[]>([]);
   const [isCopied, setIsCopied] = useState(false);
+  
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const viewerRef = useRef<HTMLDivElement>(null);
+
+  const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.25, 3));
+  const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
+  const handleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      viewerRef.current?.requestFullscreen().catch(err => {
+        console.warn(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -279,6 +286,13 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
 
     const searchParams = new URLSearchParams(window.location.search);
     const urlParam = searchParams.get("url");
+    const nameParam = searchParams.get("name");
+
+    if (nameParam) {
+      setDocName(nameParam);
+    } else {
+      setDocName("Workspace Document");
+    }
 
     if (urlParam) {
       if (urlParam.startsWith("indexeddb://")) {
@@ -424,10 +438,10 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
             </div>
             {}
             <nav className="p-3 space-y-1 mt-2">
-              <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#181818] transition-colors" href="#">
+              <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#181818] transition-colors" href="/">
                 <Home className="w-5 h-5 text-center" /> Home
               </a>
-              <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#181818] transition-colors" href="#">
+              <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#181818] transition-colors" href="/storage">
                 <Folder className="w-5 h-5 text-center" /> Storage
               </a>
               <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-100 bg-[#181818] border border-[#2A2A2A] transition-colors" href="#">
@@ -452,7 +466,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
           </div>
           {}
           <div className="p-3 mb-2 border-t border-[#1E1E1E]">
-            <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#181818] transition-colors" href="#">
+            <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#181818] transition-colors" href="/settings">
               <Settings className="w-5 h-5 text-center" /> Settings
             </a>
           </div>
@@ -471,20 +485,20 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
             >
               <ArrowLeft className="w-5 h-5" />
             </a>
-            <h1 className="text-gray-100 font-medium">Workspace Document</h1>
+            <h1 className="text-gray-100 font-medium">{docName}</h1>
           </div>
           <div className="flex items-center gap-4">
             {}
             <div className="hidden sm:flex items-center gap-3 text-sm text-gray-400 bg-[#111111] px-3 py-1.5 rounded-lg border border-[#2A2A2A]">
-              <span>100%</span>
+              <span>{Math.round(zoomLevel * 100)}%</span>
               <ChevronDown className="w-4 h-4 text-xs" />
             </div>
             <div className="hidden sm:flex items-center gap-3 text-gray-400">
-              <button className="hover:text-white"><ZoomOut className="w-4 h-4" /></button>
-              <button className="hover:text-white"><ZoomIn className="w-4 h-4" /></button>
+              <button onClick={handleZoomOut} className="hover:text-white"><ZoomOut className="w-4 h-4" /></button>
+              <button onClick={handleZoomIn} className="hover:text-white"><ZoomIn className="w-4 h-4" /></button>
               <div className="w-px h-4 bg-[#2A2A2A] mx-1"></div>
-              <button className="hover:text-white"><Maximize className="w-4 h-4" /></button>
-              <button className="hover:text-white"><Minimize className="w-4 h-4" /></button>
+              <button onClick={handleFullscreen} className="hover:text-white"><Maximize className="w-4 h-4" /></button>
+              <button onClick={() => document.exitFullscreen()} className="hover:text-white"><Minimize className="w-4 h-4" /></button>
             </div>
             {/* Active Readers UI */}
             {activeReaders.length > 0 && (
@@ -552,7 +566,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
           </div>
 
           {}
-          <div className="bg-white text-gray-900 w-full max-w-full md:max-w-[850px] h-[calc(100vh-120px)] shadow-2xl rounded-sm text-sm lg:text-base leading-relaxed relative overflow-hidden">
+          <div ref={viewerRef} className="bg-white text-gray-900 w-full max-w-full md:max-w-[850px] h-[calc(100vh-120px)] shadow-2xl rounded-sm text-sm lg:text-base leading-relaxed relative overflow-hidden">
             {url ? (
               <PdfViewer 
                 docId={docId} 
@@ -560,6 +574,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
                 highlights={highlights} 
                 addHighlight={addHighlight} 
                 activeColor={activeColor}
+                pdfScaleValue={String(zoomLevel)}
               />
             ) : (
               <div className="flex items-center justify-center h-[1100px] text-gray-400 flex-col gap-4">
