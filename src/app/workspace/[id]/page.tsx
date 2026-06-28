@@ -283,6 +283,14 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
   const currentUserRef = useRef<any>(null);
 
   useEffect(() => {
+    // Set initial zoom level based on screen width on mount
+    if (typeof window !== "undefined") {
+      if (window.innerWidth < 640) {
+        setZoomLevel(0.6);
+      } else if (window.innerWidth < 1024) {
+        setZoomLevel(0.85);
+      }
+    }
 
     const searchParams = new URLSearchParams(window.location.search);
     const urlParam = searchParams.get("url");
@@ -406,7 +414,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
       {!isLeftSidebarOpen && (
         <button 
           onClick={() => setIsLeftSidebarOpen(true)}
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-emerald-500 hover:bg-emerald-600 text-black w-5 h-16 rounded-r-md flex items-center justify-center shadow-md transition-colors z-50 hidden md:flex"
+          className="absolute left-0 top-1/2 -translate-y-1/2 bg-emerald-500 hover:bg-emerald-600 text-black w-5 h-16 rounded-r-md flex items-center justify-center shadow-md transition-colors z-50"
         >
           <ChevronDown className="w-4 h-4 -rotate-90" />
         </button>
@@ -479,15 +487,38 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
         {}
         <header className="h-16 border-b border-[#1E1E1E] bg-[#0A0A0A] flex items-center justify-between px-4 lg:px-6 z-20">
           <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)} 
+              className="md:hidden text-gray-400 hover:text-white p-1"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
             <a 
               href="/storage"
               className="text-gray-400 hover:text-white transition-colors p-1"
             >
               <ArrowLeft className="w-5 h-5" />
             </a>
-            <h1 className="text-gray-100 font-medium">{docName}</h1>
+            <h1 className="text-gray-100 font-medium text-sm sm:text-base truncate max-w-[120px] sm:max-w-none" title={docName}>{docName}</h1>
           </div>
           <div className="flex items-center gap-4">
+            {/* Color picker for smaller screens */}
+            <div className="flex xl:hidden items-center gap-1.5 border-[#2A2A2A] border px-2 py-1 rounded-lg bg-[#111111]">
+              {[
+                { id: "yellow", bg: "bg-yellow-400" },
+                { id: "blue", bg: "bg-blue-400" },
+                { id: "pink", bg: "bg-pink-400" },
+                { id: "green", bg: "bg-green-400" },
+              ].map(color => (
+                <div 
+                  key={color.id} 
+                  className="w-5 h-5 flex items-center justify-center cursor-pointer" 
+                  onClick={() => setActiveColor(color.id)}
+                >
+                  <div className={`w-3 h-3 rounded-full ${color.bg} border transition-all ${activeColor === color.id ? 'border-white scale-110' : 'border-transparent'}`}></div>
+                </div>
+              ))}
+            </div>
             {}
             <div className="hidden sm:flex items-center gap-3 text-sm text-gray-400 bg-[#111111] px-3 py-1.5 rounded-lg border border-[#2A2A2A]">
               <span>{Math.round(zoomLevel * 100)}%</span>
@@ -555,6 +586,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
               { id: "yellow", bg: "bg-yellow-400" },
               { id: "blue", bg: "bg-blue-400" },
               { id: "pink", bg: "bg-pink-400" },
+              { id: "green", bg: "bg-green-400" },
             ].map(color => (
               <div key={color.id} className="w-8 h-8 flex items-center justify-center" onClick={() => setActiveColor(color.id)}>
                 <div className={`w-4 h-4 rounded-full ${color.bg} cursor-pointer border-2 transition-all ${activeColor === color.id ? 'border-white scale-125' : 'border-[#111111]'}`}></div>
