@@ -36,6 +36,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
   const [flippedCards, setFlippedCards] = useState<Record<number, boolean>>({});
   const [activeReaders, setActiveReaders] = useState<any[]>([]);
   const [isCopied, setIsCopied] = useState(false);
+  const [isNotesCopied, setIsNotesCopied] = useState(false);
   
   const [zoomLevel, setZoomLevel] = useState(1);
   const viewerRef = useRef<HTMLDivElement>(null);
@@ -50,6 +51,52 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     } else {
       document.exitFullscreen();
     }
+  };
+
+  const getNotesMarkdown = () => {
+    if (highlights.length === 0) return "No highlights yet.";
+    
+    let md = `# Highlights & Notes for ${docName}\n`;
+    md += `Generated on: ${new Date().toLocaleDateString()}\n\n`;
+    md += `Total Highlights: ${highlights.length}\n\n`;
+    md += `---\n\n`;
+    
+    highlights.forEach((h, index) => {
+      const text = h.content?.text || "Area highlight";
+      const author = h.author ? ` (by ${h.author.name})` : "";
+      const color = h.color ? ` [${h.color.toUpperCase()}]` : "";
+      const page = h.position?.pageNumber ? ` - Page ${h.position.pageNumber}` : "";
+      
+      md += `### Highlight #${index + 1}${page}${color}${author}\n`;
+      md += `> ${text}\n\n`;
+      if (h.comment?.text) {
+        md += `*Note: ${h.comment.text}*\n\n`;
+      }
+      md += `---\n\n`;
+    });
+    
+    return md;
+  };
+
+  const handleCopyNotes = () => {
+    const md = getNotesMarkdown();
+    navigator.clipboard.writeText(md);
+    setIsNotesCopied(true);
+    setTimeout(() => setIsNotesCopied(false), 2000);
+  };
+
+  const handleDownloadNotes = () => {
+    const md = getNotesMarkdown();
+    const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+    const blobUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    const safeDocName = docName.replace(/\s+/g, "_").replace(/\.pdf$/i, "");
+    link.download = `${safeDocName}_highlights.md`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -674,9 +721,25 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold text-gray-100">AI Notes</h3>
-                  <div className="flex gap-2 text-gray-400">
-                    <button className="hover:text-white transition-colors"><Copy className="w-4 h-4" /></button>
-                    <button className="hover:text-white transition-colors"><Download className="w-4 h-4" /></button>
+                  <div className="flex items-center gap-3 text-gray-400">
+                    <button 
+                      onClick={handleCopyNotes} 
+                      className="hover:text-white transition-colors flex items-center gap-1 text-xs"
+                      title="Copy notes to clipboard"
+                    >
+                      {isNotesCopied ? (
+                        <span className="text-emerald-400 font-medium">Copied!</span>
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
+                    </button>
+                    <button 
+                      onClick={handleDownloadNotes} 
+                      className="hover:text-white transition-colors"
+                      title="Download notes as Markdown file"
+                    >
+                      <Download className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
                 <ul className="text-sm text-gray-300 space-y-3 pl-4 list-disc marker:text-gray-500">
