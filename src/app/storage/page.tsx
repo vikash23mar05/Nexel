@@ -473,14 +473,10 @@ export default function StoragePage() {
                      <div className="absolute top-3 right-3 bg-[#114032] text-emerald-100 text-xs font-bold px-2 py-1 rounded shadow-sm z-20">
                        PDF
                      </div>
-                     <Document
-                        file={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/documents/${doc.id}/stream?token=${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`}
-                        loading={<div className="text-gray-500 text-xs">Loading PDF...</div>}
-                        error={<div className="text-red-400 text-xs">Error</div>}
-                        className="flex justify-center items-center w-full h-full overflow-hidden"
-                     >
-                       <Page pageNumber={1} width={200} renderTextLayer={false} renderAnnotationLayer={false} className="shadow-sm" />
-                     </Document>
+                     <div className="flex flex-col items-center justify-center text-emerald-500 opacity-80">
+                       <FileText className="w-16 h-16 mb-2" />
+                       <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">{doc.type || "PDF Document"}</span>
+                     </div>
                   </div>
                   {}
                   <div className="bg-[#1A1A1A] border border-[#333] border-t-0 p-3 rounded-b-lg flex justify-between items-center group-hover:bg-[#222] transition-colors">
