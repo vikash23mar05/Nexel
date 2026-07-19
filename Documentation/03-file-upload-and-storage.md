@@ -2,7 +2,7 @@
 
 ## Plain-English Overview
 
-Nexal historically had two completely separate, disjointed file upload systems (Next.js route for guests vs Express/Multer route for authenticated users). This has been resolved by unifying the data flow: signed-in users on the landing page upload directly to the Express backend (MongoDB), and the Express backend now triggers the RAG text extraction and embedding generation process in the background. Guests upload to the Next.js API route and are routed directly to the workspace.
+Nexal has two completely separate file upload systems that were built at different times and never unified. One is a lightweight Next.js API route that saves files directly to disk with no authentication — used by the AI workspace. The other is an Express route using multer, protected by JWT, that stores files in a different folder and records metadata in MongoDB — used by the storage page.
 
 ---
 
@@ -40,7 +40,7 @@ flowchart TD
     style PathB fill:#0a0a1a,stroke:#60a5fa
 ```
 
-> **Unified Data Flow**: Authenticated users upload through Path B. This is now fully bridged to the AI workspace because the Express backend processes the PDF and writes embeddings to `data/embeddings/<mongoId>.json`. Guests upload through Path A and bypass the authenticated storage page, routing directly to the workspace.
+> **These two systems do not share data.** A file uploaded via Path A is invisible to MongoDB. A file uploaded via Path B cannot be opened in the AI workspace. This is the central architectural gap in the project.
 
 ---
 

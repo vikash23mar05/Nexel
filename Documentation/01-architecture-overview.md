@@ -61,7 +61,7 @@ flowchart TD
     style GHModels fill:#001133,stroke:#60a5fa
 ```
 
-> **Key observation:** The dashed gap in the middle has been resolved. While Next.js API routes and the Express backend still operate on their respective stacks, the data-flow gap has been bridged. Signed-in landing page uploads are routed to the Express backend (MongoDB), and the Express backend now triggers background text extraction and embedding generation to write vector data directly to the `data/embeddings/` folder under the document's Mongoose ObjectId.
+> **Key observation:** The dashed gap in the middle is real. The Next.js API routes and the Express backend do **not** communicate with each other. They have separate storage systems and separate document IDs. This is the most important architectural fact about this project.
 
 ---
 
