@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { embedTexts, retrieveRelevantChunks } from "@/lib/rag";
 
 if (typeof process !== "undefined") {
   process.on("unhandledRejection", (reason) => {
@@ -8,8 +9,29 @@ if (typeof process !== "undefined") {
 
 export async function POST(req: Request) {
   try {
-    const { prompt, action, text } = await req.json();
+    const { prompt, action, text, docId } = await req.json();
 
+    // ---------- RAG retrieval ----------
+    let ragContext = "";
+    if (docId) {
+      try {
+        const queryText = prompt || text || "";
+        if (queryText) {
+          const [queryEmbedding] = await embedTexts([queryText]);
+          const relevantChunks = retrieveRelevantChunks(docId, queryEmbedding, 4);
+          if (relevantChunks.length > 0) {
+            ragContext = relevantChunks
+              .map((c, i) => `[Excerpt ${i + 1}]\n${c.text}`)
+              .join("\n\n");
+            console.log(`[RAG] Retrieved ${relevantChunks.length} chunks for docId: ${docId}`);
+          }
+        }
+      } catch (err) {
+        console.error("RAG retrieval failed, falling back to no context:", err);
+      }
+    }
+
+    // ---------- System prompt ----------
     let systemPrompt = "";
     if (action === "summarize") {
       systemPrompt = "You are a helpful assistant. Summarize the provided text concisely.";
@@ -17,11 +39,19 @@ export async function POST(req: Request) {
       systemPrompt = "You are a helpful assistant. Explain the provided text in simpler terms.";
     } else if (action === "flashcards") {
       systemPrompt = "You are a helpful assistant. Generate a few flashcards based on the provided text. Format them as Q: ... A: ...";
+    } else if (action === "chat") {
+      systemPrompt = ragContext
+        ? "You are a helpful assistant answering questions about a document. Use the provided excerpts to answer accurately. If the excerpts don't contain the answer, say so clearly instead of guessing."
+        : "You are a helpful assistant.";
     } else {
       systemPrompt = "You are a helpful assistant.";
     }
 
-    const finalPrompt = prompt ? `${prompt}\n\nContext text: ${text}` : `Text to process: ${text}`;
+    // Combine RAG context + highlighted text (hybrid: retrieved chunks + exact selection)
+    const combinedContext = [ragContext, text].filter(Boolean).join("\n\n---\n\n");
+    const finalPrompt = prompt
+      ? `${prompt}\n\nContext text: ${combinedContext}`
+      : `Text to process: ${combinedContext}`;
 
     const token = process.env.GITHUB_TOKEN || "";
 
@@ -85,10 +115,9 @@ export async function POST(req: Request) {
     const stream = new ReadableStream({
       async start(controller) {
         try {
-
           const chunks = generatedText.match(/.{1,10}/g) || [];
           for (const chunk of chunks) {
-            await new Promise(resolve => setTimeout(resolve, 10)); 
+            await new Promise(resolve => setTimeout(resolve, 10));
             controller.enqueue(new TextEncoder().encode(chunk));
           }
         } catch (e) {

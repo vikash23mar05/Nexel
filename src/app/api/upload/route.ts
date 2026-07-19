@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { extractTextFromPdf, chunkText, embedTexts, saveDocEmbeddings } from "@/lib/rag";
 
 if (typeof process !== "undefined") {
   process.on("unhandledRejection", (reason) => {
@@ -30,6 +31,25 @@ export async function POST(req: Request) {
 
     const filePath = path.join(uploadsDir, filename);
     fs.writeFileSync(filePath, buffer);
+
+    // ---------- RAG: extract text, chunk, embed, persist ----------
+    // Non-fatal: upload always succeeds even if embedding fails
+    try {
+      const text = await extractTextFromPdf(buffer);
+      if (text.trim().length > 0) {
+        const chunkTexts = chunkText(text);
+        const embeddings = await embedTexts(chunkTexts);
+        const chunks = chunkTexts.map((t, i) => ({
+          id: `${uniqueSuffix}-${i}`,
+          text: t,
+          embedding: embeddings[i],
+        }));
+        saveDocEmbeddings(uniqueSuffix, chunks);
+        console.log(`[RAG] Embedded ${chunks.length} chunks for doc: ${uniqueSuffix}`);
+      }
+    } catch (err) {
+      console.error("Embedding generation failed (upload still succeeds):", err);
+    }
 
     const DB_FILE = path.join(process.cwd(), "data", "db.json");
     if (!fs.existsSync(DB_FILE)) {

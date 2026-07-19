@@ -167,7 +167,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
       const res = await fetch("/api/ai/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: "", action, text })
+        body: JSON.stringify({ prompt: "", action, text, docId })
       });
 
       if (!res.body) return;
@@ -236,7 +236,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
       const res = await fetch("/api/ai/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: currentInput, action: "chat", text: contextText })
+        body: JSON.stringify({ prompt: currentInput, action: "chat", text: contextText, docId })
       });
 
       if (!res.body) return;

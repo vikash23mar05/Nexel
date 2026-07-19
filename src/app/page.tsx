@@ -43,28 +43,49 @@ export default function LandingPage() {
         const formData = new FormData();
         formData.append("file", file);
 
-        let uploadSuccess = false;
-        let data: any = {};
+        const token = localStorage.getItem("token");
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-        try {
+        if (token) {
+          // Path B: User is signed in. Upload to Express backend (MongoDB) so it persists in their Storage page.
+          const res = await fetch(`${baseUrl}/api/documents`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`
+            },
+            body: formData
+          });
+
+          if (res.ok) {
+            // Redirect to storage page where it will now be visible
+            router.push("/storage");
+          } else {
+            const errData = await res.json().catch(() => ({}));
+            alert(errData.error || "Failed to upload document to storage.");
+          }
+        } else {
+          // Path A: User is a guest. Upload to Next.js route (flat-file) and redirect directly to workspace.
           const res = await fetch("/api/upload", {
             method: "POST",
             body: formData
           });
+
           if (res.ok) {
-            data = await res.json();
+            const data = await res.json();
             if (data.url && data.docId) {
-              uploadSuccess = true;
+              // Redirect directly to workspace so guest can use it immediately without being blocked by authenticated storage page
+              router.push(`/workspace/${data.docId}?url=${encodeURIComponent(data.url)}&name=${encodeURIComponent(file.name)}`);
+            } else {
+              throw new Error("Invalid response from server");
             }
+          } else {
+            throw new Error("Upload request failed");
           }
-        } catch (serverErr) {
-          console.warn("Server upload failed, falling back to client IndexedDB storage:", serverErr);
         }
-
-        if (uploadSuccess) {
-          router.push("/storage");
-        } else {
-
+      } catch (err) {
+        console.error("Upload failed completely", err);
+        // Fallback to client IndexedDB storage for guests
+        try {
           const { saveLocalDocument } = await import("../utils/indexedDB");
           const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
           const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
@@ -76,11 +97,12 @@ export default function LandingPage() {
             file
           );
 
-          router.push("/storage");
+          // For guests, we can direct them to the local workspace
+          router.push(`/workspace/${uniqueSuffix}?url=indexeddb://${uniqueSuffix}&name=${encodeURIComponent(file.name)}`);
+        } catch (dbErr) {
+          console.error("IndexedDB fallback failed:", dbErr);
+          alert("Upload failed. Please check file format and try again.");
         }
-      } catch (err) {
-        console.error("Upload failed completely", err);
-        alert("Upload failed. Please check file format and try again.");
       } finally {
         setIsUploading(false);
       }

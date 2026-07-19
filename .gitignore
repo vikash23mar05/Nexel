@@ -9,3 +9,5 @@ npm-debug.log
 out/
 build/
 .env.local
+data/uploads/
+data/embeddings/

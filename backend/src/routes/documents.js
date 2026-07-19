@@ -7,6 +7,7 @@ const Document = require('../models/Document');
 const auth = require('../middleware/auth');
 const multer = require('multer');
 const { validate } = require('../middleware/validation');
+const { extractTextFromPdf, chunkText, embedTexts, saveDocEmbeddings } = require('../utils/rag');
 
 // Configure Multer storage – files go to ./uploads
 const storage = multer.diskStorage({
@@ -65,6 +66,34 @@ router.post('/', upload.single('file'), async (req, res, next) => {
       filePath: req.file.path,
     });
     await doc.save();
+
+    // Run the RAG pipeline asynchronously in the background
+    const docId = doc._id.toString();
+    fs.readFile(req.file.path, async (err, buffer) => {
+      if (err) {
+        console.error(`[RAG Backend] Error reading uploaded file for embedding:`, err);
+        return;
+      }
+      try {
+        const text = await extractTextFromPdf(buffer);
+        if (text.trim().length > 0) {
+          const chunkTexts = chunkText(text);
+          const embeddings = await embedTexts(chunkTexts);
+          const chunks = chunkTexts.map((t, i) => ({
+            id: `${docId}-${i}`,
+            text: t,
+            embedding: embeddings[i],
+          }));
+          saveDocEmbeddings(docId, chunks);
+          console.log(`[RAG Backend] Successfully embedded ${chunks.length} chunks for doc: ${docId}`);
+        } else {
+          console.log(`[RAG Backend] Document ${docId} has no extractable text.`);
+        }
+      } catch (embeddingErr) {
+        console.error(`[RAG Backend] Embedding generation failed for document ${docId}:`, embeddingErr);
+      }
+    });
+
     res.status(201).json(doc);
   } catch (err) {
     next(err);
