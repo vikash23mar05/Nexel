@@ -44,17 +44,24 @@ export default function LandingPage() {
         formData.append("file", file);
 
         let uploadSuccess = false;
-        let data: any = {};
 
+        // Upload to the Express backend (same endpoint the storage page uses).
+        // Requires auth; if there's no token or the call fails we fall back to
+        // client-side IndexedDB storage below.
+        const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
         try {
-          const res = await fetch("/api/upload", {
-            method: "POST",
-            body: formData
-          });
-          if (res.ok) {
-            data = await res.json();
-            if (data.url && data.docId) {
-              uploadSuccess = true;
+          if (token) {
+            const res = await fetch(`${baseUrl}/api/documents`, {
+              method: "POST",
+              headers: { Authorization: `Bearer ${token}` },
+              body: formData
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data._id) {
+                uploadSuccess = true;
+              }
             }
           }
         } catch (serverErr) {

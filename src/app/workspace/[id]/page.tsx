@@ -149,6 +149,13 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     });
   };
 
+  // --- API helpers: everything now hits the single Express backend with auth ---
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  const authHeaders = (extra: Record<string, string> = {}) => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    return { ...extra, ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+  };
+
   const handleAIGenerate = async (action: string) => {
     const targetHighlight = highlights.find(h => h.id === activeHighlightId) || highlights[0];
     if (!targetHighlight || !targetHighlight.content?.text) {
@@ -164,9 +171,9 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     setIsGeneratingAI(true);
 
     try {
-      const res = await fetch("/api/ai/generate", {
+      const res = await fetch(`${API_BASE}/api/ai/generate`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ prompt: "", action, text, docId })
       });
 
@@ -233,9 +240,9 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     setIsGeneratingAI(true);
 
     try {
-      const res = await fetch("/api/ai/generate", {
+      const res = await fetch(`${API_BASE}/api/ai/generate`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ prompt: currentInput, action: "chat", text: contextText, docId })
       });
 
@@ -314,9 +321,9 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     }
 
     try {
-      await fetch("/api/highlights", {
+      await fetch(`${API_BASE}/api/highlights`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ docId, highlight: newHighlight })
       });
     } catch (e) {
@@ -371,7 +378,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     }
 
     if (docId) {
-      fetch(`/api/highlights?docId=${docId}`)
+      fetch(`${API_BASE}/api/highlights?docId=${docId}`, { headers: authHeaders() })
         .then(res => {
           if (!res.ok) throw new Error("Server error fetching highlights");
           return res.json();
@@ -395,17 +402,34 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
 
     // Socket.io Connection (Synchronous to avoid React Strict Mode race conditions)
     if (docId) {
-      const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000");
+      // The server verifies this token on the handshake and rejects unauthenticated sockets.
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000", {
+        auth: { token },
+      });
       socketRef.current = socket;
-      
+
       const colorMap: Record<string, string> = { yellow: "#FDE047", blue: "#60A5FA", pink: "#F472B6", green: "#4ADE80" };
       const colorKeys = Object.keys(colorMap);
       const myColorKey = colorKeys[Math.floor(Math.random() * colorKeys.length)];
       const myColorHex = colorMap[myColorKey];
-      
+
       setActiveColor(myColorKey); // Auto-set the user's default highlighter color
-      
-      const user = { id: Math.random().toString(), name: "Vikash Kumar Vivek", color: myColorHex };
+
+      // Derive display identity from the JWT (email local-part). The server ultimately
+      // forces id/name from the verified token, so this is only for optimistic local UI.
+      let displayName = "You";
+      let userId = "";
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          userId = payload.id || "";
+          displayName = (payload.email || "").split("@")[0] || "You";
+        } catch (e) {
+          console.warn("Could not decode token for user identity");
+        }
+      }
+      const user = { id: userId, name: displayName, color: myColorHex };
       currentUserRef.current = user;
       
       socket.on("connect", () => {
@@ -792,7 +816,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
                                 await saveLocalHighlights(docId, filtered);
                               } catch(dbErr) {}
                               try {
-                                await fetch(`/api/highlights?id=${h.id}&docId=${docId}`, { method: 'DELETE' });
+                                await fetch(`${API_BASE}/api/highlights?id=${h.id}&docId=${docId}`, { method: 'DELETE', headers: authHeaders() });
                               } catch(e) {}
                             }}
                             className="text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"

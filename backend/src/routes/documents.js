@@ -7,6 +7,8 @@ const Document = require('../models/Document');
 const auth = require('../middleware/auth');
 const multer = require('multer');
 const { validate } = require('../middleware/validation');
+const { indexPdfBuffer } = require('../lib/rag');
+const logger = require('../utils/logger');
 
 // Configure Multer storage – files go to ./uploads
 const storage = multer.diskStorage({
@@ -65,7 +67,21 @@ router.post('/', upload.single('file'), async (req, res, next) => {
       filePath: req.file.path,
     });
     await doc.save();
+
+    // Respond immediately; RAG indexing runs in the background so the upload
+    // isn't blocked on embedding (and never fails because of it).
     res.status(201).json(doc);
+
+    // Fire-and-forget: extract text -> chunk -> embed -> persist to Mongo.
+    // Read the file back from disk (multer wrote it) into a buffer to index.
+    const docId = doc._id.toString();
+    fs.promises
+      .readFile(req.file.path)
+      .then((buffer) => indexPdfBuffer(docId, buffer))
+      .then((count) => {
+        if (count > 0) logger.info(`[RAG] Indexed ${count} chunks for doc ${docId}`);
+      })
+      .catch((err) => logger.error(`[RAG] Indexing failed for doc ${docId}: ${err.message}`));
   } catch (err) {
     next(err);
   }

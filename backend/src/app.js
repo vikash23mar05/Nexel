@@ -34,6 +34,7 @@ app.use('/api/folders', require('./routes/folders'));
 app.use('/api/documents', require('./routes/documents'));
 app.use('/api/highlights', require('./routes/highlights'));
 app.use('/api/roadmaps', require('./routes/roadmaps'));
+app.use('/api/ai', require('./routes/ai'));
 
 // Centralized error handling
 app.use(errorHandler);
