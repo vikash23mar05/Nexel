@@ -15,8 +15,8 @@ const errorHandler = require('./middleware/errorHandler');
 const app = express();
 
 // Middleware
-app.use(cors({ origin: process.env.CLIENT_URL }));
-app.use(helmet());
+app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000', credentials: true }));
+app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
@@ -34,6 +34,8 @@ app.use('/api/folders', require('./routes/folders'));
 app.use('/api/documents', require('./routes/documents'));
 app.use('/api/highlights', require('./routes/highlights'));
 app.use('/api/roadmaps', require('./routes/roadmaps'));
+app.use('/api/ai', require('./routes/ai'));
+app.use('/api/graph', require('./routes/graph'));
 
 // Centralized error handling
 app.use(errorHandler);

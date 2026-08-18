@@ -47,8 +47,13 @@ export default function LandingPage() {
         let data: any = {};
 
         try {
-          const res = await fetch("/api/upload", {
+          const token = localStorage.getItem("token");
+          const headers: HeadersInit = {};
+          if (token) headers["Authorization"] = `Bearer ${token}`;
+
+          const res = await fetch("http://localhost:5000/api/documents/upload", {
             method: "POST",
+            headers,
             body: formData
           });
           if (res.ok) {

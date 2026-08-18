@@ -16,6 +16,11 @@ const PdfViewer = dynamic(() => import("../PdfViewer"), {
   loading: () => <div className="flex items-center justify-center h-full text-gray-400">Loading Document Viewer...</div>
 });
 
+const KnowledgeGraphVisualizer = dynamic(() => import("@/components/KnowledgeGraphVisualizer"), {
+  ssr: false,
+  loading: () => <div className="flex items-center justify-center h-full text-gray-400">Loading Knowledge Graph...</div>
+});
+
 export default function WorkspacePage({ params }: { params: Promise<{ id: string }> }) {
   const unwrappedParams = use(params);
   const [activeTab, setActiveTab] = useState("Notes");
@@ -164,7 +169,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     setIsGeneratingAI(true);
 
     try {
-      const res = await fetch("/api/ai/generate", {
+      const res = await fetch("http://localhost:5000/api/ai/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: "", action, text, docId })
@@ -233,7 +238,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     setIsGeneratingAI(true);
 
     try {
-      const res = await fetch("/api/ai/generate", {
+      const res = await fetch("http://localhost:5000/api/ai/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: currentInput, action: "chat", text: contextText, docId })
@@ -314,7 +319,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     }
 
     try {
-      await fetch("/api/highlights", {
+      await fetch("http://localhost:5000/api/highlights", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ docId, highlight: newHighlight })
@@ -371,7 +376,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     }
 
     if (docId) {
-      fetch(`/api/highlights?docId=${docId}`)
+      fetch(`http://localhost:5000/api/highlights?docId=${docId}`)
         .then(res => {
           if (!res.ok) throw new Error("Server error fetching highlights");
           return res.json();
@@ -792,7 +797,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
                                 await saveLocalHighlights(docId, filtered);
                               } catch(dbErr) {}
                               try {
-                                await fetch(`/api/highlights?id=${h.id}&docId=${docId}`, { method: 'DELETE' });
+                                await fetch(`http://localhost:5000/api/highlights/${h.id}`, { method: 'DELETE' });
                               } catch(e) {}
                             }}
                             className="text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -868,33 +873,15 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
           )}
 
           {activeTab === "Diagram" && (
-            <div className="flex-1 overflow-y-auto p-5 space-y-6">
-              <div>
-                <h3 className="text-sm font-semibold text-gray-100 mb-2">Visual Concept Map</h3>
-                <p className="text-xs text-gray-500 mb-4">A visual flow diagram linking your document highlights into a structured concept tree.</p>
-
-                <div className="w-full flex flex-col items-center py-4 bg-[#111]/30 rounded-xl border border-[#1E1E1E]">
-                  <div className="w-20 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold text-xs mb-8 shadow-[0_0_15px_rgba(52,211,153,0.1)]">
-                    Document
-                  </div>
-
-                  {highlights.length > 0 ? (
-                    <div className="w-full relative flex flex-col gap-6 items-center px-4">
-                      {}
-                      <div className="absolute top-[-32px] bottom-8 w-0.5 bg-[#2A2A2A] z-0" />
-
-                      {highlights.map((h, i) => (
-                        <div key={i} className="bg-[#111] border border-[#2A2A2A] rounded-lg p-3 w-full max-w-[260px] text-center text-xs relative z-10 hover:border-emerald-500/40 transition-colors shadow-md">
-                          <div className="text-[9px] text-emerald-400 mb-1 font-bold uppercase tracking-wider">Highlight #{i + 1}</div>
-                          <p className="text-gray-300 line-clamp-3 leading-relaxed">{h.content?.text || "Area highlight"}</p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-gray-500 text-xs text-center px-6 py-4">Add text highlights in the PDF viewer to auto-generate a visual concept diagram map.</p>
-                  )}
-                </div>
-              </div>
+            <div className="flex-1 h-full overflow-hidden flex flex-col">
+              <KnowledgeGraphVisualizer 
+                docId={docId} 
+                docName={docName} 
+                onAskAI={(promptText) => {
+                  setActiveTab("Chat");
+                  setChatInput(promptText);
+                }} 
+              />
             </div>
           )}
 
