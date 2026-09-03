@@ -10,7 +10,8 @@ const logger = require('../utils/logger');
 
 router.use(auth);
 
-const CHAT_URL = 'https://models.inference.ai.azure.com/chat/completions';
+const CHAT_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const CHAT_MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
 
 function systemPromptFor(action, hasRagContext) {
   switch (action) {
@@ -69,11 +70,11 @@ router.post('/generate', async (req, res) => {
       ? `${prompt}\n\nContext text: ${combinedContext}`
       : `Text to process: ${combinedContext}`;
 
-    const token = process.env.GITHUB_TOKEN || '';
+    const token = process.env.GROQ_API_KEY || '';
     if (!token) {
       return streamMessage(
         res,
-        '⚠️ **Configuration Error**\n\nNo GITHUB_TOKEN detected on the server. Please add it to start using free AI features.'
+        '⚠️ **Configuration Error**\n\nNo GROQ_API_KEY detected on the server. Please add it to start using AI features.'
       );
     }
 
@@ -88,7 +89,7 @@ router.post('/generate', async (req, res) => {
           { role: 'system', content: systemPrompt },
           { role: 'user', content: finalPrompt },
         ],
-        model: 'gpt-4o-mini',
+        model: CHAT_MODEL,
         temperature: 0.7,
         max_tokens: 1024,
       }),
@@ -102,7 +103,7 @@ router.post('/generate', async (req, res) => {
       } catch (e) {
         errorText = await response.text();
       }
-      return streamMessage(res, `⚠️ **GitHub Models API Error (${response.status})**\n\n${errorText}`);
+      return streamMessage(res, `⚠️ **Groq API Error (${response.status})**\n\n${errorText}`);
     }
 
     const data = await response.json();

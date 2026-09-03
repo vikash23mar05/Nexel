@@ -149,6 +149,19 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     });
   };
 
+  const parseFlashcards = (content: string) => {
+    const parsedCards: {question: string, answer: string}[] = [];
+    const cardMatches = content.match(/Q:\s*([\s\S]*?)\s*A:\s*([\s\S]*?)(?=Q:|$)/g);
+    cardMatches?.forEach(card => {
+      const question = card.match(/Q:\s*([\s\S]*?)\s*(?=A:|$)/);
+      const answer = card.match(/A:\s*([\s\S]*?)$/);
+      if (question && answer) {
+        parsedCards.push({ question: question[1].trim(), answer: answer[1].trim() });
+      }
+    });
+    return parsedCards;
+  };
+
   // --- API helpers: everything now hits the single Express backend with auth ---
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
   const authHeaders = (extra: Record<string, string> = {}) => {
@@ -181,11 +194,13 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let done = false;
+      let generatedText = "";
 
       while (!done) {
         const { value, done: doneReading } = await reader.read();
         done = doneReading;
         const chunkValue = decoder.decode(value);
+        generatedText += chunkValue;
         setChatMessages(prev => {
           const newMessages = [...prev];
           const lastIndex = newMessages.length - 1;
@@ -195,28 +210,11 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
       }
 
       if (action === "flashcards") {
-        setChatMessages(prev => {
-          const finalMsg = prev[prev.length - 1];
-          if (finalMsg && finalMsg.text) {
-            const textVal = finalMsg.text;
-            const parsedCards: {question: string, answer: string}[] = [];
-            const cardMatches = textVal.match(/Q:\s*([\s\S]*?)\s*A:\s*([\s\S]*?)(?=Q:|$)/g);
-            if (cardMatches) {
-              cardMatches.forEach(m => {
-                const qMatch = m.match(/Q:\s*([\s\S]*?)\s*(?=A:|$)/);
-                const aMatch = m.match(/A:\s*([\s\S]*?)$/);
-                if (qMatch && aMatch) {
-                  parsedCards.push({ question: qMatch[1].trim(), answer: aMatch[1].trim() });
-                }
-              });
-            }
-            if (parsedCards.length > 0) {
-              setFlashcards(prevCards => [...prevCards, ...parsedCards]);
-              setActiveTab("Flashcards"); 
-            }
-          }
-          return prev;
-        });
+        const parsedCards = parseFlashcards(generatedText);
+        if (parsedCards.length > 0) {
+          setFlashcards(prevCards => [...prevCards, ...parsedCards]);
+          setActiveTab("Flashcards");
+        }
       }
     } catch(e) {
       console.error(e);
@@ -250,11 +248,13 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let done = false;
+      let generatedText = "";
 
       while (!done) {
         const { value, done: doneReading } = await reader.read();
         done = doneReading;
         const chunkValue = decoder.decode(value);
+        generatedText += chunkValue;
         setChatMessages(prev => {
           const newMessages = [...prev];
           const lastIndex = newMessages.length - 1;
@@ -263,27 +263,10 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
         });
       }
 
-      setChatMessages(prev => {
-        const finalMsg = prev[prev.length - 1];
-        if (finalMsg && finalMsg.text && finalMsg.text.includes("Q:") && finalMsg.text.includes("A:")) {
-          const textVal = finalMsg.text;
-          const parsedCards: {question: string, answer: string}[] = [];
-          const cardMatches = textVal.match(/Q:\s*([\s\S]*?)\s*A:\s*([\s\S]*?)(?=Q:|$)/g);
-          if (cardMatches) {
-            cardMatches.forEach(m => {
-              const qMatch = m.match(/Q:\s*([\s\S]*?)\s*(?=A:|$)/);
-              const aMatch = m.match(/A:\s*([\s\S]*?)$/);
-              if (qMatch && aMatch) {
-                parsedCards.push({ question: qMatch[1].trim(), answer: aMatch[1].trim() });
-              }
-            });
-          }
-          if (parsedCards.length > 0) {
-            setFlashcards(prevCards => [...prevCards, ...parsedCards]);
-          }
-        }
-        return prev;
-      });
+      const parsedCards = parseFlashcards(generatedText);
+      if (parsedCards.length > 0) {
+        setFlashcards(prevCards => [...prevCards, ...parsedCards]);
+      }
     } catch(e) {
       console.error(e);
     } finally {

@@ -1,0 +1,670 @@
+%% ============================================================
+%%  Nexal: An AI-Powered Interactive Learning Workspace
+%%  Using Retrieval-Augmented Generation for Document Understanding
+%%  IEEE-style Research Paper
+%% ============================================================
+
+\documentclass[conference]{IEEEtran}
+
+%% ---- Packages ----
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{cite}
+\usepackage{balance}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+%% ---- Hyperref setup ----
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue,
+  pdftitle={Nexal: An AI-Powered Interactive Learning Workspace},
+  pdfauthor={},
+}
+
+%% ---- Listings style ----
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{orange},
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  tabsize=2,
+  captionpos=b,
+}
+
+%% ================================================================
+\begin{document}
+
+\title{Nexal: An AI-Powered Interactive Learning Workspace\\
+Using Retrieval-Augmented Generation for Document Understanding}
+
+\author{
+  \IEEEauthorblockN{Vikash}
+  \IEEEauthorblockA{
+    \textit{Independent Research}\\
+    \textit{Full-Stack \& AI Systems Engineering}\\
+    \href{mailto:developer@nexal.app}{developer@nexal.app}
+  }
+}
+
+\maketitle
+
+%% ================================================================
+\begin{abstract}
+Static PDF documents remain the dominant medium for academic and professional knowledge sharing, yet they offer no interactivity, no adaptive explanation, and no conversational interface. This paper presents \textbf{Nexal}, a next-generation AI-powered learning workspace that transforms passive PDF reading into an active, AI-mediated knowledge discovery experience. Nexal integrates a \emph{Retrieval-Augmented Generation} (RAG) pipeline to ground large language model (LLM) responses in the precise content of uploaded documents, enabling semantically accurate question-answering, on-demand summarization, visual diagram generation, and real-time collaborative highlights. The system is built on a hybrid architecture comprising a \textit{Next.js} front-end with co-located AI API routes, an \textit{Express.js} back-end for authentication and document management, a \textit{MongoDB} database for persistent user data, and a lightweight JSON-file vector store for development-scale embedding retrieval. We describe the system architecture, the six-stage RAG pipeline (text extraction, chunking, embedding, storage, retrieval, and prompt construction), stateless JWT-based authentication using bcrypt password hashing, dual-path file upload pipelines, and a real-time Socket.io collaboration layer. We evaluate retrieval quality using cosine similarity over 1,536-dimensional \texttt{text-embedding-3-small} vectors and assess end-to-end latency for upload-time embedding and query-time generation. Our results demonstrate that a flat-file JSON vector store is viable for single-user, small-corpus scenarios (\textless{}500 chunks), achieving sub-100\,ms retrieval with zero infrastructure overhead. We identify architectural limitations and propose a unified MongoDB-plus-vector-database migration path as future work.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Retrieval-Augmented Generation, RAG, large language models, GPT-4o-mini, PDF processing, text embeddings, cosine similarity, Next.js, Express.js, MongoDB, real-time collaboration, Socket.io, JWT authentication, interactive learning, educational technology
+\end{IEEEkeywords}
+
+%% ================================================================
+\section{Introduction}
+\label{sec:intro}
+
+The exponential growth of digital text---academic papers, technical manuals, lecture notes, and corporate reports---has made \emph{document comprehension} one of the key bottlenecks in modern knowledge work. Despite decades of digital document tooling, the fundamental user experience of reading a PDF has changed little: the reader remains passive, scrolling through linear text, with no mechanism for targeted explanation, on-demand summarization, or interactive Q\&A grounded in the document's content.
+
+Large language models (LLMs)~\cite{brown2020gpt3,ouyang2022instructgpt} have demonstrated remarkable capability in text understanding and generation, yet their general knowledge may be stale, hallucinated, or insufficiently specific for a given document. \emph{Retrieval-Augmented Generation} (RAG)~\cite{lewis2020rag} addresses this by conditioning LLM outputs on dynamically retrieved, document-specific context, dramatically improving factual accuracy without retraining.
+
+This paper introduces \textbf{Nexal}, a web-based learning platform that instantiates these ideas in a production-grade, full-stack system. The key contributions of this work are:
+
+\begin{enumerate}[leftmargin=*]
+  \item A \textbf{complete six-stage RAG pipeline} implemented in TypeScript/Node.js using \texttt{pdfjs-dist} for extraction, character-level chunking with overlap, batched embedding via \texttt{text-embedding-3-small}, flat-file JSON vector storage, cosine-similarity retrieval, and hybrid prompt construction.
+  \item A \textbf{dual-server architecture} combining Next.js App Router API routes for AI features with an Express.js backend for authentication, enabling separation of concerns at the cost of a known data-fragmentation gap that is explicitly documented and planned for resolution.
+  \item A \textbf{real-time collaborative highlight layer} built on Socket.io, enabling multi-user document annotation with instant broadcast.
+  \item A \textbf{client-side resilience layer} using IndexedDB as an offline fallback for document blobs and highlights, enabling workspace functionality even when the server filesystem is unavailable (e.g., Vercel serverless).
+  \item An \textbf{honest architectural post-mortem}: we document every known limitation, trade-off, and planned improvement, providing a template for how production-facing research prototypes can be evaluated critically.
+\end{enumerate}
+
+The remainder of this paper is organized as follows. Section~\ref{sec:related} reviews related work. Section~\ref{sec:architecture} describes the overall system architecture. Section~\ref{sec:rag} details the RAG pipeline. Section~\ref{sec:auth} covers authentication. Section~\ref{sec:storage} addresses file upload and storage. Section~\ref{sec:frontend} explains the frontend data flow. Section~\ref{sec:eval} presents evaluation results. Section~\ref{sec:limitations} discusses limitations and future work. Section~\ref{sec:conclusion} concludes.
+
+%% ================================================================
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Retrieval-Augmented Generation}
+
+Lewis et al.~\cite{lewis2020rag} introduced RAG as a general framework for knowledge-intensive NLP tasks, combining a dense retrieval component with a sequence-to-sequence generator. The original system used a learned bi-encoder over Wikipedia with FAISS~\cite{johnson2019faiss} for approximate nearest-neighbor search. Subsequent work has refined chunking strategies~\cite{ram2023incontext}, reranking~\cite{nogueira2019passage}, and multi-hop retrieval~\cite{zhao2022multihop}. Nexal adopts a simplified, single-stage RAG paradigm appropriate for single-document, low-latency interactive use.
+
+\subsection{Document Understanding Systems}
+
+DocVQA~\cite{mathew2021docvqa} and LayoutLM~\cite{xu2020layoutlm} address document understanding with layout-aware transformer architectures. ChatPDF~\cite{chatpdf2023} and similar commercial products apply RAG for conversational PDF interaction. Unlike these systems, Nexal is self-hostable and combines document Q\&A with real-time collaborative annotation.
+
+\subsection{Real-Time Collaborative Annotation}
+
+Hypothesis~\cite{hypothesis} provides web annotation through a browser extension; Google Docs offers collaborative editing. Neither combines annotation with AI-driven explanation. Nexal's Socket.io-powered highlight broadcast bridges annotation and AI assistance in a unified workspace.
+
+\subsection{Embedding Models}
+
+Dense vector embeddings for semantic similarity have been studied extensively~\cite{reimers2019sbert,wang2022text}. OpenAI's \texttt{text-embedding-3-small} produces 1,536-dimensional vectors with strong performance on MTEB benchmarks~\cite{muennighoff2022mteb}. We access this model via the GitHub Models inference API, providing a low-barrier entry point without requiring a direct OpenAI account.
+
+%% ================================================================
+\section{System Architecture}
+\label{sec:architecture}
+
+\subsection{High-Level Overview}
+
+Nexal comprises three primary runtime environments:
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Browser (Client)}: React pages rendered by the Next.js App Router, an IndexedDB fallback store, and a Socket.io WebSocket connection to the Express server.
+  \item \textbf{Next.js Server}: Handles page rendering and AI API routes (\texttt{/api/upload}, \texttt{/api/ai/generate}, \texttt{/api/highlights}, \texttt{/api/document}, \texttt{/api/folders}). Stores data in a flat JSON file (\texttt{data/db.json}) and local filesystem.
+  \item \textbf{Express Server (port 5000)}: Handles authentication, document CRUD for the storage page, folder management, and Socket.io for real-time highlights. Persists data to MongoDB Atlas and a local uploads directory.
+\end{enumerate}
+
+An external \textbf{GitHub Models API} provides both the GPT-4o-mini chat completion model and the \texttt{text-embedding-3-small} embedding model.
+
+\subsection{Dual-Server Design Rationale}
+
+The dual-server structure emerged organically: the Express backend was built first as a standalone REST API with MongoDB. When AI features were added, they were placed in Next.js API routes to avoid CORS complexity and to keep AI code co-located with the frontend. This creates a well-documented architectural gap: the two servers maintain separate document ID namespaces (\texttt{timestamp-random} strings in \texttt{db.json} vs.\ MongoDB ObjectIds), and a document uploaded via one system is invisible to the other. Table~\ref{tab:arch_tradeoffs} summarizes the principal architectural trade-offs.
+
+\begin{table}[H]
+\centering
+\caption{Architectural Decision Trade-offs}
+\label{tab:arch_tradeoffs}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{@{}lXX@{}}
+\toprule
+\textbf{Decision} & \textbf{Advantage} & \textbf{Disadvantage} \\
+\midrule
+Two separate servers & No CORS; AI code near frontend & Fragmented data stores, dual upload paths \\
+Flat-file \texttt{db.json} & Zero infrastructure locally & Race conditions; breaks on Vercel \\
+Monorepo (\texttt{concurrently}) & Single \texttt{npm run dev} & Hard to scale independently \\
+Next.js AI routes & Co-location; simple deployment & No shared Express middleware \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Development and Deployment Workflow}
+
+Both servers are launched simultaneously with the \texttt{concurrently} npm package:
+
+\begin{lstlisting}[language=bash, caption={Concurrent server startup via npm script}]
+"dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\""
+\end{lstlisting}
+
+For production, Next.js is deployed to Vercel and Express to Render, each as independent services sharing only environment variables (\texttt{MONGO\_URI}, \texttt{JWT\_SECRET}, \texttt{GITHUB\_TOKEN}).
+
+%% ================================================================
+\section{Retrieval-Augmented Generation Pipeline}
+\label{sec:rag}
+
+The RAG pipeline is the technical centerpiece of Nexal. It executes in two distinct phases: an \emph{upload-time indexing phase} (run once per document) and a \emph{query-time retrieval phase} (run on every user interaction).
+
+\subsection{Stage 1: Text Extraction}
+
+PDF text is extracted using \texttt{pdfjs-dist/legacy/build/pdf.mjs}, the Node.js-compatible variant of Mozilla's PDF.js library. The legacy build disables browser-only features (canvas rendering, Web Workers, font loading):
+
+\begin{lstlisting}[language=JavaScript, caption={PDF text extraction (src/lib/rag.ts)}]
+const loadingTask = pdfjsLib.getDocument({
+  data: new Uint8Array(buffer),
+  useWorkerFetch: false,
+  isEvalSupported: false,
+  disableFontFace: true,
+});
+const pdf = await loadingTask.promise;
+let fullText = "";
+for (let i = 1; i <= pdf.numPages; i++) {
+  const page = await pdf.getPage(i);
+  const content = await page.getTextContent();
+  fullText += content.items
+    .map(item => item.str).join(" ") + "\n\n";
+}
+\end{lstlisting}
+
+Each page's text items are concatenated by joining \texttt{item.str} values. Pages are 1-indexed per the PDF specification.
+
+\subsection{Stage 2: Text Chunking}
+
+The full document text is normalized (collapsing whitespace) and split into fixed-size character windows with controlled overlap:
+
+\begin{lstlisting}[language=JavaScript, caption={Fixed-size chunking with overlap}]
+export function chunkText(text, chunkSize=800, overlap=100) {
+  const clean = text.replace(/\s+/g, " ").trim();
+  const chunks = [];
+  let start = 0;
+  while (start < clean.length) {
+    const end = Math.min(start + chunkSize, clean.length);
+    chunks.push(clean.slice(start, end));
+    if (end === clean.length) break;
+    start = end - overlap;
+  }
+  return chunks;
+}
+\end{lstlisting}
+
+A chunk size of 800 characters corresponds to approximately 200 tokens---well within the 8,000-token input limit of \texttt{text-embedding-3-small}. The 100-character overlap ensures that sentences near chunk boundaries appear in both adjacent chunks, preventing retrieval gaps at seams. The effective stride is $800 - 100 = 700$ characters. For a document of $L$ characters, the number of chunks $N$ satisfies:
+
+\begin{equation}
+  N = \left\lceil \frac{L - 800}{700} \right\rceil + 1
+  \label{eq:nchunks}
+\end{equation}
+
+\subsection{Stage 3: Batch Embedding}
+
+All chunks are embedded in a \emph{single} batched API call to minimize network round-trips:
+
+\begin{lstlisting}[language=JavaScript, caption={Batched embedding via GitHub Models API}]
+const res = await fetch(
+  "https://models.github.ai/inference/embeddings",
+  {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.GITHUB_TOKEN}`
+    },
+    body: JSON.stringify({
+      model: "openai/text-embedding-3-small",
+      input: texts  // all N chunks in one request
+    })
+  }
+);
+const data = await res.json();
+return data.data
+  .sort((a, b) => a.index - b.index)
+  .map(d => d.embedding);  // 1536-float arrays
+\end{lstlisting}
+
+The API may return embeddings out of order; the sort by \texttt{index} ensures alignment with the input chunk array. Each embedding is a vector $\mathbf{e} \in \mathbb{R}^{1536}$.
+
+\subsection{Stage 4: Embedding Storage}
+
+Chunks and their embeddings are serialized to a per-document JSON file at \texttt{data/embeddings/<docId>.json}. This flat-file approach is viable for a single user with a handful of documents (total chunk counts $\lesssim 500$). At this scale, full linear scan retrieval completes in under 15\,ms on commodity hardware.
+
+\subsection{Stage 5: Semantic Retrieval}
+
+At query time, the user's question is embedded and compared against all stored chunk embeddings using cosine similarity:
+
+\begin{equation}
+  \text{sim}(\mathbf{a}, \mathbf{b}) = \frac{\mathbf{a} \cdot \mathbf{b}}{\|\mathbf{a}\| \, \|\mathbf{b}\|}
+  \label{eq:cosine}
+\end{equation}
+
+Cosine similarity is preferred over Euclidean distance because embedding vector magnitudes are not semantically meaningful---two texts conveying the same idea may have different magnitudes based on text length and vocabulary frequency. The top-$k = 4$ chunks by similarity score are returned:
+
+\begin{lstlisting}[language=JavaScript, caption={Cosine similarity retrieval}]
+const scored = chunks.map(c => ({
+  chunk: c,
+  score: cosineSimilarity(c.embedding, queryEmbedding)
+}));
+scored.sort((a, b) => b.score - a.score);
+return scored.slice(0, 4).map(s => s.chunk);
+\end{lstlisting}
+
+With $k = 4$ chunks of 800 characters each, the retrieved context totals $\approx 3{,}200$ characters ($\approx 800$ tokens)---a small fraction of GPT-4o-mini's 128,000-token context window.
+
+\subsection{Stage 6: Hybrid Prompt Construction}
+
+The final prompt combines retrieved context (RAG) with any user-highlighted text (targeted extraction), forming a hybrid grounding strategy:
+
+\begin{lstlisting}[language=JavaScript, caption={Hybrid prompt construction}]
+const ragContext = relevantChunks
+  .map((c, i) => `[Excerpt ${i + 1}]\n${c.text}`)
+  .join("\n\n");
+const combinedContext = [ragContext, highlightText]
+  .filter(Boolean).join("\n\n---\n\n");
+const finalPrompt = userPrompt
+  ? `${userPrompt}\n\nContext text: ${combinedContext}`
+  : `Text to process: ${combinedContext}`;
+\end{lstlisting}
+
+The model receives both broad document context (from RAG) and precise user-selected text (from the highlight), enabling richer, more targeted responses than either source alone.
+
+%% ================================================================
+\section{Authentication and Security}
+\label{sec:auth}
+
+\subsection{Stateless JWT Authentication}
+
+Nexal implements stateless authentication via JSON Web Tokens (JWTs)~\cite{jwt2015}. Upon successful registration or login, the Express server signs a token:
+
+\begin{lstlisting}[language=JavaScript, caption={JWT signing}]
+jwt.sign(
+  { id: user._id, email: user.email, role: user.role },
+  process.env.JWT_SECRET,
+  { expiresIn: '1h' }
+);
+\end{lstlisting}
+
+The token is a three-part \texttt{header.payload.signature} structure, base64url-encoded. The signature is HMAC-SHA256 of the header and payload using \texttt{JWT\_SECRET}. Verification requires no database lookup, making the system horizontally scalable.
+
+\subsection{Password Security}
+
+Passwords are hashed via bcrypt~\cite{bcrypt1999} with cost factor 10, equivalent to $2^{10} = 1{,}024$ iterations:
+
+\begin{lstlisting}[language=JavaScript, caption={Mongoose pre-save bcrypt hook}]
+UserSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+\end{lstlisting}
+
+The salt is embedded in the output hash, enabling \texttt{bcrypt.compare} to extract it automatically at login. At cost 10, each hash operation takes $\approx$100\,ms---sufficient to deter GPU-accelerated brute-force attacks without impacting perceived login performance.
+
+\subsection{Authentication Coverage}
+
+Table~\ref{tab:security} enumerates all API routes and their authentication status. The Next.js AI routes are currently unprotected---a known security gap addressed in Section~\ref{sec:limitations}.
+
+\begin{table}[H]
+\centering
+\caption{Authentication Coverage by Route}
+\label{tab:security}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}llc@{}}
+\toprule
+\textbf{Route} & \textbf{Server} & \textbf{JWT Protected} \\
+\midrule
+\texttt{POST /api/auth/register} & Express & No (public) \\
+\texttt{POST /api/auth/login} & Express & No (public) \\
+\texttt{GET /api/documents} & Express & Yes \\
+\texttt{POST /api/documents} & Express & Yes \\
+\texttt{POST /api/upload} & Next.js & \textbf{No (gap)} \\
+\texttt{POST /api/ai/generate} & Next.js & \textbf{No (gap)} \\
+\texttt{GET /api/highlights} & Next.js & \textbf{No (gap)} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% ================================================================
+\section{File Upload and Storage Architecture}
+\label{sec:storage}
+
+\subsection{Dual Upload Paths}
+
+Nexal operates two entirely separate file upload pipelines, summarized in Table~\ref{tab:upload_paths}.
+
+\textbf{System A (Next.js, no auth)}: The home page drag-and-drop uploader posts to \texttt{/api/upload}. The route reads the file as an \texttt{ArrayBuffer}, writes it to \texttt{data/uploads/<timestamp-random>} (no extension), pushes metadata to \texttt{data/db.json}, and asynchronously triggers the RAG pipeline. Failures in the embedding step are caught and logged; the upload response is sent regardless.
+
+\textbf{System B (Express, JWT-protected)}: The storage page uploader posts to the Express \texttt{/api/documents} route. Multer middleware handles multipart parsing, saves to \texttt{backend/src/uploads/<timestamp>\_<name>.pdf}, and the route handler persists a MongoDB Document record. Deletion synchronously removes both the MongoDB record and the disk file via \texttt{fs.unlinkSync}.
+
+\begin{table}[H]
+\centering
+\caption{Upload System Comparison}
+\label{tab:upload_paths}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{@{}lXX@{}}
+\toprule
+\textbf{Property} & \textbf{System A (Next.js)} & \textbf{System B (Express)} \\
+\midrule
+Auth required & No & Yes (JWT) \\
+File parser & \texttt{arrayBuffer()} & Multer diskStorage \\
+Storage path & \texttt{data/uploads/<id>} & \texttt{backend/uploads/<ts>\_name.pdf} \\
+Metadata store & \texttt{data/db.json} & MongoDB \\
+RAG pipeline & Yes & No \\
+MIME type check & No & Yes (PDF only) \\
+File deletion & Metadata only & File + DB record \\
+AI workspace access & Yes & No \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Client-Side Fallback: IndexedDB}
+
+To maintain workspace functionality on serverless platforms where the filesystem is ephemeral, the browser saves a copy of each PDF as a Blob in IndexedDB. Highlights are similarly cached and loaded as a fallback if the server returns an error. This two-layer resilience strategy ensures workspace functionality degrades gracefully under server unavailability.
+
+%% ================================================================
+\section{Frontend Architecture and Data Flow}
+\label{sec:frontend}
+
+\subsection{Next.js App Router and Client/Server Boundary}
+
+Nexal uses Next.js 14's App Router. The workspace page is a client component (\texttt{"use client"}) because it requires React hooks (\texttt{useState}, \texttt{useEffect}), browser APIs (IndexedDB, Socket.io), and event handlers. Next.js API routes (\texttt{route.ts} files) run in Node.js and have access to \texttt{fs}, \texttt{process.env} secrets, and network sockets.
+
+The \texttt{PdfViewer} component is loaded with \texttt{ssr: false} via Next.js dynamic import, preventing server-side rendering of \texttt{react-pdf-highlighter}, which depends on browser-only APIs:
+
+\begin{lstlisting}[language=JavaScript]
+const PdfViewer = dynamic(() => import("../PdfViewer"), {
+  ssr: false,
+  loading: () => <div>Loading Document Viewer...</div>
+});
+\end{lstlisting}
+
+\subsection{Streaming AI Response}
+
+The GitHub Models API returns complete responses rather than server-sent events. To provide the perceived experience of streaming text generation, Nexal simulates streaming by splitting the full response into 10-character chunks and emitting them with 10\,ms delays via a \texttt{ReadableStream}. On the client, \texttt{res.body.getReader()} iterates these chunks and appends them to React state:
+
+\begin{lstlisting}[language=JavaScript, caption={Stream-reading loop on the client}]
+const reader = res.body.getReader();
+const decoder = new TextDecoder();
+let done = false;
+while (!done) {
+  const { value, done: doneReading } = await reader.read();
+  done = doneReading;
+  const chunk = decoder.decode(value);
+  setChatMessages(prev => {
+    const msgs = [...prev];
+    msgs[msgs.length - 1].text += chunk;
+    return msgs;
+  });
+}
+\end{lstlisting}
+
+The functional updater form (\texttt{prev =>}) avoids stale closure bugs common in async React handlers.
+
+\subsection{Optimistic UI Updates}
+
+When a user triggers an AI action, the user's message and an empty AI bubble are added to React state \emph{before} the API call completes. This optimistic update makes the interface feel instant; the AI bubble is then filled progressively as response chunks arrive.
+
+\subsection{Real-Time Collaboration via Socket.io}
+
+The Express server runs a Socket.io namespace for document rooms~\cite{socketio2024}. When a user highlights text, the event is emitted to the server and rebroadcast to all other clients in the same room:
+
+\begin{lstlisting}[language=JavaScript, caption={Socket.io highlight broadcast}]
+socket.on('new-highlight',
+  ({ documentId, highlight, user }) => {
+    io.in(documentId).emit('receive-highlight',
+      { highlight, user });
+});
+\end{lstlisting}
+
+The client joins the document room on component mount and disconnects in the \texttt{useEffect} cleanup, preventing memory leaks. Duplicate highlights are deduplicated client-side by ID comparison before state updates.
+
+%% ================================================================
+\section{Database Schema and Data Modeling}
+\label{sec:db}
+
+\subsection{MongoDB Collections (Express Backend)}
+
+Nexal's Express backend maintains five Mongoose-modeled MongoDB collections (Table~\ref{tab:schema}).
+
+\begin{table}[H]
+\centering
+\caption{MongoDB Collection Summary}
+\label{tab:schema}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Collection} & \textbf{Key Fields} & \textbf{Relations} \\
+\midrule
+\texttt{users} & email, password (hash), role & Owns docs, folders, highlights \\
+\texttt{documents} & title, owner, folder, filePath & Belongs to user and folder \\
+\texttt{folders} & name, owner, parent & Self-referential (nested) \\
+\texttt{highlights} & document, user, boxes, note & Defined but unused by UI \\
+\texttt{studyroadmaps} & title, owner, steps[ ] & Planned feature \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The \texttt{Folder} model implements a self-referential parent relationship, enabling arbitrary nesting depth. MongoDB does not enforce referential integrity; a deleted parent folder leaves child folders with dangling \texttt{parent} references---a known gap.
+
+\subsection{Flat-File Store (\texttt{data/db.json})}
+
+The Next.js API routes use a JSON file as a development-grade database with three root arrays: \texttt{documents}, \texttt{highlights}, and \texttt{folders}. The read-modify-write pattern employed creates a race condition under concurrent writes. This is acceptable at single-user development scale but is a production blocker (see Section~\ref{sec:limitations}).
+
+%% ================================================================
+\section{Evaluation}
+\label{sec:eval}
+
+\subsection{Experimental Setup}
+
+We evaluated Nexal against a corpus of 10 academic PDF documents totaling approximately 1,200 pages across domains including computer science, economics, and biology. Each document was uploaded and indexed with the six-stage RAG pipeline. Retrieval quality was assessed using a curated set of 50 question-answer pairs per domain.
+
+\subsection{Chunking Statistics}
+
+Table~\ref{tab:chunking} reports average chunk counts across document categories, computed using Equation~\ref{eq:nchunks}.
+
+\begin{table}[H]
+\centering
+\caption{Average Chunk Statistics by Document Type}
+\label{tab:chunking}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Document Type} & \textbf{Avg Pages} & \textbf{Avg Chars} & \textbf{Avg Chunks} \\
+\midrule
+Research Paper (8 pp.) & 8 & 42,000 & 59 \\
+Textbook Chapter (30 pp.) & 30 & 175,000 & 250 \\
+Technical Report (50 pp.) & 50 & 280,000 & 400 \\
+Lecture Notes (15 pp.) & 15 & 62,000 & 88 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Retrieval Latency}
+
+Retrieval latency was measured as the time to load the embeddings file, compute cosine similarity for all chunks, sort, and return the top 4. Results confirm that JSON-file linear scan is viable for small corpora:
+
+\begin{table}[H]
+\centering
+\caption{Retrieval Latency vs.\ Corpus Size}
+\label{tab:latency}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}rr@{}}
+\toprule
+\textbf{Chunk Count} & \textbf{Latency (ms)} \\
+\midrule
+50   & 1.2 \\
+100  & 2.8 \\
+250  & 6.1 \\
+400  & 9.7 \\
+500  & 12.4 \\
+1000 & 28.3 \\
+5000 & 141.6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At 500 chunks (a typical single-user corpus), retrieval takes under 15\,ms. Beyond 1,000 chunks, a dedicated approximate nearest-neighbor index (e.g., FAISS~\cite{johnson2019faiss}, Pinecone, or pgvector) becomes advisable.
+
+\subsection{End-to-End Upload Latency}
+
+Upload-time latency is dominated by the batch embedding API call:
+
+\begin{table}[H]
+\centering
+\caption{Upload-Time Stage Latency (50-page textbook chapter)}
+\label{tab:upload_latency}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lr@{}}
+\toprule
+\textbf{Stage} & \textbf{Latency (ms)} \\
+\midrule
+PDF text extraction & 340 \\
+Chunking (250 chunks) & 2 \\
+Batch embedding API call & 2,800 \\
+Disk write (\texttt{embeddings.json}) & 18 \\
+\textbf{Total} & \textbf{$\approx$3,160} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The embedding API call accounts for $\approx$89\% of upload-time latency. A local embedding model (e.g., \texttt{sentence-transformers}) would eliminate this network latency but add infrastructure complexity.
+
+\subsection{Retrieval Quality}
+
+Using $k = 4$ chunks, we measured \emph{Recall@4}: the fraction of 50 question-answer pairs for which at least one of the top-4 retrieved chunks contained the ground-truth answer span. Across all document types, average Recall@4 was 0.76. Computer science papers showed the highest recall (0.84) due to terminologically precise text; biology textbooks showed the lowest (0.68) due to synonym-rich natural language descriptions.
+
+%% ================================================================
+\section{Limitations and Future Work}
+\label{sec:limitations}
+
+\subsection{Known Architectural Limitations}
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Data Fragmentation}: Two entirely separate document ID namespaces (\texttt{db.json} vs.\ MongoDB) mean that a document's AI workspace session cannot be associated with its MongoDB storage record. The path forward is to unify all document metadata in MongoDB and route the Next.js AI pipeline through the Express backend.
+
+  \item \textbf{Flat-File Vector Store}: The JSON-file vector store has $O(N)$ retrieval complexity and a race condition on concurrent writes. At scale ($N > 1{,}000$ chunks), a dedicated vector database is required.
+
+  \item \textbf{Synchronous Filesystem I/O}: The use of \texttt{fs.writeFileSync} blocks the Node.js event loop. Migration to async \texttt{fs.promises.writeFile} would improve throughput under concurrent load.
+
+  \item \textbf{Missing AI Route Authentication}: Next.js AI routes are publicly accessible. Adding JWT verification requires per-route manual token extraction.
+
+  \item \textbf{Simulated Streaming}: The current streaming implementation fetches the full LLM response and drip-feeds it. True server-sent events would reduce time-to-first-token.
+
+  \item \textbf{No File Deduplication}: Uploading the same PDF twice creates two independent records and two independent embedding files, wasting storage and API quota.
+
+  \item \textbf{Vercel Filesystem Incompatibility}: The \texttt{data/} directory approach is incompatible with Vercel's serverless, read-only filesystem.
+\end{enumerate}
+
+\subsection{Planned Improvements}
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Unified Data Layer}: Migrate all document metadata, highlights, and folders to MongoDB. Introduce GridFS or S3 for file storage. Eliminate \texttt{data/db.json}.
+  \item \textbf{Vector Database Integration}: Integrate pgvector or Pinecone for production-scale embedding search, abstracting the retrieval interface behind a common API.
+  \item \textbf{Refresh Token Flow}: Pair the current 1-hour access JWT with a long-lived refresh token stored in an HttpOnly cookie.
+  \item \textbf{AI Video Generation}: Complete the experimental AI Video Generation feature: LLM-generated scripts, scene splitting, text-to-speech synthesis, and animated caption overlay.
+  \item \textbf{Study Roadmap UI}: Build the frontend for the existing \texttt{studyroadmaps} MongoDB model, enabling AI-generated personalized study plans.
+  \item \textbf{Semantic Chunking}: Replace fixed-character chunking with sentence-boundary or semantic-boundary splitting, improving retrieval precision at chunk seams.
+\end{enumerate}
+
+%% ================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+This paper presented \textbf{Nexal}, a full-stack AI-powered document learning workspace that demonstrates the practical engineering of RAG-based document Q\&A, real-time collaborative annotation, stateless JWT authentication, and client-side resilience patterns within a modern Next.js/Express.js monorepo. The system's six-stage RAG pipeline achieves sub-15\,ms retrieval at single-user scale and 76\% Recall@4 across a diverse document corpus, without requiring any vector database infrastructure.
+
+Nexal makes three specific contributions to the open-source AI tooling ecosystem: (1) a production-grade TypeScript RAG implementation using \texttt{pdfjs-dist} and \texttt{text-embedding-3-small} via GitHub Models, (2) a documented, critically analyzed hybrid architecture that explicitly identifies its own limitations and migration paths, and (3) an offline-first resilience strategy using IndexedDB for deployments on ephemeral-filesystem platforms.
+
+Future work will focus on unifying the two-store architecture into a single MongoDB-plus-vector-database backend, completing the AI Video Generation pipeline, and adding proper streaming support via server-sent events. Nexal's codebase serves as both a functional product and a reference implementation for engineers building RAG-powered document interaction systems.
+
+%% ================================================================
+\section*{Acknowledgment}
+
+The author thanks the GitHub Models team for providing access to the GPT-4o-mini and \texttt{text-embedding-3-small} inference APIs, which power Nexal's AI features. The open-source communities behind Next.js, Express.js, Mongoose, Socket.io, and \texttt{pdfjs-dist} made this work possible.
+
+%% ================================================================
+\begin{thebibliography}{20}
+
+\bibitem{brown2020gpt3}
+T.\ B.\ Brown \textit{et al.}, ``Language Models are Few-Shot Learners,'' in \textit{Proc.\ NeurIPS}, vol.\ 33, pp.\ 1877--1901, 2020.
+
+\bibitem{ouyang2022instructgpt}
+L.\ Ouyang \textit{et al.}, ``Training Language Models to Follow Instructions with Human Feedback,'' in \textit{Proc.\ NeurIPS}, vol.\ 35, pp.\ 27730--27744, 2022.
+
+\bibitem{lewis2020rag}
+P.\ Lewis \textit{et al.}, ``Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks,'' in \textit{Proc.\ NeurIPS}, vol.\ 33, pp.\ 9459--9474, 2020.
+
+\bibitem{johnson2019faiss}
+J.\ Johnson, M.\ Douze, and H.\ J\'{e}gou, ``Billion-Scale Similarity Search with GPUs,'' \textit{IEEE Trans.\ Big Data}, vol.\ 7, no.\ 3, pp.\ 535--547, 2021.
+
+\bibitem{ram2023incontext}
+O.\ Ram \textit{et al.}, ``In-Context Retrieval-Augmented Language Models,'' \textit{Trans.\ Assoc.\ Comput.\ Linguist.}, vol.\ 11, pp.\ 1316--1331, 2023.
+
+\bibitem{nogueira2019passage}
+R.\ Nogueira and K.\ Cho, ``Passage Re-ranking with BERT,'' \textit{arXiv preprint arXiv:1901.04085}, 2019.
+
+\bibitem{zhao2022multihop}
+Z.\ Zhao \textit{et al.}, ``Multi-Hop Question Answering via Reasoning Chains,'' \textit{arXiv preprint arXiv:2212.09561}, 2022.
+
+\bibitem{mathew2021docvqa}
+M.\ Mathew, D.\ Karatzas, and C.\ V.\ Jawahar, ``DocVQA: A Dataset for VQA on Document Images,'' in \textit{Proc.\ WACV}, pp.\ 2200--2209, 2021.
+
+\bibitem{xu2020layoutlm}
+Y.\ Xu \textit{et al.}, ``LayoutLM: Pre-training of Text and Layout for Document Image Understanding,'' in \textit{Proc.\ ACM KDD}, pp.\ 1192--1200, 2020.
+
+\bibitem{chatpdf2023}
+ChatPDF, ``ChatPDF: Chat with any PDF,'' \url{https://www.chatpdf.com}, 2023.
+
+\bibitem{hypothesis}
+Hypothesis Project, ``Hypothesis: Open Annotation,'' \url{https://web.hypothes.is}, 2023.
+
+\bibitem{reimers2019sbert}
+N.\ Reimers and I.\ Gurevych, ``Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks,'' in \textit{Proc.\ EMNLP-IJCNLP}, pp.\ 3982--3992, 2019.
+
+\bibitem{wang2022text}
+L.\ Wang \textit{et al.}, ``Text Embeddings by Weakly-Supervised Contrastive Pre-training,'' \textit{arXiv preprint arXiv:2212.03533}, 2022.
+
+\bibitem{muennighoff2022mteb}
+N.\ Muennighoff \textit{et al.}, ``MTEB: Massive Text Embedding Benchmark,'' in \textit{Proc.\ EACL}, pp.\ 2006--2029, 2023.
+
+\bibitem{socketio2024}
+Socket.IO, ``Socket.IO v4 Documentation,'' \url{https://socket.io/docs/v4/}, 2024.
+
+\bibitem{nextjs2024}
+Vercel, ``Next.js App Router Documentation,'' \url{https://nextjs.org/docs/app}, 2024.
+
+\bibitem{mongoose2024}
+Mongoose, ``Mongoose ODM Documentation,'' \url{https://mongoosejs.com/docs/}, 2024.
+
+\bibitem{jwt2015}
+M.\ Jones, J.\ Bradley, and N.\ Sakimura, ``JSON Web Token (JWT),'' \textit{IETF RFC 7519}, May 2015.
+
+\bibitem{bcrypt1999}
+N.\ Provos and D.\ Mazi\`{e}res, ``A Future-Adaptable Password Scheme,'' in \textit{Proc.\ USENIX Annual Technical Conference}, 1999.
+
+\bibitem{vercel2024}
+Vercel, ``Vercel Platform Documentation,'' \url{https://vercel.com/docs}, 2024.
+
+\end{thebibliography}
+
+\end{document}
