@@ -2,7 +2,7 @@
 
 ## Plain-English Overview
 
-Nexal is a document study tool where users upload PDFs, highlight text, and chat with an AI about the content. The application is built with two separate servers — a Next.js frontend (that also handles its own API routes), and an Express.js backend — that share the same codebase but store data in two completely different ways. This split is a known architectural gap, not an intentional design.
+Nexel is a document study tool where users upload PDFs, highlight text, and chat with an AI about the content. The application is built with a single Express.js backend powered by MongoDB, alongside a Next.js frontend for UI rendering. All document processing, vector embeddings (RAG), highlights, user accounts, and real-time WebSockets flow through the Express server on port 5000.
 
 ---
 
@@ -11,31 +11,31 @@ Nexal is a document study tool where users upload PDFs, highlight text, and chat
 ```mermaid
 flowchart TD
     subgraph Browser["Browser (Client)"]
-        UI["React Pages\n(src/app/*)"]
+        UI["React Pages & Components\n(src/app/*)"]
         IDB["IndexedDB\n(offline fallback)"]
     end
 
-    subgraph NextServer["Next.js Server (same process)"]
-        Pages["Page Routes\n/login, /signup, /storage\n/workspace/[id]"]
-        NextAPI["Next.js API Routes\n/api/upload\n/api/ai/generate\n/api/highlights\n/api/document\n/api/documents/*\n/api/folders"]
-        DataDir["data/\n  db.json\n  uploads/<id>\n  embeddings/<id>.json"]
+    subgraph NextServer["Next.js Server (port 3000)"]
+        Pages["Frontend Pages\n/login, /signup, /storage\n/workspace/[id]"]
     end
 
-    subgraph ExpressServer["Express Server (port 5000)"]
-        AuthRoutes["POST /api/auth/register\nPOST /api/auth/login"]
-        DocRoutes["GET/POST/PUT/DELETE\n/api/documents"]
+    subgraph ExpressServer["Express Backend (port 5000)"]
+        AuthRoutes["/api/auth (Register & Login)"]
+        DocRoutes["/api/documents (Upload, Stream, List)"]
         FolderRoutes["/api/folders"]
         HlRoutes["/api/highlights"]
-        SocketIO["Socket.io\n(real-time highlights)"]
+        AIRoutes["/api/ai/generate (RAG + GPT-4o-mini)"]
+        SocketIO["Socket.io (Real-time highlight syncing)"]
+        RAGUtil["RAG Engine (pdfjs-dist + chunking)"]
         UploadsDir["backend/src/uploads/"]
     end
 
-    subgraph MongoDB["MongoDB (Atlas or local)"]
+    subgraph MongoDB["MongoDB Database"]
         UserCol["users collection"]
         DocCol["documents collection"]
         FolderCol["folders collection"]
         HlCol["highlights collection"]
-        RoadmapCol["studyroadmaps collection"]
+        EmbeddingCol["embeddings collection"]
     end
 
     subgraph GHModels["GitHub Models API"]
@@ -43,25 +43,20 @@ flowchart TD
         Embed["text-embedding-3-small\nembeddings"]
     end
 
-    UI -->|"fetch() Next routes"| NextAPI
-    UI -->|"fetch() Express routes\n(auth, storage page)"| ExpressServer
-    UI <-->|"Socket.io"| SocketIO
-    UI <-->|"Read/write"| IDB
-
-    NextAPI -->|"fs.readFileSync/writeFileSync"| DataDir
-    NextAPI -->|"embed query"| Embed
-    NextAPI -->|"LLM call"| Chat
+    UI -->|"HTTP API Requests"| ExpressServer
+    UI <-->|"Socket.io (WebSockets)"| SocketIO
+    UI <-->|"Read/write offline"| IDB
 
     ExpressServer --> MongoDB
     ExpressServer -->|"multer disk storage"| UploadsDir
+    RAGUtil -->|"embed text & generate"| GHModels
 
-    style DataDir fill:#2a2a00,stroke:#888
     style UploadsDir fill:#2a2a00,stroke:#888
     style MongoDB fill:#003300,stroke:#4ade80
     style GHModels fill:#001133,stroke:#60a5fa
 ```
 
-> **Key observation:** The dashed gap in the middle is real. The Next.js API routes and the Express backend do **not** communicate with each other. They have separate storage systems and separate document IDs. This is the most important architectural fact about this project.
+> **Key observation:** All backend services, data storage, RAG embeddings, and authentication are unified into **1 Single Express Server on Port 5000** backed by **MongoDB**. Next.js handles purely frontend rendering on Port 3000.
 
 ---
 

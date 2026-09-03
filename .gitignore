@@ -1,13 +1,14 @@
 node_modules/
 .env
 .env.example
+.env.local
 uploads/
+backend/src/uploads/
+backend/data/
+data/
 coverage/
 .DS_Store
 npm-debug.log
 .next/
 out/
 build/
-.env.local
-data/uploads/
-data/embeddings/
