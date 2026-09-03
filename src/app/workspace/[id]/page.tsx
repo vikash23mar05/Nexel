@@ -781,7 +781,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
                                 await saveLocalHighlights(docId, filtered);
                               } catch(dbErr) {}
                               try {
-                                await fetch(`http://localhost:5000/api/highlights/${h.id}`, { method: 'DELETE' });
+                                await fetch(`${API_BASE}/api/highlights/${h.id}`, { method: 'DELETE' });
                               } catch(e) {}
                             }}
                             className="text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"

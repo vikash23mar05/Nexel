@@ -33,6 +33,7 @@ export default function LandingPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -51,7 +52,7 @@ export default function LandingPage() {
           const headers: HeadersInit = {};
           if (token) headers["Authorization"] = `Bearer ${token}`;
 
-          const res = await fetch("http://localhost:5000/api/documents/upload", {
+          const res = await fetch(`${API_BASE}/api/documents/upload`, {
             method: "POST",
             headers,
             body: formData

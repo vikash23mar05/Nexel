@@ -38,13 +38,14 @@ export default function KnowledgeGraphVisualizer({ docId, docName, onAskAI }: Kn
   const [zoom, setZoom] = useState<number>(1);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
   const fetchGraph = async (forceRegenerate = false) => {
     setLoading(true);
     try {
       const endpoint = forceRegenerate 
-        ? `http://localhost:5000/api/graph/${docId}/generate`
-        : `http://localhost:5000/api/graph/${docId}`;
+        ? `${API_BASE}/api/graph/${docId}/generate`
+        : `${API_BASE}/api/graph/${docId}`;
 
       const method = forceRegenerate ? "POST" : "GET";
       const res = await fetch(endpoint, { method });
