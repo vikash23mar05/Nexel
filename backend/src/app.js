@@ -36,6 +36,7 @@ app.use('/api/highlights', require('./routes/highlights'));
 app.use('/api/roadmaps', require('./routes/roadmaps'));
 app.use('/api/ai', require('./routes/ai'));
 app.use('/api/graph', require('./routes/graph'));
+app.use('/api/integrations/google', require('./routes/googleDrive'));
 
 // Centralized error handling
 app.use(errorHandler);

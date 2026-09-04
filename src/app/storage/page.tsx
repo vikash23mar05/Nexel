@@ -1,16 +1,19 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { User, Home, Folder, RefreshCw, Download, Plus, FileText, Edit2, Check, FolderPlus, X, Menu, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Document, Page, pdfjs } from 'react-pdf';
-import { getLocalDocuments, saveLocalDocument } from '../../utils/indexedDB';
+import { getLocalDocuments } from '../../utils/indexedDB';
 
 if (typeof window !== "undefined") {
   pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 }
 
 export default function StoragePage() {
+  const { getToken, signOut } = useAuth();
+  const { user } = useUser();
   const router = useRouter();
   const [documents, setDocuments] = useState<any[]>([]);
   const [folders, setFolders] = useState<any[]>([]);
@@ -30,10 +33,39 @@ export default function StoragePage() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   
   const [userEmail, setUserEmail] = useState("Loading...");
+  const [isDriveConnected, setIsDriveConnected] = useState(false);
+  const [isConnectingDrive, setIsConnectingDrive] = useState(false);
+
+  const getApiToken = async () => {
+    return (await getToken()) || localStorage.getItem("token") || "";
+  };
+
+  const checkDriveConnection = async () => {
+    const token = await getApiToken();
+    const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/integrations/google/status`, { headers });
+    if (response.ok) setIsDriveConnected((await response.json()).connected);
+  };
+
+  const connectGoogleDrive = async () => {
+    setIsConnectingDrive(true);
+    try {
+      const token = await getApiToken();
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/integrations/google/connect`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not start Google Drive connection");
+      window.location.href = data.url;
+    } catch (error) {
+      console.error(error);
+      setIsConnectingDrive(false);
+    }
+  };
 
   const fetchDocuments = async () => {
     setIsLoading(true);
-    const token = localStorage.getItem("token");
+    const token = await getApiToken();
     if (!token) {
       window.location.href = "/login";
       return;
@@ -90,12 +122,14 @@ export default function StoragePage() {
   };
 
   useEffect(() => {
+    if (user?.primaryEmailAddress?.emailAddress) setUserEmail(user.primaryEmailAddress.emailAddress);
     fetchDocuments();
-  }, []);
+    checkDriveConnection().catch(error => console.error("Failed to check Google Drive connection", error));
+  }, [user]);
 
   const handleRename = async (docId: string) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = await getApiToken();
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
       const res = await fetch(`${baseUrl}/api/documents/${docId}`, {
         method: "PUT",
@@ -117,7 +151,7 @@ export default function StoragePage() {
   const handleMoveDocument = async (docId: string, folderId: string | null) => {
     try {
       setDocuments(prev => prev.map(d => d.id === docId ? { ...d, folderId } : d));
-      const token = localStorage.getItem("token");
+      const token = await getApiToken();
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
       await fetch(`${baseUrl}/api/documents/${docId}`, {
         method: "PUT",
@@ -138,7 +172,7 @@ export default function StoragePage() {
     setDocuments(prev => prev.filter(d => d.id !== docId));
 
     try {
-      const token = localStorage.getItem("token");
+      const token = await getApiToken();
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
       await fetch(`${baseUrl}/api/documents/${docId}`, {
         method: "DELETE",
@@ -157,7 +191,7 @@ export default function StoragePage() {
     if (activeFolderId === folderId) setActiveFolderId(null);
 
     try {
-      const token = localStorage.getItem("token");
+      const token = await getApiToken();
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
       await fetch(`${baseUrl}/api/folders/${folderId}`, {
         method: "DELETE",
@@ -172,7 +206,7 @@ export default function StoragePage() {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       setIsUploading(true);
-      const token = localStorage.getItem("token");
+      const token = await getApiToken();
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
       try {
@@ -204,19 +238,8 @@ export default function StoragePage() {
           throw new Error(errorBody.error || `Server upload failed (${res.status})`);
         }
       } catch (err) {
-        console.warn("Server upload failed; saving locally:", err);
-        const localId = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-        await saveLocalDocument(localId, file.name, `${(file.size / (1024 * 1024)).toFixed(1)} MB`, file);
-        setDocuments(prev => [{
-          id: `local-${localId}`,
-          localId,
-          name: file.name,
-          size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
-          type: "PDF",
-          folderId: activeFolderId,
-          uploadedAt: new Date().toISOString(),
-          isLocal: true
-        }, ...prev]);
+        console.error("Google Drive upload failed:", err);
+        alert(err instanceof Error ? err.message : "Google Drive upload failed. Please connect Drive and try again.");
       } finally {
         setIsUploading(false);
         if (fileInputRef.current) fileInputRef.current.value = "";
@@ -227,7 +250,7 @@ export default function StoragePage() {
   const handleCreateFolder = async () => {
     if (!newFolderName.trim()) return;
 
-    const token = localStorage.getItem("token");
+    const token = await getApiToken();
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
     try {
@@ -313,7 +336,7 @@ export default function StoragePage() {
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-gray-100">Account</h3>
-                  <p className="text-xs text-gray-400">{userEmail}</p>
+                  <p className="text-xs text-gray-400">{user?.primaryEmailAddress?.emailAddress || userEmail}</p>
                 </div>
               </div>
               <button onClick={() => setIsMobileSidebarOpen(false)} className="text-gray-400 hover:text-white">
@@ -342,7 +365,7 @@ export default function StoragePage() {
             </div>
             <div>
               <h3 className="text-sm font-semibold text-gray-100">Account</h3>
-              <p className="text-xs text-gray-400">{userEmail}</p>
+              <p className="text-xs text-gray-400">{user?.primaryEmailAddress?.emailAddress || userEmail}</p>
             </div>
           </div>
         </div>
@@ -355,9 +378,9 @@ export default function StoragePage() {
             <Folder className="w-5 h-5 text-center" /> Storage
           </a>
           <button 
-            onClick={() => {
+            onClick={async () => {
               localStorage.removeItem("token");
-              window.location.href = "/login";
+              await signOut({ redirectUrl: "/login" });
             }}
             className="w-full flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-[#2A2A2A] transition-colors mt-auto border-t border-[#333]"
           >
@@ -400,6 +423,13 @@ export default function StoragePage() {
                 className="bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-800 text-white px-3 sm:px-5 py-2.5 rounded-md text-xs sm:text-sm font-semibold flex items-center gap-2 transition-colors"
               >
                 <Plus className="w-4 h-4" /> {isUploading ? "Uploading..." : "Upload PDF"}
+              </button>
+              <button
+                onClick={connectGoogleDrive}
+                disabled={isConnectingDrive || isDriveConnected}
+                className={`px-3 sm:px-5 py-2.5 rounded-md text-xs sm:text-sm font-semibold transition-colors ${isDriveConnected ? "bg-emerald-900 text-emerald-200" : "bg-white text-black hover:bg-gray-200"}`}
+              >
+                {isConnectingDrive ? "Connecting..." : isDriveConnected ? "Drive Connected" : "Connect Google Drive"}
               </button>
             </div>
           </div>
@@ -477,13 +507,13 @@ export default function StoragePage() {
                 <div key={doc.id} className="group flex flex-col">
                   {}
                   <div 
-                    onClick={() => {
+                    onClick={async () => {
                       if (doc.isLocal) {
                         router.push(`/workspace/${doc.id}?url=${encodeURIComponent(`indexeddb://${doc.localId}`)}&name=${encodeURIComponent(doc.name)}`);
                         return;
                       }
                       const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-                      const token = localStorage.getItem("token") || "";
+                      const token = await getApiToken();
                       const targetUrl = `${baseUrl}/api/documents/${doc.id}/stream?token=${token}`;
                       router.push(`/workspace/${doc.id}?url=${encodeURIComponent(targetUrl)}&name=${encodeURIComponent(doc.name)}`);
                     }}

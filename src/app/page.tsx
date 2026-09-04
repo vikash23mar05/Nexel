@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 import { 
   Sparkles, 
   MessageSquare, 
@@ -17,15 +18,11 @@ import {
 } from "lucide-react";
 
 export default function LandingPage() {
+  const { isSignedIn, getToken } = useAuth();
   const [isMounted, setIsMounted] = useState(false);
-  const [isSignedIn, setIsSignedIn] = useState(false);
   
   useEffect(() => {
     setIsMounted(true);
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsSignedIn(true);
-    }
   }, []);
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -48,7 +45,7 @@ export default function LandingPage() {
         let data: any = {};
 
         try {
-          const token = localStorage.getItem("token");
+          const token = (await getToken()) || localStorage.getItem("token");
           const headers: HeadersInit = {};
           if (token) headers["Authorization"] = `Bearer ${token}`;
 

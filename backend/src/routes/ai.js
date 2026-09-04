@@ -1,14 +1,81 @@
 // backend/src/routes/ai.js
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const { retrieveRelevantChunksFromMongo } = require('../utils/rag');
+const Document = require('../models/Document');
+const auth = require('../middleware/auth');
 
-router.post('/generate', async (req, res, next) => {
+router.post('/image', async (req, res, next) => {
+  try {
+    const { prompt, text } = req.body;
+    const sourceText = String(prompt || text || '').trim();
+
+    if (!sourceText) {
+      return res.status(400).json({ error: 'A prompt or document text is required.' });
+    }
+
+    let imagePrompt = sourceText.slice(0, 700);
+    let provider = 'Pollinations';
+    const geminiKey = process.env.GEMINI_API_KEY;
+
+    if (geminiKey) {
+      try {
+        const geminiResponse = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: `Turn this study note into one precise image-generation prompt. Describe the main subjects, setting, composition, and visual style. Do not include words, labels, logos, or explanations. Return only the prompt.\n\nStudy note: ${sourceText.slice(0, 1200)}` }] }],
+              generationConfig: { temperature: 0.2, maxOutputTokens: 180 }
+            })
+          }
+        );
+        if (geminiResponse.ok) {
+          const data = await geminiResponse.json();
+          const enhancedPrompt = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+          if (enhancedPrompt) {
+            imagePrompt = enhancedPrompt;
+            provider = 'Gemini + Pollinations';
+          }
+        }
+      } catch (error) {
+        console.warn('[Image Prompt Enhancement] Gemini unavailable, using source text:', error.message);
+      }
+    }
+
+    let seed = 0;
+    for (const character of imagePrompt) seed = (seed * 31 + character.charCodeAt(0)) >>> 0;
+    const encodedPrompt = encodeURIComponent(
+      `Educational concept illustration, specific and literal, clean composition, no text, no labels, based on: ${imagePrompt}`
+    );
+    return res.json({
+      provider,
+      imageUrl: `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=768&nologo=true&seed=${seed}`
+    });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.post('/generate', auth, async (req, res, next) => {
   try {
     const { prompt, action, text, docId } = req.body;
 
+    const hasDatabaseDocument = docId && mongoose.Types.ObjectId.isValid(docId);
+
+    if (docId && !hasDatabaseDocument) {
+      console.log(`[AI] Skipping server RAG lookup for local document: ${docId}`);
+    }
+
+    if (hasDatabaseDocument) {
+      const document = await Document.findOne({ _id: docId, owner: req.user.id }).select('_id');
+      if (!document) return res.status(404).json({ error: 'Document not found' });
+    }
+
     let ragContext = '';
-    if (docId) {
+    if (hasDatabaseDocument) {
       try {
         const queryText = prompt || text || '';
         if (queryText) {
@@ -32,12 +99,14 @@ router.post('/generate', async (req, res, next) => {
       systemPrompt = 'You are a helpful assistant. Explain the provided text in simpler terms.';
     } else if (action === 'flashcards') {
       systemPrompt = 'You are a helpful assistant. Generate a few flashcards based on the provided text. Format them as Q: ... A: ...';
+    } else if (action === 'video-script') {
+      systemPrompt = 'You are a helpful study-content writer. Create a concise 5-scene video storyboard with narration and suggested visuals. Keep it under 250 words.';
     } else if (action === 'chat') {
       systemPrompt = ragContext
-        ? 'You are a helpful assistant answering questions about a document. Use the provided excerpts to answer accurately. If the excerpts don\'t contain the answer, say so clearly instead of guessing.'
-        : 'You are a helpful assistant.';
+        ? 'Answer in 3-6 concise sentences. Use the provided excerpts accurately. If they do not contain the answer, say so clearly instead of guessing.'
+        : 'Answer directly in 3-6 concise sentences. Avoid repetition and unnecessary background.';
     } else {
-      systemPrompt = 'You are a helpful assistant.';
+      systemPrompt = 'Be concise and precise. Use short paragraphs or bullets and avoid repetition.';
     }
 
     const combinedContext = [ragContext, text].filter(Boolean).join('\n\n---\n\n');
@@ -94,7 +163,7 @@ router.post('/generate', async (req, res, next) => {
       ],
       model: modelName,
       temperature: 0.7,
-      max_tokens: 1024
+      max_tokens: action === 'chat' ? 512 : action === 'summarize' || action === 'explain' ? 384 : 640
     };
 
     let generatedText = '';

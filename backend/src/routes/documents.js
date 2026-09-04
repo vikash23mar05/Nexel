@@ -3,10 +3,12 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const fs = require('fs');
-const jwt = require('jsonwebtoken');
 const Document = require('../models/Document');
 const multer = require('multer');
 const { processAndSaveDocumentRAG } = require('../utils/rag');
+const auth = require('../middleware/auth');
+const { verifyIdentity } = auth;
+const { uploadPdf, downloadPdf, deletePdf } = require('../lib/googleDrive');
 
 // Configure Multer storage – files go to ./uploads
 const storage = multer.diskStorage({
@@ -33,40 +35,19 @@ const upload = multer({
 });
 
 // Middleware for optional auth
-const optionalAuth = (req, res, next) => {
+const optionalAuth = async (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
   if (token) {
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
-      req.user = decoded;
-    } catch (err) {
-      // Ignore token error for public access
-    }
+    req.user = await verifyIdentity(token);
   }
   next();
-};
-
-// Middleware for required auth
-const auth = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-  if (!token) return res.status(401).json({ error: 'No token provided' });
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
-    req.user = decoded;
-    next();
-  } catch (err) {
-    res.status(401).json({ error: 'Invalid token' });
-  }
 };
 
 // List all documents for the logged-in user (including guest uploads)
 router.get('/', auth, async (req, res, next) => {
   try {
     const documents = await Document.find({
-      $or: [
-        { owner: req.user.id },
-        { owner: '000000000000000000000000' }
-      ]
+      owner: req.user.id
     }).sort({ createdAt: -1 });
     
     const formattedDocs = documents.map(doc => ({
@@ -93,16 +74,21 @@ router.post('/upload', optionalAuth, upload.single('file'), async (req, res, nex
     // Use logged in user ID or a fallback ObjectId string for guest uploads
     const ownerId = req.user?.id || '000000000000000000000000';
 
+    const driveFile = await uploadPdf(ownerId, req.file.path, title || req.file.originalname);
     const doc = new Document({
       title: title || req.file.originalname,
       owner: ownerId,
       folder: folder || null,
       filePath: req.file.path,
+      storageProvider: driveFile ? 'google-drive' : 'local',
+      driveFileId: driveFile?.id || null,
     });
     await doc.save();
 
     // Trigger RAG processing & MongoDB embedding generation in background
-    processAndSaveDocumentRAG(doc._id, doc.filePath).catch((err) => {
+    processAndSaveDocumentRAG(doc._id, doc.filePath).then(() => {
+      if (driveFile && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+    }).catch((err) => {
       console.error('Background RAG embedding failed:', err);
     });
 
@@ -125,16 +111,25 @@ router.post('/', auth, upload.single('file'), async (req, res, next) => {
   try {
     const { title, folder } = req.body;
     if (!req.file) return res.status(400).json({ error: 'File missing' });
+    const driveFile = await uploadPdf(req.user.id, req.file.path, title || req.file.originalname);
+    if (!driveFile) {
+      fs.unlinkSync(req.file.path);
+      return res.status(412).json({ error: 'Connect Google Drive before uploading documents.' });
+    }
     const doc = new Document({
       title: title || req.file.originalname,
       owner: req.user.id,
       folder: folder || null,
       filePath: req.file.path,
+      storageProvider: driveFile ? 'google-drive' : 'local',
+      driveFileId: driveFile?.id || null,
     });
     await doc.save();
 
     // Trigger RAG processing & MongoDB embedding generation in background
-    processAndSaveDocumentRAG(doc._id, doc.filePath).catch((err) => {
+    processAndSaveDocumentRAG(doc._id, doc.filePath).then(() => {
+      if (driveFile && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+    }).catch((err) => {
       console.error('Background RAG embedding failed:', err);
     });
 
@@ -145,10 +140,15 @@ router.post('/', auth, upload.single('file'), async (req, res, next) => {
 });
 
 // Stream a PDF to client (supports range requests)
-router.get('/:id/stream', optionalAuth, async (req, res, next) => {
+router.get('/:id/stream', auth, async (req, res, next) => {
   try {
-    const doc = await Document.findById(req.params.id);
+    const doc = await Document.findOne({ _id: req.params.id, owner: req.user.id });
     if (!doc) return res.status(404).json({ error: 'Document not found' });
+    if (doc.storageProvider === 'google-drive' && doc.driveFileId) {
+      res.setHeader('Content-Type', doc.mimeType || 'application/pdf');
+      if (await downloadPdf(req.user.id, doc.driveFileId, res)) return;
+      return res.status(404).json({ error: 'Google Drive file unavailable' });
+    }
     const filePath = doc.filePath;
     if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'File missing on server' });
 
@@ -184,9 +184,9 @@ router.get('/:id/stream', optionalAuth, async (req, res, next) => {
 });
 
 // Get single document details
-router.get('/:id', optionalAuth, async (req, res, next) => {
+router.get('/:id', auth, async (req, res, next) => {
   try {
-    const doc = await Document.findById(req.params.id);
+    const doc = await Document.findOne({ _id: req.params.id, owner: req.user.id });
     if (!doc) return res.status(404).json({ error: 'Document not found' });
     res.json(doc);
   } catch (err) {
@@ -221,6 +221,9 @@ router.delete('/:id', auth, async (req, res, next) => {
     if (!doc) return res.status(404).json({ error: 'Document not found' });
     if (fs.existsSync(doc.filePath)) {
       fs.unlinkSync(doc.filePath);
+    }
+    if (doc.storageProvider === 'google-drive' && doc.driveFileId) {
+      await deletePdf(req.user.id, doc.driveFileId).catch(() => {});
     }
     res.json({ message: 'Document deleted' });
   } catch (err) {

@@ -4,6 +4,9 @@ const router = express.Router();
 const KnowledgeGraph = require('../models/KnowledgeGraph');
 const Document = require('../models/Document');
 const { extractKnowledgeGraph } = require('../utils/graphExtractor');
+const auth = require('../middleware/auth');
+
+router.use(auth);
 
 // GET /api/graph/:docId — Fetch or generate Knowledge Graph
 router.get('/:docId', async (req, res, next) => {
@@ -13,7 +16,8 @@ router.get('/:docId', async (req, res, next) => {
     let graph = await KnowledgeGraph.findOne({ document: docId });
 
     if (!graph) {
-      const doc = await Document.findById(docId).catch(() => null);
+      const doc = await Document.findOne({ _id: docId, owner: req.user.id }).catch(() => null);
+      if (!doc) return res.status(404).json({ error: 'Document not found' });
       const filePath = doc?.filePath || '';
       graph = await extractKnowledgeGraph(docId, filePath);
     }
@@ -30,7 +34,8 @@ router.post('/:docId/generate', async (req, res, next) => {
   try {
     const { docId } = req.params;
 
-    const doc = await Document.findById(docId).catch(() => null);
+    const doc = await Document.findOne({ _id: docId, owner: req.user.id }).catch(() => null);
+    if (!doc) return res.status(404).json({ error: 'Document not found' });
     const filePath = doc?.filePath || '';
 
     const graph = await extractKnowledgeGraph(docId, filePath);

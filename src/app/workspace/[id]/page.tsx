@@ -7,6 +7,7 @@ import {
   AlignLeft, Send 
 } from "lucide-react";
 import React, { useState, useEffect, use, useRef } from "react";
+import { useAuth } from "@clerk/nextjs";
 import dynamic from "next/dynamic";
 import { io, Socket } from "socket.io-client";
 
@@ -21,6 +22,7 @@ const KnowledgeGraphVisualizer = dynamic(() => import("@/components/KnowledgeGra
 });
 
 export default function WorkspacePage({ params }: { params: Promise<{ id: string }> }) {
+  const { getToken } = useAuth();
   const unwrappedParams = use(params);
   const [activeTab, setActiveTab] = useState("Notes");
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
@@ -50,6 +52,11 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
   const [zoomLevel, setZoomLevel] = useState(1);
   const viewerRef = useRef<HTMLDivElement>(null);
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+  const getAuthHeaders = async (): Promise<Record<string, string>> => {
+    const token = await getToken();
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
 
   const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.25, 3));
   const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
@@ -272,7 +279,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     try {
       const res = await fetch(`${API_BASE}/api/ai/generate`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(await getAuthHeaders()) },
         body: JSON.stringify({ prompt: "", action, text, docId })
       });
 
@@ -333,7 +340,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     try {
       const res = await fetch(`${API_BASE}/api/ai/generate`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(await getAuthHeaders()) },
         body: JSON.stringify({ prompt: currentInput, action: "chat", text: contextText, docId })
       });
 
@@ -416,7 +423,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     try {
       const res = await fetch(`${API_BASE}/api/ai/image`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(await getAuthHeaders()) },
         body: JSON.stringify({ text })
       });
       if (!res.ok) throw new Error("Image generation failed");
@@ -463,7 +470,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     try {
       await fetch(`${API_BASE}/api/highlights`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(await getAuthHeaders()) },
         body: JSON.stringify({ docId, highlight: newHighlight })
       });
     } catch (e) {
@@ -518,7 +525,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     }
 
     if (docId) {
-      fetch(`${API_BASE}/api/highlights?docId=${docId}`)
+      getAuthHeaders().then(headers => fetch(`${API_BASE}/api/highlights?docId=${docId}`, { headers }))
         .then(res => {
           if (!res.ok) throw new Error("Server error fetching highlights");
           return res.json();
@@ -908,7 +915,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
                                 await saveLocalHighlights(docId, filtered);
                               } catch(dbErr) {}
                               try {
-                                await fetch(`${API_BASE}/api/highlights/${h.id}`, { method: 'DELETE' });
+                                await fetch(`${API_BASE}/api/highlights/${h.id}`, { method: 'DELETE', headers: await getAuthHeaders() });
                               } catch(e) {}
                             }}
                             className="text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"

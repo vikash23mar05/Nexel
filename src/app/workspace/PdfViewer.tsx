@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   PdfLoader,
   PdfHighlighter,
@@ -8,7 +8,7 @@ import {
   Popup,
   AreaHighlight,
 } from "react-pdf-highlighter";
-import type { IHighlight, NewHighlight, ViewportHighlight } from "react-pdf-highlighter";
+import type { IHighlight, NewHighlight } from "react-pdf-highlighter";
 import { pdfjs } from 'react-pdf';
 
 import "./pdf_viewer.css";
@@ -16,8 +16,6 @@ import "react-pdf-highlighter/dist/style.css";
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-
-const getNextId = () => String(Math.random()).slice(2);
 
 interface CustomHighlight extends IHighlight {
   color?: string;

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Lora } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 const inter = Inter({
@@ -26,13 +27,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${lora.variable} dark antialiased`}
-    >
-      <body suppressHydrationWarning className="min-h-full flex flex-col font-sans bg-background text-text-primary bg-[#0A0A0A]">
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html
+        lang="en"
+        className={`${inter.variable} ${lora.variable} dark antialiased`}
+      >
+        <body suppressHydrationWarning className="min-h-full flex flex-col font-sans bg-background text-text-primary bg-[#0A0A0A]">
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

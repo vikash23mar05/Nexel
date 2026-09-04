@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useAuth } from "@clerk/nextjs";
 import { Sparkles, Network, RefreshCw, ZoomIn, ZoomOut, Search, Send, Layers, Info } from "lucide-react";
 
 interface Node {
@@ -30,6 +31,7 @@ interface KnowledgeGraphVisualizerProps {
 }
 
 export default function KnowledgeGraphVisualizer({ docId, docName, onAskAI }: KnowledgeGraphVisualizerProps) {
+  const { getToken } = useAuth();
   const [graphData, setGraphData] = useState<KnowledgeGraphData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
@@ -48,7 +50,11 @@ export default function KnowledgeGraphVisualizer({ docId, docName, onAskAI }: Kn
         : `${API_BASE}/api/graph/${docId}`;
 
       const method = forceRegenerate ? "POST" : "GET";
-      const res = await fetch(endpoint, { method });
+      const token = await getToken();
+      const res = await fetch(endpoint, {
+        method,
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
       if (res.ok) {
         const data = await res.json();
         setGraphData(data);
