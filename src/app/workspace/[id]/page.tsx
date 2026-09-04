@@ -1,10 +1,9 @@
 "use client";
 
 import { 
-  User, Home, Folder, FileText, StickyNote, Library, Network, 
+  User, Home, Folder, FileText, Library, Network,
   MessageSquare, Video, Settings, ArrowLeft, ChevronDown, ZoomOut, 
-  ZoomIn, Maximize, Minimize, Sparkles, Highlighter, Type, 
-  MessageSquareText, ArrowRight, Plus, X, Copy, Download, Menu, 
+  ZoomIn, Maximize, Minimize, Sparkles, Crop, ArrowRight, Plus, X, Copy, Download, Menu, Image as ImageIcon,
   AlignLeft, Send 
 } from "lucide-react";
 import React, { useState, useEffect, use, useRef } from "react";
@@ -34,14 +33,19 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
   const [chatMessages, setChatMessages] = useState<{role: string, text: string}[]>([]);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [chatInput, setChatInput] = useState("");
+  const [selectedContextText, setSelectedContextText] = useState("");
   const [rightSidebarWidth, setRightSidebarWidth] = useState(360);
   const [isMobile, setIsMobile] = useState(false);
   const [docName, setDocName] = useState("Loading Document...");
-  const [flashcards, setFlashcards] = useState<{question: string, answer: string}[]>([]);
+  const [flashcards, setFlashcards] = useState<{question: string, answer: string, image?: string}[]>([]);
   const [flippedCards, setFlippedCards] = useState<Record<number, boolean>>({});
   const [activeReaders, setActiveReaders] = useState<any[]>([]);
   const [isCopied, setIsCopied] = useState(false);
   const [isNotesCopied, setIsNotesCopied] = useState(false);
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
+  const [isGeneratingMedia, setIsGeneratingMedia] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isClipSelectionEnabled, setIsClipSelectionEnabled] = useState(false);
   
   const [zoomLevel, setZoomLevel] = useState(1);
   const viewerRef = useRef<HTMLDivElement>(null);
@@ -58,6 +62,15 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
       document.exitFullscreen();
     }
   };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(document.fullscreenElement === viewerRef.current);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
 
   const getNotesMarkdown = () => {
     if (highlights.length === 0) return "No highlights yet.";
@@ -128,31 +141,105 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
   const renderMarkdown = (content: string) => {
     if (!content) return "";
 
-    const lines = content.split('\n');
+    const normalizedContent = content
+      .replace(/\r/g, "")
+      .replace(/\)\s+(?=[A-Z][a-z]+\s+is\s+a\s+step)/g, ").\n\n")
+      .replace(/([^\n])\s+(#{1,6})\s+/g, "$1\n\n$2 ")
+      .replace(/([^\n])\s+(\d+\.\s+)/g, "$1\n$2");
+    const lines = normalizedContent.split("\n");
 
-    return lines.map((line, idx) => {
-
-      const isHeader = line.trim().startsWith('###') || line.trim().startsWith('##') || line.trim().startsWith('#') || line.trim().startsWith('**Key');
-
-      const parts = line.split(/\*\*([^*]+)\*\*/g);
-      const renderedLine = parts.map((part, pIdx) => {
-        if (pIdx % 2 === 1) {
-          return <strong key={pIdx} className="font-bold text-gray-100">{part}</strong>;
+    const renderInline = (value: string) => {
+      const tokens = value.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g);
+      return tokens.map((token, index) => {
+        if (token.startsWith("**") && token.endsWith("**")) {
+          return <strong key={index} className="font-semibold text-white">{token.slice(2, -2)}</strong>;
         }
-        return part;
+        if (token.startsWith("*") && token.endsWith("*")) {
+          return <em key={index}>{token.slice(1, -1)}</em>;
+        }
+        if (token.startsWith("`") && token.endsWith("`")) {
+          return <code key={index} className="rounded bg-black/30 px-1 py-0.5 text-emerald-200">{token.slice(1, -1)}</code>;
+        }
+        return token;
       });
+    };
 
-      if (isHeader) {
-        return <h4 key={idx} className="text-sm font-bold text-emerald-400 mt-4 mb-2">{renderedLine}</h4>;
+    const blocks: React.ReactNode[] = [];
+    let index = 0;
+    while (index < lines.length) {
+      const line = lines[index].trim();
+      if (!line) {
+        index += 1;
+        continue;
       }
 
-      const isList = /^\d+\.\s/.test(line.trim()) || /^[\*\-\+]\s/.test(line.trim());
-      if (isList) {
-        return <div key={idx} className="pl-4 py-1 text-gray-300 leading-relaxed list-item list-disc ml-4">{renderedLine}</div>;
+      if (/^\|?\s*:?-{3,}/.test(line)) {
+        index += 1;
+        continue;
       }
 
-      return line.trim() === "" ? <div key={idx} className="h-2" /> : <p key={idx} className="text-gray-300 mb-2 leading-relaxed">{renderedLine}</p>;
-    });
+      if (line.includes("|") && lines[index + 1]?.includes("|")) {
+        const tableRows: string[][] = [];
+        while (index < lines.length && lines[index].includes("|")) {
+          const row = lines[index].trim();
+          if (!/^\|?\s*:?-{3,}/.test(row)) {
+            tableRows.push(row.replace(/^\||\|$/g, "").split("|").map(cell => cell.trim()));
+          }
+          index += 1;
+        }
+        blocks.push(
+          <div key={blocks.length} className="my-3 overflow-x-auto rounded border border-emerald-500/20">
+            <table className="w-full min-w-[360px] text-left text-xs">
+              <tbody>
+                {tableRows.map((row, rowIndex) => (
+                  <tr key={rowIndex} className={rowIndex === 0 ? "bg-emerald-500/10 text-emerald-200" : "border-t border-emerald-500/10 text-gray-300"}>
+                    {row.map((cell, cellIndex) => <td key={cellIndex} className="px-2 py-2 align-top">{renderInline(cell)}</td>)}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+        continue;
+      }
+
+      const heading = line.match(/^(#{1,6})\s+(.+)/);
+      if (heading) {
+        blocks.push(<h4 key={blocks.length} className="mt-4 mb-2 text-sm font-semibold text-emerald-300">{renderInline(heading[2])}</h4>);
+        index += 1;
+        continue;
+      }
+
+      if (/^[-*_]{3,}$/.test(line)) {
+        blocks.push(<hr key={blocks.length} className="my-3 border-emerald-500/20" />);
+        index += 1;
+        continue;
+      }
+
+      if (/^(\d+\.|[-+*])\s+/.test(line)) {
+        const listItems: string[] = [];
+        while (index < lines.length && /^(\d+\.|[-+*])\s+/.test(lines[index].trim())) {
+          listItems.push(lines[index].trim().replace(/^(\d+\.|[-+*])\s+/, ""));
+          index += 1;
+        }
+        blocks.push(
+          <ul key={blocks.length} className="my-2 list-disc space-y-1 pl-5 text-gray-300">
+            {listItems.map((item, itemIndex) => <li key={itemIndex}>{renderInline(item)}</li>)}
+          </ul>
+        );
+        continue;
+      }
+
+      const paragraphLines = [line];
+      index += 1;
+      while (index < lines.length && lines[index].trim() && !/^(#{1,6})\s|^(\d+\.|[-+*])\s|^\|/.test(lines[index].trim())) {
+        paragraphLines.push(lines[index].trim());
+        index += 1;
+      }
+      blocks.push(<p key={blocks.length} className="mb-3 text-gray-300 leading-relaxed">{renderInline(paragraphLines.join(" "))}</p>);
+    }
+
+    return blocks;
   };
 
   const parseFlashcards = (content: string) => {
@@ -168,14 +255,14 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     return parsedCards;
   };
 
-  const handleAIGenerate = async (action: string) => {
+  const handleAIGenerate = async (action: string, selectedText?: string) => {
     const targetHighlight = highlights.find(h => h.id === activeHighlightId) || highlights[0];
-    if (!targetHighlight || !targetHighlight.content?.text) {
+    const text = selectedText || targetHighlight?.content?.text || "";
+    if (!text) {
       alert("Please select a highlight with text first!");
       return;
     }
 
-    const text = targetHighlight.content.text;
     setActiveTab("Chat");
 
     const userMsg = { role: "user", text: `Please ${action} this text: "${text}"` };
@@ -213,6 +300,12 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
         if (parsedCards.length > 0) {
           setFlashcards(prevCards => [...prevCards, ...parsedCards]);
           setActiveTab("Flashcards");
+        } else {
+          setFlashcards(prevCards => [...prevCards, {
+            question: "What is the main idea of this snippet?",
+            answer: text
+          }]);
+          setActiveTab("Flashcards");
         }
       }
     } catch(e) {
@@ -230,7 +323,8 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
     setActiveTab("Chat");
 
     const targetHighlight = highlights.find(h => h.id === activeHighlightId) || highlights[0];
-    const contextText = targetHighlight ? targetHighlight.content?.text || "" : "";
+    const contextText = selectedContextText || (targetHighlight ? targetHighlight.content?.text || "" : "");
+    setSelectedContextText("");
 
     const userMsg = { role: "user", text: currentInput };
     setChatMessages(prev => [...prev, userMsg, { role: "assistant", text: "" }]);
@@ -270,6 +364,70 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
       console.error(e);
     } finally {
       setIsGeneratingAI(false);
+    }
+  };
+
+  const handleContextAction = async (
+    action: "explain" | "ask" | "highlight" | "flashcard",
+    text: string,
+    highlight: any
+  ) => {
+    setIsClipSelectionEnabled(false);
+
+    if (action === "highlight") {
+      await addHighlight(highlight, activeColor);
+      return;
+    }
+
+    if (action === "flashcard") {
+      if (highlight.content?.image) {
+        setFlashcards(prevCards => [...prevCards, {
+          question: "What does this clipped section show?",
+          answer: "",
+          image: highlight.content.image
+        }]);
+        setActiveTab("Flashcards");
+      } else {
+        await handleAIGenerate("flashcards", text);
+      }
+      return;
+    }
+
+    if (action === "explain") {
+      await handleAIGenerate("explain", text);
+      return;
+    }
+
+    setSelectedContextText(text);
+    setActiveTab("Chat");
+    setChatInput("What does this mean?");
+  };
+
+  const handleGenerateImage = async () => {
+    const targetHighlight = highlights.find(h => h.id === activeHighlightId) || highlights[0];
+    const text = chatInput.trim() || targetHighlight?.content?.text || "";
+    if (!text) {
+      alert("Select a highlight or enter a prompt first.");
+      return;
+    }
+
+    setIsGeneratingMedia(true);
+    setActiveTab("Chat");
+    try {
+      const res = await fetch(`${API_BASE}/api/ai/image`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      });
+      if (!res.ok) throw new Error("Image generation failed");
+      const data = await res.json();
+      setGeneratedImageUrl(data.imageUrl);
+      setChatMessages(prev => [...prev, { role: "assistant", text: "Generated study illustration:" }]);
+    } catch (error) {
+      console.error(error);
+      alert("Image generation is temporarily unavailable.");
+    } finally {
+      setIsGeneratingMedia(false);
     }
   };
 
@@ -394,7 +552,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
       
       setActiveColor(myColorKey); // Auto-set the user's default highlighter color
       
-      const user = { id: Math.random().toString(), name: "Vikash Kumar Vivek", color: myColorHex };
+      const user = { id: Math.random().toString(), name: "You", color: myColorHex };
       currentUserRef.current = user;
       
       socket.on("connect", () => {
@@ -445,7 +603,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
   }, [docId]);
 
   return (
-    <div className="bg-[#0A0A0A] text-gray-300 h-screen w-screen overflow-hidden flex selection:bg-emerald-500/30 relative">
+    <div className="bg-[#0A0A0A] text-gray-300 h-dvh w-full overflow-hidden flex selection:bg-emerald-500/30 relative">
       {}
       {!isLeftSidebarOpen && (
         <button 
@@ -475,8 +633,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
                   <User className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-100">Vikash Kumar Vivek</h3>
-                  <p className="text-xs text-gray-500">Test@email.com</p>
+                  <h3 className="text-sm font-semibold text-gray-100">Account</h3>
                 </div>
               </div>
             </div>
@@ -488,41 +645,21 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
               <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#181818] transition-colors" href="/storage">
                 <Folder className="w-5 h-5 text-center" /> Storage
               </a>
-              <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-100 bg-[#181818] border border-[#2A2A2A] transition-colors" href="#">
+              <span className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-100 bg-[#181818] border border-[#2A2A2A]">
                 <FileText className="w-5 h-5 text-center" /> Documents
-              </a>
-              <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#181818] transition-colors" href="#">
-                <StickyNote className="w-5 h-5 text-center" /> Notes
-              </a>
-              <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#181818] transition-colors" href="#">
-                <Library className="w-5 h-5 text-center" /> Flashcards
-              </a>
-              <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#181818] transition-colors" href="#">
-                <Network className="w-5 h-5 text-center" /> Diagrams
-              </a>
-              <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#181818] transition-colors" href="#">
-                <MessageSquare className="w-5 h-5 text-center" /> AI Chat
-              </a>
-              <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#181818] transition-colors" href="#">
-                <Video className="w-5 h-5 text-center" /> Videos
-              </a>
+              </span>
             </nav>
           </div>
           {}
-          <div className="p-3 mb-2 border-t border-[#1E1E1E]">
-            <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#181818] transition-colors" href="/settings">
-              <Settings className="w-5 h-5 text-center" /> Settings
-            </a>
-          </div>
         </aside>
       )}
       {}
 
       {}
-      <main className="flex-1 flex flex-col relative min-w-0">
+      <main className="flex-1 flex flex-col relative min-w-0 min-h-0">
         {}
-        <header className="h-16 border-b border-[#1E1E1E] bg-[#0A0A0A] flex items-center justify-between px-4 lg:px-6 z-20">
-          <div className="flex items-center gap-4">
+        <header className="min-h-16 border-b border-[#1E1E1E] bg-[#0A0A0A] flex items-center justify-between gap-2 px-3 sm:px-4 lg:px-6 z-20">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <button 
               onClick={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)} 
               className="md:hidden text-gray-400 hover:text-white p-1"
@@ -537,7 +674,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
             </a>
             <h1 className="text-gray-100 font-medium text-sm sm:text-base truncate max-w-[120px] sm:max-w-none" title={docName}>{docName}</h1>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             {/* Color picker for smaller screens */}
             <div className="flex xl:hidden items-center gap-1.5 border-[#2A2A2A] border px-2 py-1 rounded-lg bg-[#111111]">
               {[
@@ -556,16 +693,16 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
               ))}
             </div>
             {}
-            <div className="hidden sm:flex items-center gap-3 text-sm text-gray-400 bg-[#111111] px-3 py-1.5 rounded-lg border border-[#2A2A2A]">
+            <div className="hidden md:flex items-center gap-3 text-sm text-gray-400 bg-[#111111] px-3 py-1.5 rounded-lg border border-[#2A2A2A]">
               <span>{Math.round(zoomLevel * 100)}%</span>
               <ChevronDown className="w-4 h-4 text-xs" />
             </div>
-            <div className="hidden sm:flex items-center gap-3 text-gray-400">
+            <div className="hidden md:flex items-center gap-3 text-gray-400">
               <button onClick={handleZoomOut} className="hover:text-white"><ZoomOut className="w-4 h-4" /></button>
               <button onClick={handleZoomIn} className="hover:text-white"><ZoomIn className="w-4 h-4" /></button>
               <div className="w-px h-4 bg-[#2A2A2A] mx-1"></div>
-              <button onClick={handleFullscreen} className="hover:text-white"><Maximize className="w-4 h-4" /></button>
-              <button onClick={() => document.exitFullscreen()} className="hover:text-white"><Minimize className="w-4 h-4" /></button>
+              <button onClick={handleFullscreen} title={isFullscreen ? "Exit fullscreen" : "Fullscreen"} className="hover:text-white"><Maximize className="w-4 h-4" /></button>
+              <button onClick={handleFullscreen} title={isFullscreen ? "Minimize PDF" : "Open fullscreen"} className="hover:text-white"><Minimize className="w-4 h-4" /></button>
             </div>
             {/* Active Readers UI */}
             {activeReaders.length > 0 && (
@@ -602,46 +739,36 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
 
             <button 
               onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
-              className="bg-emerald-400 hover:bg-emerald-500 text-black px-4 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors shadow-[0_0_15px_rgba(52,211,153,0.3)]">
-              <Sparkles className="w-4 h-4" /> AI Tools
+              className="bg-emerald-400 hover:bg-emerald-500 text-black px-2.5 sm:px-4 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors shadow-[0_0_15px_rgba(52,211,153,0.3)]">
+              <Sparkles className="w-4 h-4" /> <span className="hidden sm:inline">AI Tools</span>
+            </button>
+            <button
+              onClick={() => setIsClipSelectionEnabled(prev => !prev)}
+              title={isClipSelectionEnabled ? "Turn off clip selection" : "Select a PDF region for a flashcard"}
+              className={`flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg border text-sm transition-colors ${
+                isClipSelectionEnabled
+                  ? "border-emerald-400 bg-emerald-500 text-black"
+                  : "border-[#2A2A2A] bg-[#111111] text-gray-300 hover:text-white hover:bg-[#181818]"
+              }`}
+            >
+              <Crop className="w-4 h-4" /> <span className="hidden sm:inline">Clip</span>
             </button>
           </div>
         </header>
 
         {}
-        <div className="flex-1 overflow-y-auto bg-[#0E0E0E] relative flex justify-center pt-8 pb-32">
+        <div className="flex-1 min-h-0 overflow-auto bg-[#0E0E0E] relative flex justify-center p-2 sm:pt-8 sm:pb-32">
           {}
-          <div className="absolute left-6 top-24 bg-[#111111] border border-[#2A2A2A] rounded-xl p-2 flex-col gap-3 shadow-lg z-10 hidden xl:flex">
-            <button className="w-8 h-8 flex items-center justify-center rounded bg-emerald-500 text-black hover:bg-emerald-400 transition-colors">
-              <Highlighter className="w-4 h-4" />
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded text-gray-400 hover:text-white hover:bg-[#181818] transition-colors">
-              <Type className="w-4 h-4" />
-            </button>
-            {[
-              { id: "yellow", bg: "bg-yellow-400" },
-              { id: "blue", bg: "bg-blue-400" },
-              { id: "pink", bg: "bg-pink-400" },
-              { id: "green", bg: "bg-green-400" },
-            ].map(color => (
-              <div key={color.id} className="w-8 h-8 flex items-center justify-center" onClick={() => setActiveColor(color.id)}>
-                <div className={`w-4 h-4 rounded-full ${color.bg} cursor-pointer border-2 transition-all ${activeColor === color.id ? 'border-white scale-125' : 'border-[#111111]'}`}></div>
-              </div>
-            ))}
-            <button className="w-8 h-8 flex items-center justify-center rounded text-gray-400 hover:text-white hover:bg-[#181818] transition-colors mt-1">
-              <MessageSquareText className="w-4 h-4" />
-            </button>
-          </div>
-
-          {}
-          <div ref={viewerRef} className="bg-white text-gray-900 w-full max-w-full md:max-w-[850px] h-[calc(100vh-120px)] shadow-2xl rounded-sm text-sm lg:text-base leading-relaxed relative overflow-hidden">
+          <div ref={viewerRef} className="bg-white text-gray-900 w-full max-w-full md:max-w-[850px] min-h-[calc(100dvh-72px)] md:h-[calc(100dvh-120px)] shadow-2xl rounded-sm text-sm lg:text-base leading-relaxed relative overflow-hidden">
             {url ? (
               <PdfViewer 
                 docId={docId} 
                 url={url} 
                 highlights={highlights} 
                 addHighlight={addHighlight} 
+                onContextAction={handleContextAction}
                 activeColor={activeColor}
+                isClipSelectionEnabled={isClipSelectionEnabled}
                 pdfScaleValue={String(zoomLevel)}
               />
             ) : (
@@ -662,9 +789,9 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
       {isRightSidebarOpen && (
         <aside 
           style={{ width: isMobile ? "100%" : rightSidebarWidth }}
-          className={`bg-[#0A0A0A] flex flex-col transition-[width] duration-75 select-none ${
+            className={`bg-[#0A0A0A] flex flex-col transition-[width] duration-75 select-none ${
             isMobile 
-              ? "fixed inset-y-0 right-0 z-50 shadow-2xl animate-in slide-in-from-right duration-250" 
+              ? "fixed inset-0 z-50 shadow-2xl animate-in slide-in-from-right duration-250"
               : "relative border-l border-[#1E1E1E] z-20"
           }`}
         >
@@ -810,10 +937,13 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
                   <button onClick={() => handleAIGenerate('flashcards')} disabled={isGeneratingAI} className="flex items-center justify-center gap-2 py-2 px-3 bg-[#111111] border border-[#2A2A2A] rounded-lg text-xs font-medium text-gray-300 hover:bg-[#181818] hover:text-white transition-colors disabled:opacity-50">
                     <Library className="w-3 h-3" /> Flashcards
                   </button>
+                  <button onClick={handleGenerateImage} disabled={isGeneratingMedia} className="flex items-center justify-center gap-2 py-2 px-3 bg-[#111111] border border-[#2A2A2A] rounded-lg text-xs font-medium text-gray-300 hover:bg-[#181818] hover:text-white transition-colors disabled:opacity-50">
+                    <ImageIcon className="w-3 h-3" /> {isGeneratingMedia ? "Generating..." : "Image"}
+                  </button>
                   <button disabled className="flex items-center justify-center gap-2 py-2 px-3 bg-[#111111] border border-[#2A2A2A] rounded-lg text-xs font-medium text-gray-300 opacity-50 cursor-not-allowed">
                     <Network className="w-3 h-3" /> Diagrams
                   </button>
-                  <button disabled className="col-span-2 flex items-center justify-center gap-2 py-2 px-3 bg-[#111111] border border-[#2A2A2A] rounded-lg text-xs font-medium text-gray-300 opacity-50 cursor-not-allowed">
+                  <button onClick={() => handleAIGenerate('video-script')} disabled={isGeneratingAI} className="col-span-2 flex items-center justify-center gap-2 py-2 px-3 bg-[#111111] border border-[#2A2A2A] rounded-lg text-xs font-medium text-gray-300 hover:bg-[#181818] hover:text-white transition-colors disabled:opacity-50">
                     <Video className="w-3 h-3" /> Video Script
                   </button>
                 </div>
@@ -838,11 +968,13 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
                         {flippedCards[idx] ? (
                           <div className="text-emerald-300 text-sm leading-relaxed">
                             <span className="text-[9px] text-emerald-500 block mb-1 uppercase tracking-widest font-bold">Answer</span>
-                            {card.answer}
+                            {card.image && <img src={card.image} alt="Captured PDF snippet" className="mb-3 max-h-48 w-full object-contain rounded border border-emerald-500/20" />}
+                            {card.answer || "Captured PDF snippet"}
                           </div>
                         ) : (
                           <div className="text-gray-100 text-sm font-semibold leading-relaxed">
-                            <span className="text-[9px] text-gray-500 block mb-1 uppercase tracking-widest font-bold">Question</span>
+                            {card.image && <img src={card.image} alt="Captured PDF snippet" className="mb-3 max-h-48 w-full object-contain rounded border border-gray-700" />}
+                            <span className="text-[9px] text-gray-500 block mb-1 uppercase tracking-widest font-bold">{card.image ? "Snippet" : "Question"}</span>
                             {card.question}
                           </div>
                         )}
@@ -887,6 +1019,11 @@ export default function WorkspacePage({ params }: { params: Promise<{ id: string
                     </div>
                   ))}
                   {isGeneratingAI && <div className="text-emerald-500 text-xs animate-pulse pl-1">AI is typing...</div>}
+                  {generatedImageUrl && (
+                    <div className="rounded-lg overflow-hidden border border-emerald-500/20">
+                      <img src={generatedImageUrl} alt="AI generated study illustration" className="w-full h-auto" />
+                    </div>
+                  )}
                 </div>
               )}
             </div>

@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { User, Home, Folder, User as ProfileIcon, Settings, RefreshCw, Download, Plus, FileText, Edit2, Check, FolderPlus, X, Menu, Trash2 } from "lucide-react";
+import { User, Home, Folder, RefreshCw, Download, Plus, FileText, Edit2, Check, FolderPlus, X, Menu, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Document, Page, pdfjs } from 'react-pdf';
+import { getLocalDocuments, saveLocalDocument } from '../../utils/indexedDB';
 
 if (typeof window !== "undefined") {
   pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -45,21 +46,34 @@ export default function StoragePage() {
 
     try {
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      const [docsRes, foldersRes] = await Promise.all([
+      const [docsResult, foldersResult] = await Promise.allSettled([
         fetch(`${baseUrl}/api/documents`, { headers: { Authorization: `Bearer ${token}` } }),
         fetch(`${baseUrl}/api/folders`, { headers: { Authorization: `Bearer ${token}` } })
       ]);
-      
-      if (docsRes.status === 401 || foldersRes.status === 401) {
+
+      const docsRes = docsResult.status === "fulfilled" ? docsResult.value : null;
+      const foldersRes = foldersResult.status === "fulfilled" ? foldersResult.value : null;
+      if (docsRes?.status === 401 || foldersRes?.status === 401) {
         localStorage.removeItem("token");
         window.location.href = "/login";
         return;
       }
       
-      const docsData = await docsRes.json();
-      const foldersData = await foldersRes.json();
-      
-      setDocuments(docsData);
+      const docsData = docsRes?.ok ? await docsRes.json() : [];
+      const foldersData = foldersRes?.ok ? await foldersRes.json() : [];
+
+      const localDocuments = await getLocalDocuments();
+      const localDocs = localDocuments.map(doc => ({
+        id: `local-${doc.id}`,
+        localId: doc.id,
+        name: doc.name,
+        size: doc.size,
+        type: "PDF",
+        folderId: null,
+        uploadedAt: doc.uploadedAt,
+        isLocal: true
+      }));
+      setDocuments([...docsData, ...localDocs.filter(localDoc => !docsData.some((doc: any) => doc.name === localDoc.name))]);
       
       const formattedFolders = foldersData.map((f: any) => ({
         id: f._id,
@@ -184,12 +198,25 @@ export default function StoragePage() {
             folderId: rawDoc.folder,
             uploadedAt: rawDoc.createdAt
           };
-          setDocuments(prev => [newDoc, ...prev]);
+          setDocuments(prev => [newDoc, ...prev.filter(doc => doc.name !== file.name)]);
         } else {
-          console.error("Server upload failed");
+          const errorBody = await res.json().catch(() => ({}));
+          throw new Error(errorBody.error || `Server upload failed (${res.status})`);
         }
       } catch (err) {
-        console.error("Upload failed:", err);
+        console.warn("Server upload failed; saving locally:", err);
+        const localId = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+        await saveLocalDocument(localId, file.name, `${(file.size / (1024 * 1024)).toFixed(1)} MB`, file);
+        setDocuments(prev => [{
+          id: `local-${localId}`,
+          localId,
+          name: file.name,
+          size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+          type: "PDF",
+          folderId: activeFolderId,
+          uploadedAt: new Date().toISOString(),
+          isLocal: true
+        }, ...prev]);
       } finally {
         setIsUploading(false);
         if (fileInputRef.current) fileInputRef.current.value = "";
@@ -236,7 +263,7 @@ export default function StoragePage() {
   };
 
   return (
-    <div className="bg-[#181818] text-gray-200 h-screen w-screen overflow-hidden flex font-sans relative">
+    <div className="bg-[#181818] text-gray-200 h-dvh w-full overflow-hidden flex font-sans relative">
       {}
       {isCreatingFolder && (
         <div className="absolute inset-0 bg-black/60 z-50 flex items-center justify-center">
@@ -285,7 +312,7 @@ export default function StoragePage() {
                   <User className="w-6 h-6 text-gray-300" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-100">Nexel User</h3>
+                  <h3 className="text-sm font-semibold text-gray-100">Account</h3>
                   <p className="text-xs text-gray-400">{userEmail}</p>
                 </div>
               </div>
@@ -301,12 +328,6 @@ export default function StoragePage() {
               <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-100 bg-[#2A2A2A] border-l-4 border-emerald-500 transition-colors" href="/storage" onClick={() => setIsMobileSidebarOpen(false)}>
                 <Folder className="w-5 h-5 text-center" /> Storage
               </a>
-              <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="/profile" onClick={() => setIsMobileSidebarOpen(false)}>
-                <ProfileIcon className="w-5 h-5 text-center" /> Profile
-              </a>
-              <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="/settings" onClick={() => setIsMobileSidebarOpen(false)}>
-                <Settings className="w-5 h-5 text-center" /> Settings
-              </a>
             </nav>
           </aside>
         </div>
@@ -320,7 +341,7 @@ export default function StoragePage() {
               <User className="w-6 h-6 text-gray-300" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-gray-100">Nexel User</h3>
+              <h3 className="text-sm font-semibold text-gray-100">Account</h3>
               <p className="text-xs text-gray-400">{userEmail}</p>
             </div>
           </div>
@@ -332,12 +353,6 @@ export default function StoragePage() {
           </a>
           <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-100 bg-[#2A2A2A] border-l-4 border-emerald-500 transition-colors" href="/storage">
             <Folder className="w-5 h-5 text-center" /> Storage
-          </a>
-          <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="/profile">
-            <ProfileIcon className="w-5 h-5 text-center" /> Profile
-          </a>
-          <a className="flex items-center gap-4 px-6 py-3.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-[#2A2A2A] transition-colors" href="/settings">
-            <Settings className="w-5 h-5 text-center" /> Settings
           </a>
           <button 
             onClick={() => {
@@ -463,6 +478,10 @@ export default function StoragePage() {
                   {}
                   <div 
                     onClick={() => {
+                      if (doc.isLocal) {
+                        router.push(`/workspace/${doc.id}?url=${encodeURIComponent(`indexeddb://${doc.localId}`)}&name=${encodeURIComponent(doc.name)}`);
+                        return;
+                      }
                       const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
                       const token = localStorage.getItem("token") || "";
                       const targetUrl = `${baseUrl}/api/documents/${doc.id}/stream?token=${token}`;

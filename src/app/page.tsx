@@ -94,10 +94,10 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white selection:bg-[#2A2A2A] overflow-hidden">
+    <div className="min-h-screen w-full overflow-x-hidden bg-[#0A0A0A] text-white selection:bg-[#2A2A2A]">
       {}
       <nav className="fixed top-0 left-0 right-0 h-12 border-b border-[#1E1E1E] bg-[#0A0A0A]/70 backdrop-blur-[16px] z-50 flex items-center justify-center">
-        <div className="w-full max-w-[1100px] px-6 flex items-center justify-between">
+        <div className="w-full max-w-[1100px] px-4 sm:px-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-zinc-600 to-zinc-400 flex items-center justify-center">
               <div className="w-2 h-2 rounded-full bg-white"></div>
@@ -107,10 +107,6 @@ export default function LandingPage() {
 
           {}
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#" className="text-gray-300 hover:text-white transition-colors">Product</a>
-            <a href="#" className="text-gray-300 hover:text-white transition-colors">Solutions</a>
-            <a href="#" className="text-gray-300 hover:text-white transition-colors">Pricing</a>
-
             <div className="flex items-center gap-6 ml-4 border-l border-gray-800 pl-8">
               {isMounted && isSignedIn ? (
                 <a href="/storage" className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-600 border border-gray-500 hover:border-white transition-colors overflow-hidden">
@@ -149,10 +145,6 @@ export default function LandingPage() {
             exit={{ opacity: 0, y: -20 }}
             className="fixed inset-x-0 top-12 bg-[#0A0A0A]/95 border-b border-[#1E1E1E] backdrop-blur-[16px] z-40 md:hidden flex flex-col px-6 py-6 space-y-4 shadow-2xl animate-fade-in"
           >
-            <a href="#" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white text-base font-medium transition-colors py-1">Product</a>
-            <a href="#" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white text-base font-medium transition-colors py-1">Solutions</a>
-            <a href="#" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white text-base font-medium transition-colors py-1">Pricing</a>
-            <div className="h-px bg-gray-800/60 my-1" />
             {isMounted && isSignedIn ? (
               <a href="/storage" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 py-2 text-gray-300 hover:text-white transition-colors">
                 <div className="w-8 h-8 rounded-full bg-gray-600 border border-gray-500 flex items-center justify-center overflow-hidden">
@@ -176,26 +168,26 @@ export default function LandingPage() {
       </AnimatePresence>
 
       {}
-      <section className="pt-32 pb-20 px-6 flex flex-col items-center text-center relative">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-white/[0.03] blur-[120px] rounded-full pointer-events-none" />
+      <section className="pt-28 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 flex flex-col items-center text-center relative">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[min(800px,120vw)] h-[400px] bg-white/[0.03] blur-[120px] rounded-full pointer-events-none" />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-[720px] z-10"
+          className="w-full max-w-[720px] z-10"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#2A2A2A] bg-[#111111] mb-8">
             <Sparkles className="w-3 h-3 text-[#A1A1A1]" />
             <span className="text-[12px] font-medium text-[#A1A1A1] tracking-wide">Introducing AI-Powered Workspaces</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-medium tracking-[-0.055em] leading-[1.1] mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-medium leading-[1.1] mb-6">
             Transform PDFs into <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-[#707070] [-webkit-text-fill-color:transparent] [transform:translate3d(0,0,0)]">Interactive Knowledge.</span>
           </h1>
 
-          <p className="text-base sm:text-lg md:text-xl text-[#A1A1A1] tracking-[-0.01em] mb-10 max-w-[600px] mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-[#A1A1A1] mb-10 max-w-[600px] mx-auto">
             Highlight text to instantly generate structured notes, visual diagrams, and flashcards. Stop reading passively.
           </p>
 
@@ -219,7 +211,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="mt-20 w-full max-w-[1100px] relative z-10 perspective-1000"
+          className="mt-12 sm:mt-20 w-full max-w-[1100px] relative z-10 perspective-1000"
         >
           <div className="rounded-[12px] border border-[#2A2A2A] bg-[#0E0E0E] overflow-hidden shadow-2xl flex relative aspect-[16/9] transform-gpu rotate-x-[2deg] scale-[0.95] hover:rotate-x-0 hover:scale-100 transition-all duration-700 ease-out">
             {isMounted ? (
@@ -239,7 +231,7 @@ export default function LandingPage() {
       </section>
 
       {}
-      <section id="features" className="py-24 px-6 bg-[#0A0A0A]">
+      <section id="features" className="py-16 sm:py-24 px-4 sm:px-6 bg-[#0A0A0A]">
         <div className="max-w-[1100px] mx-auto">
           <div className="mb-16">
             <h2 className="text-3xl md:text-4xl font-medium tracking-[-0.02em] mb-4">
@@ -267,7 +259,7 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {}
-            <div className="col-span-1 md:col-span-2 bg-[#111111] border border-[#2A2A2A] rounded-[12px] p-8 hover:bg-[#181818] transition-colors group">
+            <div className="col-span-1 md:col-span-2 bg-[#111111] border border-[#2A2A2A] rounded-[12px] p-5 sm:p-8 hover:bg-[#181818] transition-colors group">
               <div className="w-10 h-10 rounded-[8px] bg-[#1E1E1E] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
@@ -278,7 +270,7 @@ export default function LandingPage() {
             </div>
 
             {}
-            <div className="bg-[#111111] border border-[#2A2A2A] rounded-[12px] p-8 hover:bg-[#181818] transition-colors group">
+            <div className="bg-[#111111] border border-[#2A2A2A] rounded-[12px] p-5 sm:p-8 hover:bg-[#181818] transition-colors group">
               <div className="w-10 h-10 rounded-[8px] bg-[#1E1E1E] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <MessageSquare className="w-5 h-5 text-white" />
               </div>
@@ -289,7 +281,7 @@ export default function LandingPage() {
             </div>
 
             {}
-            <div className="bg-[#111111] border border-[#2A2A2A] rounded-[12px] p-8 hover:bg-[#181818] transition-colors group">
+            <div className="bg-[#111111] border border-[#2A2A2A] rounded-[12px] p-5 sm:p-8 hover:bg-[#181818] transition-colors group">
               <div className="w-10 h-10 rounded-[8px] bg-[#1E1E1E] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Network className="w-5 h-5 text-white" />
               </div>
@@ -300,7 +292,7 @@ export default function LandingPage() {
             </div>
 
             {}
-            <div className="col-span-1 md:col-span-2 bg-[#111111] border border-[#2A2A2A] rounded-[12px] p-8 hover:bg-[#181818] transition-colors group relative overflow-hidden">
+            <div className="col-span-1 md:col-span-2 bg-[#111111] border border-[#2A2A2A] rounded-[12px] p-5 sm:p-8 hover:bg-[#181818] transition-colors group relative overflow-hidden">
               <div className="w-10 h-10 rounded-[8px] bg-[#1E1E1E] flex items-center justify-center mb-6 relative z-10 group-hover:scale-110 transition-transform">
                 <Video className="w-5 h-5 text-white" />
               </div>
@@ -327,12 +319,6 @@ export default function LandingPage() {
               <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
             </div>
             <span className="font-medium tracking-tight text-[15px]">Nexel</span>
-          </div>
-          <div className="flex items-center gap-6 text-[14px] text-[#707070]">
-            <a href="#" className="hover:text-white transition-colors">Twitter</a>
-            <a href="#" className="hover:text-white transition-colors">GitHub</a>
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
           </div>
         </div>
       </footer>

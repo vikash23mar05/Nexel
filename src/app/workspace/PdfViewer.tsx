@@ -28,14 +28,18 @@ export default function DocumentViewer({
   url,
   highlights,
   addHighlight,
+  onContextAction,
   activeColor,
+  isClipSelectionEnabled,
   pdfScaleValue = "1"
 }: { 
   docId: string, 
   url: string,
   highlights: CustomHighlight[],
   addHighlight: (h: NewHighlight, c: string) => void,
+  onContextAction: (action: "explain" | "ask" | "highlight" | "flashcard", text: string, highlight: NewHighlight) => void,
   activeColor: string,
+  isClipSelectionEnabled: boolean,
   pdfScaleValue?: string
 }) {
 
@@ -60,8 +64,9 @@ export default function DocumentViewer({
       >
         {(pdfDocument) => (
           <PdfHighlighter
+            key={pdfScaleValue}
             pdfDocument={pdfDocument}
-            enableAreaSelection={(event) => event.altKey}
+            enableAreaSelection={(event) => isClipSelectionEnabled || event.altKey}
             onScrollChange={() => {}}
             scrollRef={() => {}}
             pdfScaleValue={pdfScaleValue}
@@ -71,11 +76,58 @@ export default function DocumentViewer({
               hideTipAndSelection,
               transformSelection
             ) => {
+              const newHighlight = { content, position, comment: { text: "", emoji: "" } };
+              const selectedText = content.text?.trim() || "";
+              const hasImage = Boolean(content.image);
 
-              addHighlight({ content, position, comment: { text: "", emoji: "" } }, activeColor);
+              if (!selectedText && !hasImage) {
+                addHighlight(newHighlight, activeColor);
+                setTimeout(hideTipAndSelection, 0);
+                return <div style={{ display: 'none' }}></div>;
+              }
 
-              setTimeout(hideTipAndSelection, 0);
-              return <div style={{ display: 'none' }}></div>;
+              return (
+                <div className="flex items-center gap-1 rounded-lg border border-gray-700 bg-gray-950 p-1 text-xs text-white shadow-xl">
+                  {selectedText && <>
+                    <button
+                      className="rounded px-2 py-1 hover:bg-emerald-500 hover:text-black"
+                      onClick={() => {
+                        onContextAction("explain", selectedText, newHighlight);
+                        hideTipAndSelection();
+                      }}
+                    >
+                      Explain
+                    </button>
+                    <button
+                      className="rounded px-2 py-1 hover:bg-emerald-500 hover:text-black"
+                      onClick={() => {
+                        onContextAction("ask", selectedText, newHighlight);
+                        hideTipAndSelection();
+                      }}
+                    >
+                      Ask
+                    </button>
+                  </>}
+                  <button
+                    className="rounded px-2 py-1 hover:bg-emerald-500 hover:text-black"
+                    onClick={() => {
+                      onContextAction("flashcard", selectedText, newHighlight);
+                      hideTipAndSelection();
+                    }}
+                  >
+                    Flashcard
+                  </button>
+                  <button
+                    className="rounded px-2 py-1 hover:bg-emerald-500 hover:text-black"
+                    onClick={() => {
+                      onContextAction("highlight", selectedText, newHighlight);
+                      hideTipAndSelection();
+                    }}
+                  >
+                    Highlight
+                  </button>
+                </div>
+              );
             }}
             highlightTransform={(
               highlight: any,

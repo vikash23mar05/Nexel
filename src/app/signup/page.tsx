@@ -154,7 +154,7 @@ export default function SignupPage() {
                 />
               </div>
               <label htmlFor="terms" className="text-sm text-gray-400 select-none">
-                I agree to the <a href="#" className="text-gray-300 underline underline-offset-2 hover:text-white">Terms & Conditions</a>
+                I agree to the Terms & Conditions
               </label>
             </div>
 
