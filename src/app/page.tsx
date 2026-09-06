@@ -4,7 +4,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
+import {
+  Show,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+  useAuth,
+} from "@clerk/nextjs";
 import { 
   Sparkles, 
   MessageSquare, 
@@ -105,21 +111,17 @@ export default function LandingPage() {
           {}
           <nav className="hidden md:flex items-center gap-8">
             <div className="flex items-center gap-6 ml-4 border-l border-gray-800 pl-8">
-              {isMounted && isSignedIn ? (
-                <a href="/storage" className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-600 border border-gray-500 hover:border-white transition-colors overflow-hidden">
-                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
-                     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                     <circle cx="12" cy="7" r="4"></circle>
-                   </svg>
-                </a>
-              ) : (
-                <>
-                  <a href="/login" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Log in</a>
-                  <a href="/signup" className="bg-emerald-500 text-black px-4 py-2 rounded-full font-medium hover:bg-emerald-400 transition-colors text-sm">
-                    Sign up
-                  </a>
-                </>
-              )}
+              <Show when="signed-out">
+                <SignInButton mode="modal">
+                  <button className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Log in</button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <button className="bg-emerald-500 text-black px-4 py-2 rounded-full font-medium hover:bg-emerald-400 transition-colors text-sm">Sign up</button>
+                </SignUpButton>
+              </Show>
+              <Show when="signed-in">
+                <UserButton />
+              </Show>
             </div>
           </nav>
 
@@ -142,24 +144,17 @@ export default function LandingPage() {
             exit={{ opacity: 0, y: -20 }}
             className="fixed inset-x-0 top-12 bg-[#0A0A0A]/95 border-b border-[#1E1E1E] backdrop-blur-[16px] z-40 md:hidden flex flex-col px-6 py-6 space-y-4 shadow-2xl animate-fade-in"
           >
-            {isMounted && isSignedIn ? (
-              <a href="/storage" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 py-2 text-gray-300 hover:text-white transition-colors">
-                <div className="w-8 h-8 rounded-full bg-gray-600 border border-gray-500 flex items-center justify-center overflow-hidden">
-                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
-                     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                     <circle cx="12" cy="7" r="4"></circle>
-                   </svg>
-                </div>
-                <span className="font-medium text-base">My Storage</span>
-              </a>
-            ) : (
-              <>
-                <a href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white text-base font-medium transition-colors py-1">Log in</a>
-                <a href="/signup" onClick={() => setIsMobileMenuOpen(false)} className="bg-emerald-500 text-black py-2.5 px-4 rounded-lg font-semibold hover:bg-emerald-400 text-center transition-colors text-sm inline-block">
-                  Sign up
-                </a>
-              </>
-            )}
+            <Show when="signed-out">
+              <SignInButton mode="modal">
+                <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 hover:text-white text-base font-medium transition-colors py-1">Log in</button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button onClick={() => setIsMobileMenuOpen(false)} className="bg-emerald-500 text-black py-2.5 px-4 rounded-lg font-semibold hover:bg-emerald-400 text-center transition-colors text-sm inline-block">Sign up</button>
+              </SignUpButton>
+            </Show>
+            <Show when="signed-in">
+              <UserButton />
+            </Show>
           </motion.div>
         )}
       </AnimatePresence>

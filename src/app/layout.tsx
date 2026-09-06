@@ -27,15 +27,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html
-        lang="en"
-        className={`${inter.variable} ${lora.variable} dark antialiased`}
-      >
-        <body suppressHydrationWarning className="min-h-full flex flex-col font-sans bg-background text-text-primary bg-[#0A0A0A]">
+    <html
+      lang="en"
+      className={`${inter.variable} ${lora.variable} dark antialiased`}
+    >
+      <body suppressHydrationWarning className="min-h-full flex flex-col font-sans bg-background text-text-primary bg-[#0A0A0A]">
+        <ClerkProvider>
           {children}
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }
